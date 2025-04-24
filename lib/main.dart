@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home:  Text('Mi Terrenito'),
+      home:  Home(title: 'Mi terrenito'),
     );
   }
 }
