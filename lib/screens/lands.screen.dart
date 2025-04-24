@@ -72,7 +72,7 @@ class PropertyCard extends StatelessWidget{
                   ),
                   Text('${property.size} m2'),
                   Row(
-                    children: [Text("${property.maxPrice}-${property.minPrice}",
+                    children: [Text("\$${property.maxPrice}-\$${property.minPrice}",
                      style: TextStyle(
                        fontSize: 15,
                        fontWeight: FontWeight.bold
