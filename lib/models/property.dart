@@ -8,6 +8,7 @@ class Property{
   final String zone;
   final String location;
   final String mapLocation;
+  
 
   Property({
     required this.name,
