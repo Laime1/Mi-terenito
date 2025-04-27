@@ -132,15 +132,19 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       // Contenido principal
-      body: Expanded(
-        child: selectedIndex == 0
-            ? LandScreen(properties: properties)
-            : Center(
-          child: Text(
-            'Mostrando: ${categories[selectedIndex]}',
-            style: const TextStyle(fontSize: 20),
+      body: Column(
+        children: [
+          Expanded(
+            child: selectedIndex == 0
+                ? LandScreen(properties: properties)
+                : Center(
+              child: Text(
+                'Mostrando: ${categories[selectedIndex]}',
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
 
       // Barra de navegación inferior
