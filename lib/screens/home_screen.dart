@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mi_terrenito/screens/profile_secreen.dart';
 import 'package:mi_terrenito/screens/rentals_screens.dart';
 import '../models/property.dart';
+import '../services/api_service.dart';
 import 'form_screen.dart';
 import 'houses.screens.dart';
 import 'lands.screen.dart';
@@ -18,24 +19,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int bottomNavIndex = 0;
   final List<String> categories = ['Terrenos', 'Alquileres', 'Casas'];
   String searchText = '';
+  late Future<List<Property>> futureProperties;
+  final ApiService apiService = ApiService();
+
+
 
   // Datos de ejemplo (podrías mover esto a un servicio/repositorio)
-  final List<Property> properties = [
-    Property(
-      name: 'Archipielago Alalay(Cochabamba)',
-      size: 400,
-      images: [
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYr-GmtrfZWSAxatZEkftLn6fXLD0QTqyCcQ&s',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-WWwP-_XelzhkjL7VROxlw9BuGVH6KjrE3Q&s',
-      ],
-      description: 'Ubicado en pleno centro de la laguna alalay, con vista a la..',
-      minPrice: 999,
-      maxPrice: 1000,
-      zone: 'Zona Sur',
-      location: 'Cochabamba',
-      mapLocation: 'https://www.google.com/maps/place/Plaza+Sucre/@-17.411946,-66.1632659,13z/data=!4m9!1m2!2m1!1zLA!3m5!1s0x93e373f8d705ee63:0x8b64d1ced4c8c13f!8m2!3d-17.3922658!4d-66.1480371!16s%2Fg%2F1tj3m4zb?hl=es-419&entry=ttu&g_ep=EgoyMDI1MDQyMi4wIKXMDSoASAFQAw%3D%3D',
-    ),
-  ];
 
   //late final List<Widget> _bottomNavScreens;
   late  final List<Widget>  _categoryScreens;
@@ -57,12 +46,31 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState(){
     super.initState();
+    // _categoryScreens = [
+    //   LandScreen(properties: properties),
+    //   const RentalsScreen(),
+    //   const HousesScreen(),
+    // ];
+    futureProperties = apiService.fetchProperties();
+    _initializeScreens();
+  }
+
+  void _initializeScreens() {
     _categoryScreens = [
-      LandScreen(properties: properties),
+      FutureBuilder<List<Property>>(
+        future: futureProperties,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return LandScreen(properties: snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
       const RentalsScreen(),
       const HousesScreen(),
     ];
-
   }
 
   Widget _buildSearchBar() {
@@ -132,21 +140,26 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.person),
+          ),
+        ],
         iconTheme: const IconThemeData(color: Colors.black),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(110),
-          child: Column(
-            children: [
-              _buildSearchBar(),
-              _buildCategoryChips(),
-              const SizedBox(height: 8),
-            ],
-          ),
+          child: _buildSearchBar(),
         ),
       ),
       body: _categoryScreens[selectedCategoryIndex],
       bottomNavigationBar: _buildBottomNavigationBar(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){},
+        child: Icon(Icons.add),
+      ),
     );
+    
   }
 
   BottomNavigationBar _buildBottomNavigationBar() {
@@ -158,13 +171,17 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.add, color: Colors.black),
+          icon: Icon(Icons.bedroom_parent_sharp, color: Colors.black),
           label: 'Agregar',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person, color: Colors.black),
+          icon: Icon(Icons.home_work_sharp, color: Colors.black),
           label: 'Perfil',
         ),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.landscape_sharp),
+          label: 'Terrenos'
+        )
       ],
     );
   }

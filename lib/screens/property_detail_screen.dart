@@ -26,7 +26,7 @@ class PropertyDetailScreen extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  property.images.first,
+                  property.images.first.url,
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -35,24 +35,24 @@ class PropertyDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             // Miniaturas de imágenes
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: property.images.map((img) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      img,
-                      height: 50,
-                      width: 50,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: property.images.map((img) {
+            //     return Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 4),
+            //       child: ClipRRect(
+            //         borderRadius: BorderRadius.circular(8),
+            //         child: Image.network(
+            //           img,
+            //           height: 50,
+            //           width: 50,
+            //           fit: BoxFit.cover,
+            //         ),
+            //       ),
+            //     );
+            //   }).toList(),
+            // ),
+            // const SizedBox(height: 16),
             // Precios
             Text(
               '\$ ${property.minPrice} - \$ ${property.maxPrice}',
