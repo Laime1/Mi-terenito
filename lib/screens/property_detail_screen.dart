@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
 import '../models/property.dart';
 
-
-class PropertyDetailScreen extends StatelessWidget {
+class PropertyDetailScreen extends StatefulWidget {
   final Property property;
 
   const PropertyDetailScreen({super.key, required this.property});
 
   @override
+  State<PropertyDetailScreen> createState() => _PropertyDetailScreenState();
+}
+
+class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
+  late String selectedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedImage = widget.property.images.first;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final property = widget.property;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(property.name, style: const TextStyle(fontSize: 16)),
@@ -25,12 +39,12 @@ class PropertyDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen principal
+            // Imagen principal actualizable
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  property.images.first,
+                  selectedImage,
                   height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -39,23 +53,45 @@ class PropertyDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Miniaturas
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: property.images.take(3).map((img) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      img,
-                      height: 40,
-                      width: 40,
-                      fit: BoxFit.cover,
+            // Carrusel de miniaturas
+            SizedBox(
+              height: 50,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: property.images.length,
+                itemBuilder: (context, index) {
+                  final img = property.images[index];
+                  final isSelected = img == selectedImage;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedImage = img;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isSelected ? Colors.blue : Colors.transparent,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.network(
+                            img,
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
+                  );
+                },
+              ),
             ),
             const SizedBox(height: 12),
 
@@ -90,7 +126,7 @@ class PropertyDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Contactos
+            // Contacto
             const Text(
               'Contacto:',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -99,7 +135,7 @@ class PropertyDetailScreen extends StatelessWidget {
 
             const Spacer(),
 
-            // Botones contacto
+            // Botones de contacto
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -107,13 +143,17 @@ class PropertyDetailScreen extends StatelessWidget {
                   onPressed: () {},
                   icon: const Icon(Icons.chat, size: 18),
                   label: const Text('WhatsApp'),
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
                 ),
                 ElevatedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.map, size: 18),
                   label: const Text('Mapa'),
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
                 ),
               ],
             ),
@@ -138,12 +178,10 @@ class PropertyDetailScreen extends StatelessWidget {
         ],
         onTap: (index) {
           if (index == 0) {
-            // Acción de Editar
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Editar presionado')),
             );
           } else if (index == 1) {
-            // Acción de Eliminar
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Eliminar presionado')),
             );
