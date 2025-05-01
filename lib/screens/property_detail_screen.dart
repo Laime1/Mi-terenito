@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/property.dart';
+import '../models/property/property.dart';
 
 class PropertyDetailScreen extends StatelessWidget {
   final Property property;

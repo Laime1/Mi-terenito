@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/property.dart';
+import '../models/property/property.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.0.6:8000';
+  static const String baseUrl = 'https://api-terrenito.onrender.com/api';
 
   Future<List<Property>> fetchProperties() async {
-    final response = await http.get(Uri.parse('$baseUrl/properties'));
+    final response = await http.get(Uri.parse('$baseUrl/propiedades'));
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonResponse = json.decode(response.body);

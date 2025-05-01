@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/property.dart';
+import '../models/property/property.dart';
 import '../screens/property_detail_screen.dart'; // ¡Importa la pantalla de detalle!
 
 class PropertyCard extends StatelessWidget {

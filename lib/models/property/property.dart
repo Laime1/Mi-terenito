@@ -1,6 +1,6 @@
-import 'package:mi_terrenito/models/location.dart';
-import 'package:mi_terrenito/models/picture.dart';
-import 'package:mi_terrenito/models/type.dart';
+import 'package:mi_terrenito/models/property/location.dart';
+import 'package:mi_terrenito/models/property/picture.dart';
+import 'package:mi_terrenito/models/property/type.dart';
 import 'package:mi_terrenito/models/user.dart';
 
 class Property{
