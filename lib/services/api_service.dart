@@ -1,9 +1,14 @@
+// api_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/property/property.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://api-terrenito.onrender.com/api';
+  // ✅ IP de tu servidor Laravel en red local
+  static const String host = 'https://api-terrenito.onrender.com';
+  static const String baseUrl = '$host/api';
+
+  static String get hostUrl => host;
 
   Future<List<Property>> fetchProperties() async {
     final response = await http.get(Uri.parse('$baseUrl/propiedades'));
@@ -15,6 +20,4 @@ class ApiService {
       throw Exception('Failed to load properties');
     }
   }
-
-// Puedes agregar más métodos para POST, PUT, DELETE, etc.
 }
