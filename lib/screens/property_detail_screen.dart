@@ -1,160 +1,192 @@
 import 'package:flutter/material.dart';
 import '../models/property/property.dart';
 
-class PropertyDetailScreen extends StatelessWidget {
+class PropertyDetailScreen extends StatefulWidget {
   final Property property;
 
   const PropertyDetailScreen({super.key, required this.property});
 
   @override
+  State<PropertyDetailScreen> createState() => _PropertyDetailScreenState();
+}
+
+class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
+  late String selectedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedImage = widget.property.images[0].url;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final property = widget.property;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(property.name),
+        title: Text(property.name, style: const TextStyle(fontSize: 16)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.5,
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen principal
+            // Imagen principal actualizable
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  property.images.first.url,
-                  height: 200,
+                  selectedImage,
+                  height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             const SizedBox(height: 12),
-            // Miniaturas de imágenes
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: property.images.map((img) {
-            //     return Padding(
-            //       padding: const EdgeInsets.symmetric(horizontal: 4),
-            //       child: ClipRRect(
-            //         borderRadius: BorderRadius.circular(8),
-            //         child: Image.network(
-            //           img,
-            //           height: 50,
-            //           width: 50,
-            //           fit: BoxFit.cover,
-            //         ),
-            //       ),
-            //     );
-            //   }).toList(),
-            // ),
-            // const SizedBox(height: 16),
-            // Precios
+
+            // Carrusel de miniaturas
+            SizedBox(
+              height: 50,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: property.images.length,
+                itemBuilder: (context, index) {
+                  final img = property.images[index].url;
+                  final isSelected = img == selectedImage;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedImage = img;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isSelected ? Colors.blue : Colors.transparent,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.network(
+                            img,
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Precio
             Text(
               '\$ ${property.minPrice} - \$ ${property.maxPrice}',
               style: const TextStyle(
-                fontSize: 22,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
+
             // Descripción
             const Text(
-              'Descripción de Terreno',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+              'Descripción',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
             Text(
               property.description,
-              style: const TextStyle(fontSize: 15),
-            ),
-            const SizedBox(height: 16),
-            // Tamaño
-            RichText(
-              text: TextSpan(
-                style: const TextStyle(color: Colors.black, fontSize: 16),
-                children: [
-                  const TextSpan(
-                    text: 'Tamaño: ',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: '${property.size} m²',
-                  ),
-                ],
-              ),
+              style: const TextStyle(fontSize: 14),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
-            // Zona
-            RichText(
-              text: TextSpan(
-                style: const TextStyle(color: Colors.black, fontSize: 16),
-                children: [
-                  const TextSpan(
-                    text: 'Zona: ',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: property.zone,
-                  ),
-                ],
-              ),
+
+            // Tamaño y zona
+            Text(
+              'Tamaño: ${property.size} m²\nZona: ${property.zone}',
+              style: const TextStyle(fontSize: 14),
             ),
-            const SizedBox(height: 16),
-            // Contactos
+            const SizedBox(height: 8),
+
+            // Contacto
             const Text(
-              'Números de Contacto:',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              'Contacto:',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 4),
-            const Text(
-              '6543216 - 76543211',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 24),
+            const Text('6543216 - 76543211', style: TextStyle(fontSize: 14)),
+
+            const Spacer(),
+
             // Botones de contacto
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.chat),
-                  label: const Text('Contacto'),
+                  icon: const Icon(Icons.chat, size: 18),
+                  label: const Text('WhatsApp'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
                 ),
                 ElevatedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.map),
-                  label: const Text('Ubicación'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            // Botones de editar y eliminar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  label: const Text('Editar', style: TextStyle(color: Colors.blue)),
-                ),
-                OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  label: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                  icon: const Icon(Icons.map, size: 18),
+                  label: const Text('Mapa'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
                 ),
               ],
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: const Color.fromARGB(255, 176, 34, 34),
+        unselectedItemColor: const Color.fromARGB(221, 4, 43, 239),
+        backgroundColor: Colors.white,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.edit),
+            label: 'Editar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.delete),
+            label: 'Eliminar',
+          ),
+        ],
+        onTap: (index) {
+          if (index == 0) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Editar presionado')),
+            );
+          } else if (index == 1) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Eliminar presionado')),
+            );
+          }
+        },
       ),
     );
   }
