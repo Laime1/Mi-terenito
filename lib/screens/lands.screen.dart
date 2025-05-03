@@ -15,11 +15,14 @@ class LandScreen extends StatefulWidget {
 class LandScreenState extends State<LandScreen> {
   TextEditingController searchController = TextEditingController();
   List<Property> filteredProperties = [];
+  List<Property> landsProperties = [];
+
 
   @override
   void initState() {
     super.initState();
-    filteredProperties = widget.properties;
+    landsProperties = widget.properties.where((p) => p.isRental()).toList();
+    filteredProperties = landsProperties;
     searchController.addListener(_filterProperties);
   }
 
@@ -32,7 +35,7 @@ class LandScreenState extends State<LandScreen> {
   void _filterProperties() {
     final query = searchController.text.toLowerCase();
     setState(() {
-      filteredProperties = widget.properties.where((property) {
+      filteredProperties = landsProperties.where((property) {
         final title = property.name?.toLowerCase() ?? '';
         final description = property.description?.toLowerCase() ?? '';
         final price = property.maxPrice.toString() ?? '0';

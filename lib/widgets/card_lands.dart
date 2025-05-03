@@ -25,7 +25,7 @@ class PropertyCard extends StatelessWidget {
               Expanded(
                 flex: 4,
                 child: Image.network(
-                  property.images.first.url,
+                  property.images.first.urlNew,
                   height: 120,
                   fit: BoxFit.cover,
                 ),

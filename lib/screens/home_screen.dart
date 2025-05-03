@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Datos de ejemplo (podrías mover esto a un servicio/repositorio)
 
   //late final List<Widget> _bottomNavScreens;
-  late  final List<Widget> _categoryScreens = [
+  late final List<Widget> _categoryScreens = [
     FutureBuilder<List<Property>>(
       future: ApiService().fetchProperties(),
       builder: (context, snapshot) {
@@ -36,8 +36,28 @@ class _HomeScreenState extends State<HomeScreen> {
         return const Center(child: CircularProgressIndicator());
       },
     ),
-    const RentalsScreen(),
-    const HousesScreen(),
+    FutureBuilder<List<Property>>(
+      future: ApiService().fetchProperties(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return RentalsScreen(properties: snapshot.data!);
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    ),
+    FutureBuilder<List<Property>>(
+      future: ApiService().fetchProperties(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return HousesScreen(properties: snapshot.data!);
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    ),
   ];
 
 
