@@ -21,7 +21,7 @@ class LandScreenState extends State<LandScreen> {
   @override
   void initState() {
     super.initState();
-    landsProperties = widget.properties.where((p) => p.isRental()).toList();
+    landsProperties = widget.properties.where((p) => p.isLand()).toList();
     filteredProperties = landsProperties;
     searchController.addListener(_filterProperties);
   }
