@@ -1,10 +1,10 @@
 class Picture{
   final int id;
-  final String url;
+  final String urlNew;
   final int idProperty;
   final DateTime createdAt;
   final DateTime updatedUp;
-  final String urlNew;
+  final String url;
 
   Picture({
     required this.id,
@@ -19,8 +19,8 @@ class Picture{
 
     return Picture(
         id: json['id_imagen'] ?? 0,
-        url: json['ruta_imagen'] ?? '',
-        urlNew: json['url'] ?? '',
+        url: json['url'] ?? '',
+        urlNew: json['ruta_imagen'] ?? '',
         idProperty: json['id_propiedad'] ?? 0,
       createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
       updatedUp: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
