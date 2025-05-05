@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/property.dart';
+import '../models/property/property.dart';
 import '../screens/property_detail_screen.dart'; // ¡Importa la pantalla de detalle!
 
 class PropertyCard extends StatelessWidget {
@@ -25,7 +25,7 @@ class PropertyCard extends StatelessWidget {
               Expanded(
                 flex: 4,
                 child: Image.network(
-                  property.images.first,
+                  property.images.first.url,
                   height: 120,
                   fit: BoxFit.cover,
                 ),
@@ -50,7 +50,7 @@ class PropertyCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 13),
                     ),
-                    Text('${property.size} m²'),
+                    Text('${property.size.toInt()} m²'),
                     Row(
                       children: [
                         Text(

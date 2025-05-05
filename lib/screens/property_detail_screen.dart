@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/property.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // ← Importante
+import '../models/property/property.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
   final Property property;
@@ -16,7 +17,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   @override
   void initState() {
     super.initState();
-    selectedImage = widget.property.images.first;
+    selectedImage = widget.property.images[0].url;
   }
 
   @override
@@ -39,7 +40,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen principal actualizable
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
@@ -52,15 +52,13 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
-            // Carrusel de miniaturas
             SizedBox(
               height: 50,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: property.images.length,
                 itemBuilder: (context, index) {
-                  final img = property.images[index];
+                  final img = property.images[index].url;
                   final isSelected = img == selectedImage;
                   return GestureDetector(
                     onTap: () {
@@ -94,8 +92,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
-            // Precio
             Text(
               '\$ ${property.minPrice} - \$ ${property.maxPrice}',
               style: const TextStyle(
@@ -105,12 +101,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               ),
             ),
             const SizedBox(height: 8),
-
-            // Descripción
-            const Text(
-              'Descripción',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            const Text('Descripción', style: TextStyle(fontWeight: FontWeight.bold)),
             Text(
               property.description,
               style: const TextStyle(fontSize: 14),
@@ -118,40 +109,44 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
+            RichText(
+          text: TextSpan(
+              style: const TextStyle(fontSize: 14, color: Colors.black),
+              children: [
+              const TextSpan(text: 'Tamaño: ', style: TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(text: '${property.size} m²\n'),
+              const TextSpan(text: 'Zona: ', style: TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(text: property.zone),
+               ],
+             ),
+                 ),
 
-            // Tamaño y zona
-            Text(
-              'Tamaño: ${property.size} m²\nZona: ${property.zone}',
-              style: const TextStyle(fontSize: 14),
-            ),
             const SizedBox(height: 8),
-
-            // Contacto
-            const Text(
-              'Contacto:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            const Text('Contacto:', style: TextStyle(fontWeight: FontWeight.bold)),
             const Text('6543216 - 76543211', style: TextStyle(fontSize: 14)),
-
             const Spacer(),
-
-            // Botones de contacto
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.chat, size: 18),
+                  onPressed: () {
+                    // Lógica para abrir WhatsApp aquí
+                  },
+                  icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18, color: Colors.white),
                   label: const Text('WhatsApp'),
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.map, size: 18),
-                  label: const Text('Mapa'),
+                  onPressed: () {
+                    // Lógica para abrir mapa aquí
+                  },
+                  icon: const FaIcon(FontAwesomeIcons.mapLocationDot, size: 18, color: Colors.white),
+                  label: const Text('Ubicación'),
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
