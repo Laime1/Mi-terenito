@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/property/property.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://api-terrenito.onrender.com/api';
+  static const String baseUrl = 'http://localhost:3000/api';
 
   Future<List<Property>> fetchProperties() async {
     final response = await http.get(Uri.parse('$baseUrl/propiedades'));
