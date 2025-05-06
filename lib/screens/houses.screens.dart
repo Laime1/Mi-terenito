@@ -1,9 +1,51 @@
 import 'package:flutter/material.dart';
 
+import '../models/property/property.dart';
+import '../widgets/card_lands.dart';
 import 'form_screen.dart';
 
-class HousesScreen extends StatelessWidget {
-  const HousesScreen({super.key});
+class HousesScreen extends StatefulWidget {
+  final List<Property> properties;
+  const HousesScreen({super.key, required this.properties});
+
+  @override
+  State<HousesScreen> createState() => _HousesScreenState();
+}
+
+class _HousesScreenState extends State<HousesScreen> {
+
+  TextEditingController searchController = TextEditingController();
+  List<Property> filteredProperties = [];
+  List<Property> houseProperties = [];
+
+
+  @override
+  void initState() {
+    super.initState();
+    houseProperties = widget.properties.where((p) => p.isHouse()).toList();
+    filteredProperties =houseProperties;
+    searchController.addListener(_filterProperties);
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterProperties() {
+    final query = searchController.text.toLowerCase();
+    setState(() {
+      filteredProperties = houseProperties.where((property) {
+        final title = property.name.toLowerCase() ?? '';
+        final description = property.description.toLowerCase() ?? '';
+        final price = property.maxPrice.toString() ?? '0';
+        return title.contains(query) ||
+            description.contains(query) ||
+            price.contains(query);
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +67,21 @@ class HousesScreen extends StatelessWidget {
                   onPressed: () {},
                 ),
               ),
+            ),
+          ),
+          Expanded(
+            child: filteredProperties.isEmpty
+                ? Center(
+              child: searchController.text.isEmpty
+                  ? const CircularProgressIndicator()
+                  : const Text('No se encontraron resultados'),
+            )
+                : ListView.builder(
+              itemCount: filteredProperties.length,
+              itemBuilder: (context, index) {
+                final property = filteredProperties[index];
+                return PropertyCard(property: property);
+              },
             ),
           ),
         ],

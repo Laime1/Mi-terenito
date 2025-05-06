@@ -3,7 +3,6 @@ import 'package:mi_terrenito/screens/profile_secreen.dart';
 import 'package:mi_terrenito/screens/rentals_screens.dart';
 import '../models/property/property.dart';
 import '../services/api_service.dart';
-import 'form_screen.dart';
 import 'houses.screens.dart';
 import 'lands.screen.dart';
 
