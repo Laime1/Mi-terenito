@@ -21,7 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _fetchUserData();
   }
 
-  // Función para obtener los datos del usuario desde la API
+ 
   Future<void> _fetchUserData() async {
     try {
       final response = await http.get(Uri.parse('http://localhost:3000/api/usuarios/11'));
@@ -29,23 +29,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
 
-        // Establecer los datos recuperados en los controladores de texto
+        
         setState(() {
           _nameController.text = data['nombre_usuario'] ?? '';
           _phoneController.text = data['contacto'] ?? '';
           _emailController.text = data['correo'] ?? '';
         });
       } else {
-        // Si la respuesta no es exitosa, mostrar un error
+        
         _showErrorDialog('Error al cargar los datos del usuario');
       }
     } catch (e) {
-      // Manejar errores de la petición HTTP
+    
       _showErrorDialog('Error de conexión');
     }
   }
 
-  // Mostrar un diálogo de error
+ 
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -88,11 +88,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,  // Centrar los elementos
+          crossAxisAlignment: CrossAxisAlignment.center,  
           children: [
-            // Foto de perfil centrada
+            
             const SizedBox(height: 24),
-            Center(  // Usamos Center para asegurar que la imagen esté centrada
+            Center(  
               child: CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.grey,
@@ -105,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               'Perfil de Usuario',
               style: TextStyle(
                 fontSize: 24,
-                fontFamily: 'InknutAntiqua',  // Fuente aplicada
+                fontFamily: 'InknutAntiqua',
                 fontWeight: FontWeight.w600,
                 color: Colors.black,
               ),
@@ -144,39 +144,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Widget para mostrar solo los datos sin opción de editar
+  
   Widget _buildDisplayField({
     required String label,
     required String text,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),  // Añadir espaciado vertical entre cada campo
+      padding: const EdgeInsets.symmetric(vertical: 8.0), 
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,  // Alineación a la izquierda
+        crossAxisAlignment: CrossAxisAlignment.start,  
         children: [
           Text(
             label,
             style: const TextStyle(
               fontSize: 14,
-              fontFamily: 'InknutAntiqua', // Fuente aplicada
-              fontWeight: FontWeight.w600, // Negrita para las etiquetas
+              fontFamily: 'InknutAntiqua', 
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 4),
-          // Aseguramos que el texto esté alineado correctamente con un contenedor
+          
           Container(
-            width: double.infinity,  // Asegura que ocupe todo el ancho disponible
+            width: double.infinity,  
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),  // Agregar borde para dar el estilo de campo
+              border: Border.all(color: Colors.grey), 
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               text,
               style: TextStyle(
                 fontSize: 16,
-                fontFamily: 'InknutAntiqua', // Fuente aplicada
-                fontWeight: FontWeight.w400, // Peso regular para el texto
+                fontFamily: 'InknutAntiqua', 
+                fontWeight: FontWeight.w400, 
               ),
             ),
           ),
