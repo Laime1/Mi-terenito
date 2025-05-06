@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/screens/profile_secreen.dart';
 import 'package:mi_terrenito/screens/rentals_screens.dart';
+import 'package:mi_terrenito/screens/houses.screens.dart' as houses;
+import 'package:mi_terrenito/screens/lands.screen.dart' as lands;
+
 import '../models/property/property.dart';
 import '../services/api_service.dart';
-import 'houses.screens.dart';
-import 'lands.screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,17 +19,12 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<List<Property>> futureProperties;
   final ApiService apiService = ApiService();
 
-
-
-  // Datos de ejemplo (podrías mover esto a un servicio/repositorio)
-
-  //late final List<Widget> _bottomNavScreens;
-  late  final List<Widget> _categoryScreens = [
+  late final List<Widget> _categoryScreens = [
     FutureBuilder<List<Property>>(
-      future: ApiService().fetchProperties(),
+      future: apiService.fetchProperties(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return LandScreen(properties: snapshot.data!);
+          return lands.LandScreen(properties: snapshot.data!);
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
@@ -36,12 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     ),
     const RentalsScreen(),
-    const HousesScreen(),
+    const houses.HousesScreen(),
   ];
 
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
     futureProperties = apiService.fetchProperties();
   }
@@ -51,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
       selectedCategoryIndex = index;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -77,13 +71,13 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
-                onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                  );
-                },
-                icon: Icon(Icons.person_2_rounded),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                );
+              },
+              icon: const Icon(Icons.person_2_rounded),
             ),
           ),
         ],
@@ -91,9 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: _categoryScreens[selectedCategoryIndex],
       bottomNavigationBar: _buildBottomNavigationBar(),
-
     );
-    
   }
 
   BottomNavigationBar _buildBottomNavigationBar() {
@@ -105,19 +97,18 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.landscape_sharp, ),
+          icon: Icon(Icons.landscape_sharp),
           label: 'Terrenos',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.home_work_sharp, ),
+          icon: Icon(Icons.home_work_sharp),
           label: 'Alquileres',
         ),
         BottomNavigationBarItem(
-            icon: Icon(Icons.home_sharp),
-          label: 'Casas'
-        )
+          icon: Icon(Icons.home_sharp),
+          label: 'Casas',
+        ),
       ],
     );
   }
 }
-
