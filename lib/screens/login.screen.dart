@@ -1,4 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:mi_terrenito/screens/home_screen.dart'; // Asegúrate de importar la pantalla de inicio
+//import 'package:mi_terrenito/widgets/error_dialog.dart'; // Asegúrate de tener un widget de error si lo tienes
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -90,7 +94,7 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                
+                          login(context, correoController.text, contrasenaController.text);
                         },
                         child: const Text("Iniciar sesión"),
                       ),
@@ -102,6 +106,59 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  // Función login
+  Future<void> login(BuildContext context, String correo, String contrasena) async {
+    final url = Uri.parse('http://localhost:3000/api/usuarios/login');
+
+    // Realiza la solicitud HTTP POST
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'correo': correo, 'contraseña': contrasena}),
+    );
+
+
+    print('Respuesta: ${response.body}');
+
+    if (response.statusCode == 200) {
+
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      print('Respuesta del servidor: $data'); // Verifica la respuesta en consola
+
+      if (data.containsKey('id_usuario')) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else {
+        _showErrorDialog(context, 'Credenciales incorrectas');
+      }
+    } else {
+      _showErrorDialog(context, 'Error al iniciar sesión');
+    }
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cerrar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
