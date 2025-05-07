@@ -16,7 +16,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   @override
   void initState() {
     super.initState();
-    selectedImage = widget.property.images[0].urlNew;
+    selectedImage = widget.property.images[0].url;
   }
 
   @override
@@ -60,7 +60,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                 scrollDirection: Axis.horizontal,
                 itemCount: property.images.length,
                 itemBuilder: (context, index) {
-                  final img = property.images[index].urlNew;
+                  final img = property.images[index].url;
                   final isSelected = img == selectedImage;
                   return GestureDetector(
                     onTap: () {
