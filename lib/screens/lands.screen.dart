@@ -34,9 +34,9 @@ class _LandScreenState extends State<LandScreen> {
     final query = searchController.text.toLowerCase();
     setState(() {
       filteredProperties = widget.properties.where((property) {
-        final title = property.name.toLowerCase() ?? '';
-        final description = property.description.toLowerCase() ?? '';
-        final price = property.maxPrice.toString() ?? '';
+        final title = property.name?.toLowerCase() ?? '';
+        final description = property.description?.toLowerCase() ?? '';
+        final price = property.maxPrice?.toString() ?? '';
         return title.contains(query) ||
             description.contains(query) ||
             price.contains(query);

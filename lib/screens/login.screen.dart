@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mi_terrenito/screens/home_screen.dart'; 
-//import 'package:mi_terrenito/widgets/error_dialog.dart';
+import 'package:mi_terrenito/screens/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -66,9 +65,7 @@ class LoginScreen extends StatelessWidget {
                             hintText: 'ingresar contraseña',
                             suffixIcon: IconButton(
                               icon: Icon(
-                                value
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                                value ? Icons.visibility_off : Icons.visibility,
                               ),
                               onPressed: () {
                                 obscurePassword.value = !value;
@@ -109,7 +106,6 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  // Función login
   Future<void> login(BuildContext context, String correo, String contrasena) async {
     final url = Uri.parse('http://localhost:3000/api/usuarios/login');
 
@@ -119,19 +115,13 @@ class LoginScreen extends StatelessWidget {
       body: json.encode({'correo': correo, 'contraseña': contrasena}),
     );
 
-
-    print('Respuesta: ${response.body}');
-
     if (response.statusCode == 200) {
-
       final Map<String, dynamic> data = json.decode(response.body);
-
-      print('Respuesta del servidor: $data');
 
       if (data.containsKey('id_usuario')) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen(idUsuario: data['id_usuario'])),
         );
       } else {
         _showErrorDialog(context, 'Credenciales incorrectas');
