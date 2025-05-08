@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 import 'home_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final int idUsuario;
+  const ProfileScreen({super.key, required this.idUsuario});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -15,37 +16,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
+  late int idUsuario;
+
   @override
   void initState() {
     super.initState();
+    idUsuario = widget.idUsuario;
     _fetchUserData();
   }
 
- 
   Future<void> _fetchUserData() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:3000/api/usuarios/11'));
-
+      final response = await http.get(Uri.parse('http://localhost:3000/api/usuarios/$idUsuario'));
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-
-        
         setState(() {
           _nameController.text = data['nombre_usuario'] ?? '';
           _phoneController.text = data['contacto'] ?? '';
           _emailController.text = data['correo'] ?? '';
         });
       } else {
-        
         _showErrorDialog('Error al cargar los datos del usuario');
       }
     } catch (e) {
-    
       _showErrorDialog('Error de conexión');
     }
   }
 
- 
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -88,19 +85,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,  
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            
             const SizedBox(height: 24),
-            Center(  
+            Center(
               child: CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.grey,
-                child: Icon(Icons.person, size: 80, color: Colors.white),
+                child: const Icon(Icons.person, size: 80, color: Colors.white),
               ),
             ),
             const SizedBox(height: 24),
-            // Titulo centrado
             const Text(
               'Perfil de Usuario',
               style: TextStyle(
@@ -133,7 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onPressed: () {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen(idUsuario: idUsuario)),
             (Route<dynamic> route) => false,
           );
         },
@@ -144,39 +139,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  
   Widget _buildDisplayField({
     required String label,
     required String text,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0), 
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,  
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
             style: const TextStyle(
               fontSize: 14,
-              fontFamily: 'InknutAntiqua', 
+              fontFamily: 'InknutAntiqua',
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 4),
-          
           Container(
-            width: double.infinity,  
+            width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey), 
+              border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
-                fontFamily: 'InknutAntiqua', 
-                fontWeight: FontWeight.w400, 
+                fontFamily: 'InknutAntiqua',
+                fontWeight: FontWeight.w400,
               ),
             ),
           ),

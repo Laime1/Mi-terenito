@@ -16,5 +16,14 @@ class ApiService {
     }
   }
 
-// Puedes agregar más métodos para POST, PUT, DELETE, etc.
+  Future<List<Property>> fetchPropertiesByUserId(int idUsuario) async {
+    final response = await http.get(Uri.parse('$baseUrl/propiedades/usuario/$idUsuario'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonResponse = json.decode(response.body);
+      return jsonResponse.map((json) => Property.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al obtener propiedades del usuario');
+    }
+  }
 }
