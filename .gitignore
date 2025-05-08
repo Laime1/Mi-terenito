@@ -44,12 +44,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-<<<<<<< HEAD
 linux/
 macos/
 windows/
-=======
-/linux/
-/macos/
-/windows/
->>>>>>> antonio
+
