@@ -31,7 +31,6 @@ class Property{
     required this.minPrice,
     required this.maxPrice,
     required this.zone,
-    //required this.location,
     required this.mapLocation,
     required this.status,
     required this.createdAt,
@@ -63,4 +62,9 @@ class Property{
        type: Types.fromJson(json['tipo'] ?? {}),
    );
  }
+
+  bool isLand() => type.name.toLowerCase().contains('terreno');
+  bool isRental() => type.name.toLowerCase().contains('alquiler');
+  bool isHouse() => type.name.toLowerCase().contains('casa');
+
 }
