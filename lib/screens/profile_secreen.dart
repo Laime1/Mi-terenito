@@ -27,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _fetchUserData() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:3000/api/usuarios/$idUsuario'));
+      final response = await http.get(Uri.parse('https://api-terrenito-nodejs.onrender.com/api/usuarios/$idUsuario'));
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         setState(() {

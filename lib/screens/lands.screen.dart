@@ -9,23 +9,25 @@ class LandScreen extends StatefulWidget {
   const LandScreen({super.key, required this.properties});
 
   @override
-  _LandScreenState createState() => _LandScreenState();
+  LandScreenState createState() => LandScreenState();
 }
 
-class _LandScreenState extends State<LandScreen> {
-  final TextEditingController searchController = TextEditingController();
-  late List<Property> filteredProperties;
+class LandScreenState extends State<LandScreen> {
+  TextEditingController searchController = TextEditingController();
+  List<Property> filteredProperties = [];
+  List<Property> landsProperties = [];
+
 
   @override
   void initState() {
     super.initState();
-    filteredProperties = widget.properties;
+    landsProperties = widget.properties.where((p) => p.isLand()).toList();
+    filteredProperties = landsProperties;
     searchController.addListener(_filterProperties);
   }
 
   @override
   void dispose() {
-    searchController.removeListener(_filterProperties);
     searchController.dispose();
     super.dispose();
   }
@@ -33,10 +35,10 @@ class _LandScreenState extends State<LandScreen> {
   void _filterProperties() {
     final query = searchController.text.toLowerCase();
     setState(() {
-      filteredProperties = widget.properties.where((property) {
-        final title = property.name.toLowerCase() ?? '';
-        final description = property.description.toLowerCase() ?? '';
-        final price = property.maxPrice.toString() ?? '';
+      filteredProperties = landsProperties.where((property) {
+        final title = property.name?.toLowerCase() ?? '';
+        final description = property.description?.toLowerCase() ?? '';
+        final price = property.maxPrice.toString() ?? '0';
         return title.contains(query) ||
             description.contains(query) ||
             price.contains(query);
@@ -47,12 +49,9 @@ class _LandScreenState extends State<LandScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Terrenos'),
-        backgroundColor: Colors.green[700],
-      ),
       body: Column(
         children: [
+          Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold),),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -65,7 +64,9 @@ class _LandScreenState extends State<LandScreen> {
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.clear),
-                  onPressed: () => searchController.clear(),
+                  onPressed: () {
+                    searchController.clear();
+                  },
                 ),
               ),
             ),
@@ -73,29 +74,28 @@ class _LandScreenState extends State<LandScreen> {
           Expanded(
             child: filteredProperties.isEmpty
                 ? Center(
-                    child: searchController.text.isEmpty
-                        ? const CircularProgressIndicator()
-                        : const Text('No se encontraron resultados'),
-                  )
+              child: searchController.text.isEmpty
+                  ? const CircularProgressIndicator()
+                  : const Text('No se encontraron resultados'),
+            )
                 : ListView.builder(
-                    itemCount: filteredProperties.length,
-                    itemBuilder: (context, index) {
-                      final property = filteredProperties[index];
-                      return PropertyCard(property: property);
-                    },
-                  ),
+              itemCount: filteredProperties.length,
+              itemBuilder: (context, index) {
+                final property = filteredProperties[index];
+                return PropertyCard(property: property);
+              },
+            ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green[700],
         child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const FormScreen()),
-          );
-        },
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const FormScreen()),
+            );
+          },
       ),
     );
   }

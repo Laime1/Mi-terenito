@@ -107,7 +107,7 @@ class LoginScreen extends StatelessWidget {
   }
 
   Future<void> login(BuildContext context, String correo, String contrasena) async {
-    final url = Uri.parse('http://localhost:3000/api/usuarios/login');
+    final url = Uri.parse('https://api-terrenito-nodejs.onrender.com/api/usuarios/login/');
 
     final response = await http.post(
       url,

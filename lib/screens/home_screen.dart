@@ -5,6 +5,8 @@ import 'package:mi_terrenito/screens/houses.screens.dart' as houses;
 import 'package:mi_terrenito/screens/lands.screen.dart' as lands;
 import '../models/property/property.dart';
 import '../services/api_service.dart';
+import 'houses.screens.dart';
+import 'lands.screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int idUsuario;
@@ -34,21 +36,42 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> categoryScreens = [
+    late final List<Widget> _categoryScreens = [
       FutureBuilder<List<Property>>(
-        future: apiService.fetchPropertiesByUserId(widget.idUsuario),
+        future: ApiService().fetchProperties(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return lands.LandScreen(properties: snapshot.data!);
+            return LandScreen(properties: snapshot.data!);
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           return const Center(child: CircularProgressIndicator());
         },
       ),
-      const RentalsScreen(),
-      const houses.HousesScreen(),
+      FutureBuilder<List<Property>>(
+        future: ApiService().fetchProperties(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return RentalsScreen(properties: snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
+      FutureBuilder<List<Property>>(
+        future: ApiService().fetchProperties(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return HousesScreen(properties: snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
     ];
+
 
     return Scaffold(
       appBar: AppBar(
@@ -69,24 +92,24 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfileScreen(idUsuario: widget.idUsuario),
-                ),
-              );
-            },
-            icon: const Icon(Icons.person_2_rounded),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(idUsuario: widget.idUsuario),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.person_2_rounded),
+            ),
           ),
-        ),
-      ],
+        ],
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: categoryScreens[selectedCategoryIndex],
+      body: _categoryScreens[selectedCategoryIndex],
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
