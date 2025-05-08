@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // ← Importante
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/property/property.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
