@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:mi_terrenito/models/property/property.dart';
-import 'package:mi_terrenito/screens/form_screen.dart';
+import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
+import 'form_screen.dart';
 
-class LandScreen extends StatefulWidget {
+class LandsScreen extends StatefulWidget {
   final List<Property> properties;
   final int? idUsuario;
-
-  const LandScreen({super.key, required this.properties, this.idUsuario});
+  const LandsScreen({super.key, required this.properties, required this.idUsuario});
 
   @override
-  LandScreenState createState() => LandScreenState();
+  State<LandsScreen> createState() => _LandsScreenState();
 }
 
-class LandScreenState extends State<LandScreen> {
+class _LandsScreenState extends State<LandsScreen> {
   TextEditingController searchController = TextEditingController();
   List<Property> filteredProperties = [];
-  List<Property> landsProperties = [];
+  List<Property> landProperties = [];
 
   @override
   void initState() {
     super.initState();
-    landsProperties = widget.properties.where((p) => p.isLand()).toList();
-    filteredProperties = landsProperties;
+    landProperties = widget.properties.where((p) => p.isLand()).toList();
+    filteredProperties = landProperties;
     searchController.addListener(_filterProperties);
   }
 
@@ -35,13 +34,11 @@ class LandScreenState extends State<LandScreen> {
   void _filterProperties() {
     final query = searchController.text.toLowerCase();
     setState(() {
-      filteredProperties = landsProperties.where((property) {
+      filteredProperties = landProperties.where((property) {
         final title = property.name.toLowerCase();
         final description = property.description.toLowerCase();
         final price = property.maxPrice.toString();
-        return title.contains(query) ||
-            description.contains(query) ||
-            price.contains(query);
+        return title.contains(query) || description.contains(query) || price.contains(query);
       }).toList();
     });
   }
@@ -51,16 +48,14 @@ class LandScreenState extends State<LandScreen> {
     return Scaffold(
       body: Column(
         children: [
-          const Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold)),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
                 hintText: 'Buscar terrenos...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.clear),
@@ -74,8 +69,8 @@ class LandScreenState extends State<LandScreen> {
           Expanded(
             child: filteredProperties.isEmpty
                 ? Center(
-                    child: searchController.text.isEmpty
-                        ? const CircularProgressIndicator()
+                    child: landProperties.isEmpty
+                        ? const Text('No cuentas con propiedades en esta área (Terrenos)')
                         : const Text('No se encontraron resultados'),
                   )
                 : ListView.builder(

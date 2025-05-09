@@ -28,9 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     idUsuario = widget.idUsuario;
     estaLogueado = idUsuario != null;
-    if (estaLogueado) {
-      futureProperties = apiService.fetchPropertiesByUserId(idUsuario!);
-    }
+    futureProperties = estaLogueado
+        ? apiService.fetchPropertiesByUserId(idUsuario!)
+        : apiService.fetchProperties();
   }
 
   void _onItemTapped(int index) {
@@ -43,45 +43,16 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       estaLogueado = false;
       idUsuario = null;
+      futureProperties = apiService.fetchProperties();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    late final List<Widget> categoryScreens = [
-      FutureBuilder<List<Property>>(
-        future: ApiService().fetchProperties(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return LandScreen(properties: snapshot.data!, idUsuario: idUsuario);
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-      FutureBuilder<List<Property>>(
-        future: ApiService().fetchProperties(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return RentalsScreen(properties: snapshot.data!,idUsuario: idUsuario);
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-      FutureBuilder<List<Property>>(
-        future: ApiService().fetchProperties(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return HousesScreen(properties: snapshot.data!,idUsuario: idUsuario,);
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
+    final List<Widget Function(List<Property>)> screenBuilders = [
+      (props) => LandsScreen(properties: props, idUsuario: idUsuario),
+      (props) => RentalsScreen(properties: props, idUsuario: idUsuario),
+      (props) => HousesScreen(properties: props, idUsuario: idUsuario),
     ];
 
     return Scaffold(
@@ -173,7 +144,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: categoryScreens[selectedCategoryIndex],
+      body: FutureBuilder<List<Property>>(
+        future: futureProperties,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return screenBuilders[selectedCategoryIndex](snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }

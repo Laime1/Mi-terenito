@@ -1,20 +1,16 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../models/property/location.dart';
 import '../services/api_service.dart';
 import '../widgets/map_selection.dart';
 
 class FormScreen extends  StatefulWidget{
   const FormScreen({super.key});
-
   @override
   State<FormScreen> createState() => _FormScreenState();
-
 }
 
 class _FormScreenState extends State<FormScreen>{
