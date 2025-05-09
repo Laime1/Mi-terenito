@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mi_terrenito/screens/home_screen.dart';
+//import 'package:mi_terrenito/screens/home_screen.dart';
+import 'package:mi_terrenito/services/api_service.dart';
+
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -107,7 +109,7 @@ class LoginScreen extends StatelessWidget {
   }
 
   Future<void> login(BuildContext context, String correo, String contrasena) async {
-    final url = Uri.parse('https://api-terrenito-nodejs.onrender.com/api/usuarios/login/');
+    final url = Uri.parse('${ApiService.baseUrl}/usuarios/login/');
 
     final response = await http.post(
       url,
@@ -119,10 +121,7 @@ class LoginScreen extends StatelessWidget {
       final Map<String, dynamic> data = json.decode(response.body);
 
       if (data.containsKey('id_usuario')) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen(idUsuario: data['id_usuario'])),
-        );
+        Navigator.pop(context, data['id_usuario']);
       } else {
         _showErrorDialog(context, 'Credenciales incorrectas');
       }

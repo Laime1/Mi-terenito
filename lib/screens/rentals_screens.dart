@@ -4,10 +4,11 @@ import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
 import 'form_screen.dart';
 
+
 class RentalsScreen extends StatefulWidget {
   final List<Property> properties;
-
-  const RentalsScreen({super.key, required this.properties});
+  final int? idUsuario;
+  const RentalsScreen({super.key, required this.properties,required this.idUsuario});
 
   @override
   State<RentalsScreen> createState() => _RentalsScreenState();
@@ -88,15 +89,17 @@ class _RentalsScreenState extends State<RentalsScreen> {
             ),
           ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const FormScreen()),
-          );
-        },
-      ),
+      floatingActionButton: widget.idUsuario != null
+          ? FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FormScreen()),
+                );
+              },
+            )
+          : null,
     );
   }
 }

@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/screens/login.screen.dart';
 import 'package:mi_terrenito/screens/profile_secreen.dart';
 import 'package:mi_terrenito/screens/rentals_screens.dart';
-import 'package:mi_terrenito/screens/houses.screens.dart' as houses;
-import 'package:mi_terrenito/screens/lands.screen.dart' as lands;
 import '../models/property/property.dart';
 import '../services/api_service.dart';
 import 'houses.screens.dart';
 import 'lands.screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final int idUsuario;
+  final int? idUsuario;
 
-  const HomeScreen({super.key, required this.idUsuario});
+  const HomeScreen({super.key, this.idUsuario});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,11 +20,17 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedCategoryIndex = 0;
   late Future<List<Property>> futureProperties;
   final ApiService apiService = ApiService();
+  bool estaLogueado = false;
+  int? idUsuario;
 
   @override
   void initState() {
     super.initState();
-    futureProperties = apiService.fetchPropertiesByUserId(widget.idUsuario);
+    idUsuario = widget.idUsuario;
+    estaLogueado = idUsuario != null;
+    if (estaLogueado) {
+      futureProperties = apiService.fetchPropertiesByUserId(idUsuario!);
+    }
   }
 
   void _onItemTapped(int index) {
@@ -34,14 +39,21 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _cerrarSesion() {
+    setState(() {
+      estaLogueado = false;
+      idUsuario = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    late final List<Widget> _categoryScreens = [
+    late final List<Widget> categoryScreens = [
       FutureBuilder<List<Property>>(
         future: ApiService().fetchProperties(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return LandScreen(properties: snapshot.data!);
+            return LandScreen(properties: snapshot.data!, idUsuario: idUsuario);
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
@@ -52,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
         future: ApiService().fetchProperties(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return RentalsScreen(properties: snapshot.data!);
+            return RentalsScreen(properties: snapshot.data!,idUsuario: idUsuario);
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
@@ -63,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         future: ApiService().fetchProperties(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HousesScreen(properties: snapshot.data!);
+            return HousesScreen(properties: snapshot.data!,idUsuario: idUsuario,);
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
@@ -71,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     ];
-
 
     return Scaffold(
       appBar: AppBar(
@@ -94,22 +105,75 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfileScreen(idUsuario: widget.idUsuario),
+            child: estaLogueado
+                ? PopupMenuButton<String>(
+                    icon: const Icon(Icons.person_2_rounded, color: Colors.black),
+                    onSelected: (String result) {
+                      if (result == 'perfil') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileScreen(idUsuario: idUsuario!),
+                          ),
+                        );
+                      } else if (result == 'cerrar') {
+                        _cerrarSesion();
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Sesión finalizada'),
+                              content: const Text('Has cerrado sesión exitosamente.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Aceptar'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'perfil',
+                        child: Text('Ver perfil'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'cerrar',
+                        child: Text('Cerrar sesión'),
+                      ),
+                    ],
+                  )
+                : TextButton(
+                    onPressed: () async {
+                      final nuevoUsuarioId = await Navigator.push<int?>(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      );
+
+                      if (nuevoUsuarioId != null) {
+                        setState(() {
+                          idUsuario = nuevoUsuarioId;
+                          estaLogueado = true;
+                          futureProperties = apiService.fetchPropertiesByUserId(idUsuario!);
+                        });
+                      }
+                    },
+                    child: const Text(
+                      'Iniciar sesión',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                );
-              },
-              icon: const Icon(Icons.person_2_rounded),
-            ),
           ),
         ],
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: _categoryScreens[selectedCategoryIndex],
+      body: categoryScreens[selectedCategoryIndex],
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }

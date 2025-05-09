@@ -6,7 +6,8 @@ import 'form_screen.dart';
 
 class HousesScreen extends StatefulWidget {
   final List<Property> properties;
-  const HousesScreen({super.key, required this.properties});
+  final int? idUsuario;
+  const HousesScreen({super.key, required this.properties, required this.idUsuario});
 
   @override
   State<HousesScreen> createState() => _HousesScreenState();
@@ -37,8 +38,8 @@ class _HousesScreenState extends State<HousesScreen> {
     final query = searchController.text.toLowerCase();
     setState(() {
       filteredProperties = houseProperties.where((property) {
-        final title = property.name?.toLowerCase() ?? '';
-        final description = property.description?.toLowerCase() ?? '';
+        final title = property.name.toLowerCase() ?? '';
+        final description = property.description.toLowerCase() ?? '';
         final price = property.maxPrice.toString() ?? '0';
         return title.contains(query) ||
             description.contains(query) ||
@@ -86,15 +87,17 @@ class _HousesScreenState extends State<HousesScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const FormScreen()),
-          );
-        },
-      ),
+      floatingActionButton: widget.idUsuario != null
+          ? FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FormScreen()),
+                );
+              },
+            )
+          : null,
     );
   }
 }

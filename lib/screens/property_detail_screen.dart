@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // ← Importante
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/property/property.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
   final Property property;
+  final int? idUsuario;
 
-  const PropertyDetailScreen({super.key, required this.property});
+  const PropertyDetailScreen({
+    super.key,
+    required this.property,
+    this.idUsuario,
+  });
 
   @override
   State<PropertyDetailScreen> createState() => _PropertyDetailScreenState();
@@ -18,6 +23,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   void initState() {
     super.initState();
     selectedImage = widget.property.images[0].url;
+
+    // Para depurar si se está recibiendo correctamente el idUsuario
+    debugPrint("ID del usuario recibido: ${widget.idUsuario}");
   }
 
   @override
@@ -110,17 +118,16 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
             ),
             const SizedBox(height: 8),
             RichText(
-          text: TextSpan(
-              style: const TextStyle(fontSize: 14, color: Colors.black),
-              children: [
-              const TextSpan(text: 'Tamaño: ', style: TextStyle(fontWeight: FontWeight.bold)),
-              TextSpan(text: '${property.size} m²\n'),
-              const TextSpan(text: 'Zona: ', style: TextStyle(fontWeight: FontWeight.bold)),
-              TextSpan(text: property.zone),
-               ],
-             ),
-                 ),
-
+              text: TextSpan(
+                style: const TextStyle(fontSize: 14, color: Colors.black),
+                children: [
+                  const TextSpan(text: 'Tamaño: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: '${property.size} m²\n'),
+                  const TextSpan(text: 'Zona: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: property.zone),
+                ],
+              ),
+            ),
             const SizedBox(height: 8),
             const Text('Contacto:', style: TextStyle(fontWeight: FontWeight.bold)),
             const Text('6543216 - 76543211', style: TextStyle(fontSize: 14)),
@@ -129,9 +136,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // Lógica para abrir WhatsApp aquí
-                  },
+                  onPressed: () {},
                   icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18, color: Colors.white),
                   label: const Text('WhatsApp'),
                   style: ElevatedButton.styleFrom(
@@ -140,9 +145,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // Lógica para abrir mapa aquí
-                  },
+                  onPressed: () {},
                   icon: const FaIcon(FontAwesomeIcons.mapLocationDot, size: 18, color: Colors.white),
                   label: const Text('Ubicación'),
                   style: ElevatedButton.styleFrom(
@@ -155,34 +158,37 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: const Color.fromARGB(255, 176, 34, 34),
-        unselectedItemColor: const Color.fromARGB(221, 4, 43, 239),
-        backgroundColor: Colors.white,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
-            label: 'Editar',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.delete),
-            label: 'Eliminar',
-          ),
-        ],
-        onTap: (index) {
-          if (index == 0) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Editar presionado')),
-            );
-          } else if (index == 1) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Eliminar presionado')),
-            );
-          }
-        },
-      ),
+      // Solo muestra la barra inferior si el usuario inició sesión (idUsuario != null)
+      bottomNavigationBar: widget.idUsuario != null
+          ? BottomNavigationBar(
+              selectedItemColor: const Color.fromARGB(255, 176, 34, 34),
+              unselectedItemColor: const Color.fromARGB(221, 4, 43, 239),
+              backgroundColor: Colors.white,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.edit),
+                  label: 'Editar',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.delete),
+                  label: 'Eliminar',
+                ),
+              ],
+              onTap: (index) {
+                if (index == 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Editar presionado')),
+                  );
+                } else if (index == 1) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Eliminar presionado')),
+                  );
+                }
+              },
+            )
+          : null,
     );
   }
 }

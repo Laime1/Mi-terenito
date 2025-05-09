@@ -5,8 +5,9 @@ import '../widgets/card_lands.dart';
 
 class LandScreen extends StatefulWidget {
   final List<Property> properties;
+  final int? idUsuario;
 
-  const LandScreen({super.key, required this.properties});
+  const LandScreen({super.key, required this.properties, this.idUsuario});
 
   @override
   LandScreenState createState() => LandScreenState();
@@ -16,7 +17,6 @@ class LandScreenState extends State<LandScreen> {
   TextEditingController searchController = TextEditingController();
   List<Property> filteredProperties = [];
   List<Property> landsProperties = [];
-
 
   @override
   void initState() {
@@ -36,9 +36,9 @@ class LandScreenState extends State<LandScreen> {
     final query = searchController.text.toLowerCase();
     setState(() {
       filteredProperties = landsProperties.where((property) {
-        final title = property.name?.toLowerCase() ?? '';
-        final description = property.description?.toLowerCase() ?? '';
-        final price = property.maxPrice.toString() ?? '0';
+        final title = property.name.toLowerCase();
+        final description = property.description.toLowerCase();
+        final price = property.maxPrice.toString();
         return title.contains(query) ||
             description.contains(query) ||
             price.contains(query);
@@ -51,7 +51,7 @@ class LandScreenState extends State<LandScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold),),
+          const Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold)),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -74,29 +74,31 @@ class LandScreenState extends State<LandScreen> {
           Expanded(
             child: filteredProperties.isEmpty
                 ? Center(
-              child: searchController.text.isEmpty
-                  ? const CircularProgressIndicator()
-                  : const Text('No se encontraron resultados'),
-            )
+                    child: searchController.text.isEmpty
+                        ? const CircularProgressIndicator()
+                        : const Text('No se encontraron resultados'),
+                  )
                 : ListView.builder(
-              itemCount: filteredProperties.length,
-              itemBuilder: (context, index) {
-                final property = filteredProperties[index];
-                return PropertyCard(property: property);
-              },
-            ),
+                    itemCount: filteredProperties.length,
+                    itemBuilder: (context, index) {
+                      final property = filteredProperties[index];
+                      return PropertyCard(property: property);
+                    },
+                  ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const FormScreen()),
-            );
-          },
-      ),
+      floatingActionButton: widget.idUsuario != null
+          ? FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FormScreen()),
+                );
+              },
+            )
+          : null,
     );
   }
 }
