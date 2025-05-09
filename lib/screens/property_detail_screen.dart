@@ -160,7 +160,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                         selectedImage = img;
                         currentIndex = index;
                       });
-                      _mostrarGaleria(index);
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
