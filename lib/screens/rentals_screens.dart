@@ -39,8 +39,8 @@ class _RentalsScreenState extends State<RentalsScreen> {
     final query = searchController.text.toLowerCase();
     setState(() {
       filteredProperties = rentalProperties.where((property) {
-        final title = property.name?.toLowerCase() ?? '';
-        final description = property.description?.toLowerCase() ?? '';
+        final title = property.name.toLowerCase() ?? '';
+        final description = property.description.toLowerCase() ?? '';
         final price = property.maxPrice.toString() ?? '0';
         return title.contains(query) ||
             description.contains(query) ||

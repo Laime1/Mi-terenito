@@ -24,7 +24,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     super.initState();
     selectedImage = widget.property.images[0].url;
 
-    // Para depurar si se está recibiendo correctamente el idUsuario
     debugPrint("ID del usuario recibido: ${widget.idUsuario}");
   }
 
@@ -158,7 +157,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
           ],
         ),
       ),
-      // Solo muestra la barra inferior si el usuario inició sesión (idUsuario != null)
+
       bottomNavigationBar: widget.idUsuario != null
           ? BottomNavigationBar(
               selectedItemColor: const Color.fromARGB(255, 176, 34, 34),

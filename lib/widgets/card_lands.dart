@@ -4,7 +4,7 @@ import '../screens/property_detail_screen.dart';
 
 class PropertyCard extends StatelessWidget {
   final Property property;
-  final int? idUsuario; // Agrega idUsuario aquí
+  final int? idUsuario;
 
   const PropertyCard({super.key, required this.property, this.idUsuario});
 
@@ -19,7 +19,7 @@ class PropertyCard extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => PropertyDetailScreen(
                 property: property,
-                idUsuario: idUsuario, // Pasa idUsuario a PropertyDetailScreen
+                idUsuario: idUsuario,
               ),
             ),
           );

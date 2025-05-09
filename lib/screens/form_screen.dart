@@ -37,7 +37,7 @@ class _FormScreenState extends State<FormScreen>{
 
   // Variables para imágenes
   final ImagePicker _picker = ImagePicker();
-  List<File> _selectedImages = [];
+  final List<File> _selectedImages = [];
 
 
   @override
