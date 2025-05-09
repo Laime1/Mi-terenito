@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/property/property.dart';
@@ -18,13 +19,96 @@ class PropertyDetailScreen extends StatefulWidget {
 
 class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   late String selectedImage;
+  late int currentIndex;
 
   @override
   void initState() {
     super.initState();
     selectedImage = widget.property.images[0].url;
+    currentIndex = 0;
+  }
 
-    debugPrint("ID del usuario recibido: ${widget.idUsuario}");
+  void _mostrarGaleria(int startIndex) {
+    currentIndex = startIndex;
+    bool showArrows = true;
+    Timer? hideTimer;
+
+    showDialog(
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setStateDialog) {
+          void toggleArrows() {
+            setStateDialog(() => showArrows = true);
+            hideTimer?.cancel();
+            hideTimer = Timer(const Duration(seconds: 3), () {
+              setStateDialog(() => showArrows = false);
+            });
+          }
+
+          toggleArrows();
+
+          return GestureDetector(
+            onTap: toggleArrows,
+            child: Dialog(
+              backgroundColor: Colors.black.withOpacity(0.9),
+              insetPadding: EdgeInsets.zero,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  InteractiveViewer(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        widget.property.images[currentIndex].url,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                  if (showArrows && currentIndex > 0)
+                    Positioned(
+                      left: 8,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 28),
+                        onPressed: () {
+                          setStateDialog(() {
+                            currentIndex--;
+                          });
+                          toggleArrows();
+                        },
+                      ),
+                    ),
+                  if (showArrows && currentIndex < widget.property.images.length - 1)
+                    Positioned(
+                      right: 8,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 28),
+                        onPressed: () {
+                          setStateDialog(() {
+                            currentIndex++;
+                          });
+                          toggleArrows();
+                        },
+                      ),
+                    ),
+                  if (showArrows)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                        onPressed: () {
+                          hideTimer?.cancel();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    ).then((_) => hideTimer?.cancel());
   }
 
   @override
@@ -48,13 +132,16 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  selectedImage,
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+              child: GestureDetector(
+                onTap: () => _mostrarGaleria(currentIndex),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    selectedImage,
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -71,7 +158,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     onTap: () {
                       setState(() {
                         selectedImage = img;
+                        currentIndex = index;
                       });
+                      _mostrarGaleria(index);
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -157,7 +246,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
           ],
         ),
       ),
-
       bottomNavigationBar: widget.idUsuario != null
           ? BottomNavigationBar(
               selectedItemColor: const Color.fromARGB(255, 176, 34, 34),

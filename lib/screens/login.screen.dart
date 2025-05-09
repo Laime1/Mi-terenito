@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mi_terrenito/services/api_service.dart';
 
-
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -14,6 +13,14 @@ class LoginScreen extends StatelessWidget {
     final ValueNotifier<bool> obscurePassword = ValueNotifier(true);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
@@ -32,7 +39,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 20),
               Image.asset(
                 'assets/icono_terreno.png',
-                height: 200,
+                height: 300,
               ),
               const SizedBox(height: 30),
               Container(

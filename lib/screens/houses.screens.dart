@@ -13,11 +13,9 @@ class HousesScreen extends StatefulWidget {
 }
 
 class _HousesScreenState extends State<HousesScreen> {
-
   TextEditingController searchController = TextEditingController();
   List<Property> filteredProperties = [];
   List<Property> houseProperties = [];
-
 
   @override
   void initState() {

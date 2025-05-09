@@ -36,15 +36,47 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onItemTapped(int index) {
     setState(() {
       selectedCategoryIndex = index;
+      futureProperties = estaLogueado
+          ? apiService.fetchPropertiesByUserId(idUsuario!)
+          : apiService.fetchProperties();
     });
   }
 
   void _cerrarSesion() {
-    setState(() {
-      estaLogueado = false;
-      idUsuario = null;
-      futureProperties = apiService.fetchProperties();
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Sesión cerrada'),
+          content: const Text('Sesion Finalizada.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
+              child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _iniciarSesion() async {
+    final nuevoUsuarioId = await Navigator.push<int?>(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+    if (nuevoUsuarioId != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen(idUsuario: nuevoUsuarioId)),
+      );
+    }
   }
 
   @override
@@ -78,7 +110,37 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(8.0),
             child: estaLogueado
                 ? PopupMenuButton<String>(
-                    icon: const Icon(Icons.person_2_rounded, color: Colors.black),
+                    icon: const Icon(Icons.person_2_rounded, color: Colors.black, size: 24),
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'perfil',
+                        height: 36,
+                        child: Row(
+                          children: const [
+                            Icon(Icons.person, color: Colors.black54, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              'Ver perfil',
+                              style: TextStyle(fontSize: 13),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'cerrar',
+                        height: 36,
+                        child: Row(
+                          children: const [
+                            Icon(Icons.logout, color: Colors.redAccent, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              'Cerrar sesión',
+                              style: TextStyle(fontSize: 13, color: Colors.redAccent),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     onSelected: (String result) {
                       if (result == 'perfil') {
                         Navigator.push(
@@ -89,49 +151,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       } else if (result == 'cerrar') {
                         _cerrarSesion();
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Sesión finalizada'),
-                              content: const Text('Has cerrado sesión exitosamente.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('Aceptar'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
                       }
                     },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      const PopupMenuItem<String>(
-                        value: 'perfil',
-                        child: Text('Ver perfil'),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: 'cerrar',
-                        child: Text('Cerrar sesión'),
-                      ),
-                    ],
                   )
                 : TextButton(
-                    onPressed: () async {
-                      final nuevoUsuarioId = await Navigator.push<int?>(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
-                      );
-
-                      if (nuevoUsuarioId != null) {
-                        setState(() {
-                          idUsuario = nuevoUsuarioId;
-                          estaLogueado = true;
-                          futureProperties = apiService.fetchPropertiesByUserId(idUsuario!);
-                        });
-                      }
-                    },
+                    onPressed: _iniciarSesion,
                     child: const Text(
                       'Iniciar sesión',
                       style: TextStyle(
