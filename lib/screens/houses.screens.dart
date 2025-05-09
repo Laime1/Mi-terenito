@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
 import 'form_screen.dart';
