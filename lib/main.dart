@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mi_terrenito/screens/login.screen.dart'; // Importar pantalla de login
+import 'package:mi_terrenito/screens/home_screen.dart'; // Importar pantalla de login
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
      
-      home: const LoginScreen(),
+      home: const HomeScreen(idUsuario: 0),
 
     );
   }
