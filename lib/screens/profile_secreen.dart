@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'home_screen.dart';
+import 'package:mi_terrenito/services/api_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   final int idUsuario;
@@ -27,7 +28,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _fetchUserData() async {
     try {
-      final response = await http.get(Uri.parse('https://api-terrenito-nodejs.onrender.com/api/usuarios/$idUsuario'));
+      final response = await http.get(Uri.parse('${ApiService.baseUrl}/usuarios/$idUsuario'));
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         setState(() {

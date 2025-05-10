@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mi_terrenito/screens/home_screen.dart';
+import 'package:mi_terrenito/services/api_service.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -13,6 +13,14 @@ class LoginScreen extends StatelessWidget {
     final ValueNotifier<bool> obscurePassword = ValueNotifier(true);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
@@ -31,7 +39,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 20),
               Image.asset(
                 'assets/icono_terreno.png',
-                height: 200,
+                height: 300,
               ),
               const SizedBox(height: 30),
               Container(
@@ -107,7 +115,7 @@ class LoginScreen extends StatelessWidget {
   }
 
   Future<void> login(BuildContext context, String correo, String contrasena) async {
-    final url = Uri.parse('https://api-terrenito-nodejs.onrender.com/api/usuarios/login/');
+    final url = Uri.parse('${ApiService.baseUrl}/usuarios/login/');
 
     final response = await http.post(
       url,
@@ -119,10 +127,7 @@ class LoginScreen extends StatelessWidget {
       final Map<String, dynamic> data = json.decode(response.body);
 
       if (data.containsKey('id_usuario')) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen(idUsuario: data['id_usuario'])),
-        );
+        Navigator.pop(context, data['id_usuario']);
       } else {
         _showErrorDialog(context, 'Credenciales incorrectas');
       }

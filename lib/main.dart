@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
      
-      home: const HomeScreen(idUsuario: 0),
+      home: const HomeScreen(),
 
     );
   }

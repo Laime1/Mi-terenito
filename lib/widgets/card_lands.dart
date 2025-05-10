@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/property/property.dart';
-import '../screens/property_detail_screen.dart'; // ¡Importa la pantalla de detalle!
+import '../screens/property_detail_screen.dart';
 
 class PropertyCard extends StatelessWidget {
   final Property property;
-  const PropertyCard({super.key, required this.property});
+  final int? idUsuario; // Agrega idUsuario aquí
+
+  const PropertyCard({super.key, required this.property, this.idUsuario});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,10 @@ class PropertyCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PropertyDetailScreen(property: property),
+              builder: (context) => PropertyDetailScreen(
+                property: property,
+                idUsuario: idUsuario, // Pasa idUsuario a PropertyDetailScreen
+              ),
             ),
           );
         },
