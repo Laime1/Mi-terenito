@@ -115,6 +115,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   Widget build(BuildContext context) {
     final property = widget.property;
 
+    // Verifica si idUsuario es correcto en la pantalla de detalles
+    print('idUsuario en PropertyDetailScreen: ${widget.idUsuario}'); 
+
     return Scaffold(
       appBar: AppBar(
         title: Text(property.name, style: const TextStyle(fontSize: 16)),

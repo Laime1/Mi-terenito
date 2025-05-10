@@ -1,3 +1,4 @@
+//import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
@@ -6,6 +7,7 @@ import 'form_screen.dart';
 class HousesScreen extends StatefulWidget {
   final List<Property> properties;
   final int? idUsuario;
+
   const HousesScreen({super.key, required this.properties, required this.idUsuario});
 
   @override
@@ -77,7 +79,7 @@ class _HousesScreenState extends State<HousesScreen> {
                     itemCount: filteredProperties.length,
                     itemBuilder: (context, index) {
                       final property = filteredProperties[index];
-                      return PropertyCard(property: property);
+                      return PropertyCard(property: property,idUsuario: widget.idUsuario);
                     },
                   ),
           ),
@@ -89,7 +91,9 @@ class _HousesScreenState extends State<HousesScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FormScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => FormScreen(),
+                  ),
                 );
               },
             )
