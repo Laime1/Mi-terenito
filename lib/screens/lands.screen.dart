@@ -77,7 +77,10 @@ class _LandsScreenState extends State<LandsScreen> {
                     itemCount: filteredProperties.length,
                     itemBuilder: (context, index) {
                       final property = filteredProperties[index];
-                      return PropertyCard(property: property);
+                      return PropertyCard(
+                        property: property,
+                        idUsuario: widget.idUsuario,
+                      );
                     },
                   ),
           ),

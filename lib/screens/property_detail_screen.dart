@@ -115,6 +115,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   Widget build(BuildContext context) {
     final property = widget.property;
 
+    print('idUsuario en PropertyDetailScreen: ${widget.idUsuario}'); 
+
     return Scaffold(
       appBar: AppBar(
         title: Text(property.name, style: const TextStyle(fontSize: 16)),
