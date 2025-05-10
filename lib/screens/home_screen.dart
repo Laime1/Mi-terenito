@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/screens/login.screen.dart';
 import 'package:mi_terrenito/screens/profile_secreen.dart';
 import 'package:mi_terrenito/screens/rentals_screens.dart';
-import 'package:mi_terrenito/screens/houses.screens.dart' as houses;
-import 'package:mi_terrenito/screens/lands.screen.dart' as lands;
 import '../models/property/property.dart';
 import '../services/api_service.dart';
 import 'houses.screens.dart';
 import 'lands.screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final int idUsuario;
+  final int? idUsuario;
 
-  const HomeScreen({super.key, required this.idUsuario});
+  const HomeScreen({super.key, this.idUsuario});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,57 +20,72 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedCategoryIndex = 0;
   late Future<List<Property>> futureProperties;
   final ApiService apiService = ApiService();
+  bool estaLogueado = false;
+  int? idUsuario;
 
   @override
   void initState() {
     super.initState();
-    futureProperties = apiService.fetchPropertiesByUserId(widget.idUsuario);
+    idUsuario = widget.idUsuario;
+    estaLogueado = idUsuario != null;
+    futureProperties = estaLogueado
+        ? apiService.fetchPropertiesByUserId(idUsuario!)
+        : apiService.fetchProperties();
   }
 
   void _onItemTapped(int index) {
     setState(() {
       selectedCategoryIndex = index;
+      futureProperties = estaLogueado
+          ? apiService.fetchPropertiesByUserId(idUsuario!)
+          : apiService.fetchProperties();
     });
+  }
+
+  void _cerrarSesion() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Sesión cerrada'),
+          content: const Text('Sesion Finalizada.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
+              child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _iniciarSesion() async {
+    final nuevoUsuarioId = await Navigator.push<int?>(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+    if (nuevoUsuarioId != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen(idUsuario: nuevoUsuarioId)),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    late final List<Widget> _categoryScreens = [
-      FutureBuilder<List<Property>>(
-        future: ApiService().fetchProperties(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return LandScreen(properties: snapshot.data!);
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-      FutureBuilder<List<Property>>(
-        future: ApiService().fetchProperties(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return RentalsScreen(properties: snapshot.data!);
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-      FutureBuilder<List<Property>>(
-        future: ApiService().fetchProperties(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return HousesScreen(properties: snapshot.data!);
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
+    final List<Widget Function(List<Property>)> screenBuilders = [
+      (props) => LandsScreen(properties: props, idUsuario: idUsuario),
+      (props) => RentalsScreen(properties: props, idUsuario: idUsuario),
+      (props) => HousesScreen(properties: props, idUsuario: idUsuario),
     ];
-
 
     return Scaffold(
       appBar: AppBar(
@@ -94,22 +108,77 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfileScreen(idUsuario: widget.idUsuario),
+            child: estaLogueado
+                ? PopupMenuButton<String>(
+                    icon: const Icon(Icons.person_2_rounded, color: Colors.black, size: 24),
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'perfil',
+                        height: 36,
+                        child: Row(
+                          children: const [
+                            Icon(Icons.person, color: Colors.black54, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              'Ver perfil',
+                              style: TextStyle(fontSize: 13),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'cerrar',
+                        height: 36,
+                        child: Row(
+                          children: const [
+                            Icon(Icons.logout, color: Colors.redAccent, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              'Cerrar sesión',
+                              style: TextStyle(fontSize: 13, color: Colors.redAccent),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    onSelected: (String result) {
+                      if (result == 'perfil') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileScreen(idUsuario: idUsuario!),
+                          ),
+                        );
+                      } else if (result == 'cerrar') {
+                        _cerrarSesion();
+                      }
+                    },
+                  )
+                : TextButton(
+                    onPressed: _iniciarSesion,
+                    child: const Text(
+                      'Iniciar sesión',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                );
-              },
-              icon: const Icon(Icons.person_2_rounded),
-            ),
           ),
         ],
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: _categoryScreens[selectedCategoryIndex],
+      body: FutureBuilder<List<Property>>(
+        future: futureProperties,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return screenBuilders[selectedCategoryIndex](snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
