@@ -3,25 +3,25 @@ import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
 import 'form_screen.dart';
 
-class LandsScreen extends StatefulWidget {
+class HousesScreen extends StatefulWidget {
   final List<Property> properties;
   final int? idUsuario;
-  const LandsScreen({super.key, required this.properties, required this.idUsuario});
+  const HousesScreen({super.key, required this.properties, required this.idUsuario});
 
   @override
-  State<LandsScreen> createState() => _LandsScreenState();
+  State<HousesScreen> createState() => _HousesScreenState();
 }
 
-class _LandsScreenState extends State<LandsScreen> {
+class _HousesScreenState extends State<HousesScreen> {
   TextEditingController searchController = TextEditingController();
   List<Property> filteredProperties = [];
-  List<Property> landProperties = [];
+  List<Property> houseProperties = [];
 
   @override
   void initState() {
     super.initState();
-    landProperties = widget.properties.where((p) => p.isLand()).toList();
-    filteredProperties = landProperties;
+    houseProperties = widget.properties.where((p) => p.isHouse()).toList();
+    filteredProperties = houseProperties;
     searchController.addListener(_filterProperties);
   }
 
@@ -34,7 +34,7 @@ class _LandsScreenState extends State<LandsScreen> {
   void _filterProperties() {
     final query = searchController.text.toLowerCase();
     setState(() {
-      filteredProperties = landProperties.where((property) {
+      filteredProperties = houseProperties.where((property) {
         final title = property.name.toLowerCase();
         final description = property.description.toLowerCase();
         final price = property.maxPrice.toString();
@@ -48,13 +48,13 @@ class _LandsScreenState extends State<LandsScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('CASAS', style: TextStyle(fontWeight: FontWeight.bold)),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
-                hintText: 'Buscar terrenos...',
+                hintText: 'Buscar casas...',
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
@@ -69,8 +69,8 @@ class _LandsScreenState extends State<LandsScreen> {
           Expanded(
             child: filteredProperties.isEmpty
                 ? Center(
-                    child: landProperties.isEmpty
-                        ? const Text('No cuentas con propiedades en esta área (Terrenos)')
+                    child: houseProperties.isEmpty
+                        ? const Text('No cuentas con propiedades en esta área (Casas)')
                         : const Text('No se encontraron resultados'),
                   )
                 : ListView.builder(

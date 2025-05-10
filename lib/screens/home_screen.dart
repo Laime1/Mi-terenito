@@ -1,61 +1,98 @@
 import 'package:flutter/material.dart';
-
-import '../models/property.dart';
+import 'package:mi_terrenito/screens/login.screen.dart';
+import 'package:mi_terrenito/screens/profile_secreen.dart';
+import 'package:mi_terrenito/screens/rentals_screens.dart';
+import '../models/property/property.dart';
+import '../services/api_service.dart';
+import 'houses.screens.dart';
 import 'lands.screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int? idUsuario;
+
+  const HomeScreen({super.key, this.idUsuario});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int selectedIndex = 0; // Categoría seleccionada
-  int bottomNavIndex = 0; // Índice barra inferior
-  List<String> categories = ['Terrenos', 'Alquileres', 'Casas'];
-  String searchText = ''; // Texto del buscador
+  int selectedCategoryIndex = 0;
+  late Future<List<Property>> futureProperties;
+  final ApiService apiService = ApiService();
+  bool estaLogueado = false;
+  int? idUsuario;
 
-  final List<Property> properties = [
-    Property(
-        name: 'Archipielago Alalay(Cochabamba)',
-        size: 400,
-        images: ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYr-GmtrfZWSAxatZEkftLn6fXLD0QTqyCcQ&s', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-WWwP-_XelzhkjL7VROxlw9BuGVH6KjrE3Q&s'],
-        description: 'Ubicado en pleno centro de la laguna alalay, con vista a la..',
-        minPrice: 999,
-        maxPrice: 1000,
-        zone: 'Zona Sur',
-        location: 'Cochabamba',
-        mapLocation: 'https://www.google.com/maps/place/Plaza+Sucre/@-17.411946,-66.1632659,13z/data=!4m9!1m2!2m1!1zLA!3m5!1s0x93e373f8d705ee63:0x8b64d1ced4c8c13f!8m2!3d-17.3922658!4d-66.1480371!16s%2Fg%2F1tj3m4zb?hl=es-419&entry=ttu&g_ep=EgoyMDI1MDQyMi4wIKXMDSoASAFQAw%3D%3D'
-    ),
-    Property(
-        name: 'Archipielago Alalay(Cochabamba)',
-        size: 400,
-        images: ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-WWwP-_XelzhkjL7VROxlw9BuGVH6KjrE3Q&s', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-WWwP-_XelzhkjL7VROxlw9BuGVH6KjrE3Q&s'],
-        description: '''Ubicado en pleno centro de la laguna alalay, con vista a la...''',
-        minPrice: 999,
-        maxPrice: 1000,
-        zone: 'Zona Sur',
-        location: 'Cochabamba',
-        mapLocation: 'https://www.google.com/maps/place/Plaza+Sucre/@-17.411946,-66.1632659,13z/data=!4m9!1m2!2m1!1zLA!3m5!1s0x93e373f8d705ee63:0x8b64d1ced4c8c13f!8m2!3d-17.3922658!4d-66.1480371!16s%2Fg%2F1tj3m4zb?hl=es-419&entry=ttu&g_ep=EgoyMDI1MDQyMi4wIKXMDSoASAFQAw%3D%3D'
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    idUsuario = widget.idUsuario;
+    estaLogueado = idUsuario != null;
+    futureProperties = estaLogueado
+        ? apiService.fetchPropertiesByUserId(idUsuario!)
+        : apiService.fetchProperties();
+  }
 
-  void onBottomNavTapped(int index) {
+  void _onItemTapped(int index) {
     setState(() {
-      bottomNavIndex = index;
+      selectedCategoryIndex = index;
+      futureProperties = estaLogueado
+          ? apiService.fetchPropertiesByUserId(idUsuario!)
+          : apiService.fetchProperties();
     });
   }
 
+  void _cerrarSesion() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Sesión cerrada'),
+          content: const Text('Sesion Finalizada.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
+              child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _iniciarSesion() async {
+    final nuevoUsuarioId = await Navigator.push<int?>(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+    if (nuevoUsuarioId != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen(idUsuario: nuevoUsuarioId)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget Function(List<Property>)> screenBuilders = [
+      (props) => LandsScreen(properties: props, idUsuario: idUsuario),
+      (props) => RentalsScreen(properties: props, idUsuario: idUsuario),
+      (props) => HousesScreen(properties: props, idUsuario: idUsuario),
+    ];
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
-        title: Row(
-          children: const [
+        title: const Row(
+          children: [
             Icon(Icons.business, color: Colors.black),
             SizedBox(width: 8),
             Text(
@@ -68,100 +105,105 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-      body: Column(
-        children: [
+        actions: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(categories.length, (index) {
-                  final isSelected = index == selectedIndex;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isSelected ? Colors.black : Colors.white,
-                        foregroundColor:
-                            isSelected ? Colors.white : Colors.black,
-                        side: const BorderSide(color: Colors.black),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (isSelected) ...[
-                            const Icon(Icons.check, size: 16),
-                            const SizedBox(width: 6),
+            padding: const EdgeInsets.all(8.0),
+            child: estaLogueado
+                ? PopupMenuButton<String>(
+                    icon: const Icon(Icons.person_2_rounded, color: Colors.black, size: 24),
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'perfil',
+                        height: 36,
+                        child: Row(
+                          children: const [
+                            Icon(Icons.person, color: Colors.black54, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              'Ver perfil',
+                              style: TextStyle(fontSize: 13),
+                            ),
                           ],
-                          Text(categories[index]),
-                        ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'cerrar',
+                        height: 36,
+                        child: Row(
+                          children: const [
+                            Icon(Icons.logout, color: Colors.redAccent, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              'Cerrar sesión',
+                              style: TextStyle(fontSize: 13, color: Colors.redAccent),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    onSelected: (String result) {
+                      if (result == 'perfil') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileScreen(idUsuario: idUsuario!),
+                          ),
+                        );
+                      } else if (result == 'cerrar') {
+                        _cerrarSesion();
+                      }
+                    },
+                  )
+                : TextButton(
+                    onPressed: _iniciarSesion,
+                    child: const Text(
+                      'Iniciar sesión',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  );
-                }),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
-            child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  searchText = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Buscar...',
-                prefixIcon: const Icon(Icons.search),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: selectedIndex == 0
-                ? LandScreen(properties: properties)
-                : Center(
-              child: Text(
-                'Mostrando: ${categories[selectedIndex]}',
-                style: const TextStyle(fontSize: 20),
-              ),
-            ),
+                  ),
           ),
         ],
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: bottomNavIndex,
-        onTap: onBottomNavTapped,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black54,
-        backgroundColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add, color: Colors.black),
-            label: 'Agregar',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person, color: Colors.black),
-            label: 'Perfil',
-          ),
-        ],
+      body: FutureBuilder<List<Property>>(
+        future: futureProperties,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return screenBuilders[selectedCategoryIndex](snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  BottomNavigationBar _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      currentIndex: selectedCategoryIndex,
+      onTap: _onItemTapped,
+      selectedItemColor: Colors.black,
+      unselectedItemColor: Colors.black54,
+      backgroundColor: Colors.white,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.landscape_sharp),
+          label: 'Terrenos',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_work_sharp),
+          label: 'Alquileres',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_sharp),
+          label: 'Casas',
+        ),
+      ],
     );
   }
 }
