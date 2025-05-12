@@ -92,7 +92,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FormScreen(),
+                    builder: (context) => FormScreen(type: 2,),
                   ),
                 );
               },

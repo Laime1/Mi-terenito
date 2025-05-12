@@ -1,16 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../models/property/location.dart';
 import '../services/api_service.dart';
-import '../widgets/map_selection.dart';
 
 class FormScreen extends  StatefulWidget{
-  const FormScreen({super.key});
+  final int type;
+  const FormScreen({super.key, required this.type});
 
   @override
   State<FormScreen> createState() => _FormScreenState();
@@ -23,12 +21,14 @@ class _FormScreenState extends State<FormScreen>{
   final TextEditingController _title = TextEditingController();
   final TextEditingController _size = TextEditingController();
   final TextEditingController _description = TextEditingController();
+  final TextEditingController _priceMin = TextEditingController();
+  final TextEditingController _priceMax = TextEditingController();
+
   final TextEditingController _mapLocationController = TextEditingController();
+  final TextEditingController _zoneController = TextEditingController();
+  final TextEditingController _mapUrlController = TextEditingController();
 
 
-  // Variables para Google Maps
-  String _selectedAddress = '';
-  LatLng? _selectedLocation;
 
   // Variables para el dropdown de ubicación
   List<Location> _ubicaciones = [];
@@ -44,6 +44,119 @@ class _FormScreenState extends State<FormScreen>{
   void initState() {
     super.initState();
     _fetchUbicaciones();
+  }
+
+  Future<void> _submitForm() async {
+    // Validar campos obligatorios
+    if (_size.text.isEmpty ||
+        _description.text.isEmpty ||
+        _priceMin.text.isEmpty ||
+        _priceMax.text.isEmpty ||
+        _zoneController.text.isEmpty ||
+        _selectedUbicacion == null ||
+        widget.type == null ||
+        _selectedImages.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor complete todos los campos')),
+      );
+      return;
+    }
+
+    // Validar tamaño numérico
+    double? tamano = double.tryParse(_size.text);
+    double? precioMin = double.tryParse(_priceMin.text);
+    double? precioMax = double.tryParse(_priceMax.text);
+    if (tamano == null || precioMin == null || precioMax == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tamaño y precios deben ser números válidos')),
+      );
+      return;
+    }
+
+    try {
+      int idUsuario = 1; // Cambiar por el id real del usuario
+
+      // Mostrar indicador de carga
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      // Crear la propiedad
+      await _apiService.createProperty(
+        _title.text,
+        _description.text,
+        tamano,
+        precioMin,
+        precioMax,
+        _zoneController.text,
+        idUsuario,
+        _selectedUbicacion!.id,
+        widget.type,
+        _selectedImages,
+      );
+
+      // Cerrar indicador de carga
+      Navigator.of(context).pop();
+
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Propiedad creada exitosamente')),
+      );
+
+      // Limpiar formulario
+      _clearForm();
+
+      // Opcional: regresar a la pantalla anterior
+      // Navigator.of(context).pop();
+
+    } catch (e) {
+      // Cerrar indicador de carga si está abierto
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+       print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al crear propiedad: $e')),
+      );
+    }
+  }
+
+  void _clearForm() {
+    _title.clear();
+    _size.clear();
+    _description.clear();
+    _mapUrlController.clear();
+    _zoneController.clear();
+    setState(() {
+      _selectedUbicacion = null;
+      _selectedImages.clear();
+    });
+  }
+
+  void _cancelForm() {
+    // Mostrar diálogo de confirmación
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancelar formulario'),
+        content: const Text('¿Estás seguro de que deseas cancelar? Se perderán los datos ingresados.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cerrar diálogo
+              Navigator.of(context).pop(); // Cerrar formulario
+            },
+            child: const Text('Sí'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _fetchUbicaciones() async {
@@ -89,36 +202,8 @@ class _FormScreenState extends State<FormScreen>{
     });
   }
 
-  Future<void> _openGoogleMaps() async {
-    // Aquí podrías abrir un diálogo o nueva pantalla con el mapa
-    // Por ahora simularemos la selección de una ubicación
-    final result = await showDialog<Map<String, dynamic>>(
-      context: context,
-      builder: (context) => const MapSelectionDialog(),
-    );
 
-    if (result != null) {
-      setState(() {
-        _selectedLocation = result['location'];
-        _selectedAddress = result['address'];
-        _mapLocationController.text = _selectedAddress;
-      });
-    }
-  }
 
-  Future<void> _openInGoogleMaps() async {
-    if (_selectedLocation != null) {
-      final url =
-          'https://www.google.com/maps/search/?api=1&query=${_selectedLocation!.latitude},${_selectedLocation!.longitude}';
-      if (await canLaunchUrl(Uri.parse(url))) {
-        await launchUrl(Uri.parse(url));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se pudo abrir Google Maps')),
-        );
-      }
-    }
-  }
 
 
   String _getDisplayText(Location location) {
@@ -130,6 +215,12 @@ class _FormScreenState extends State<FormScreen>{
     return Scaffold(
       appBar: AppBar(
         title:  Text('Registro de Propiedad'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: _cancelForm,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding:  EdgeInsets.all(32),
@@ -193,13 +284,76 @@ class _FormScreenState extends State<FormScreen>{
                 ),
               ],
             ),
-            const Divider(height: 40, thickness: 1),
-            formInput( title: 'Titulo de propiedad', type: TextInputType.name),
+            Divider(),
             SizedBox(height: 16,),
-            formInput(title: 'Tamaño de Terreno',),
+            TextFormField(
+              controller: _title,
+              decoration: const InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                border: OutlineInputBorder(gapPadding: 5),
+                labelText: 'Título de propiedad',
+              ),
+              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+            ),
+
+            const SizedBox(height: 16),
+
+            TextFormField(
+              controller: _size,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                border: OutlineInputBorder(gapPadding: 5),
+                labelText: 'Tamaño de Terreno',
+              ),
+              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+            ),
+
+            const SizedBox(height: 16),
+
+            TextFormField(
+              controller: _description,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                border: OutlineInputBorder(gapPadding: 5),
+                labelText: 'Descripción',
+              ),
+              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+            ),
             SizedBox(height: 16,),
-            formInput(title: 'Descripcion', max: 3),
-            SizedBox(height: 16,),
+            Row(
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: TextFormField(
+                    controller: _priceMin,
+                    decoration: const InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      border: OutlineInputBorder(gapPadding: 5),
+                      labelText: 'Precio minimo',
+                    ),
+                    validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+                  ),
+                ),
+                SizedBox(width: 5,),
+                Expanded(
+                  flex: 5,
+                    child:  TextFormField(
+                      controller: _priceMax,
+                      decoration: const InputDecoration(
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: OutlineInputBorder(gapPadding: 5),
+                        labelText: 'Precio maximo',
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+                    ),
+                )
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
             _ubicaciones.isEmpty
                 ? const CircularProgressIndicator()
                 : DropdownButtonFormField<Location>(
@@ -233,40 +387,52 @@ class _FormScreenState extends State<FormScreen>{
                 return null;
               },
             ),
-            const SizedBox(height: 10),
-            formInput(title: 'Zona'),
-            const SizedBox(height: 16),
-            const Text(
-              'Ubicación en Mapa',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            SizedBox(height: 16,),
+            TextFormField(
+              controller: _mapUrlController,
+              maxLines: 1,
+              decoration: const InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                border: OutlineInputBorder(gapPadding: 5),
+                labelText: 'Url de mapa',
+              ),
+              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
             ),
-            const SizedBox(height: 8),
+
+            const SizedBox(height: 16),
+
+            TextFormField(
+              controller: _zoneController,
+              maxLines: 1,
+              decoration: const InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                border: OutlineInputBorder(gapPadding: 5),
+                labelText: 'Zona',
+              ),
+              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+            ),
+
+            const SizedBox(height: 32),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _mapLocationController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: 'Dirección seleccionada',
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.map),
-                        onPressed: _openGoogleMaps,
-                      ),
-                    ),
+                ElevatedButton(
+                  onPressed: _cancelForm,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  ),
+                  child: const Text('Guardar'),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            if (_selectedLocation != null)
-              ElevatedButton.icon(
-                icon: const Icon(Icons.open_in_new),
-                label: const Text('Ver en Google Maps'),
-                onPressed: _openInGoogleMaps,
-              ),
-
           ],
         ),
       ),
@@ -276,6 +442,7 @@ class _FormScreenState extends State<FormScreen>{
   TextFormField formInput({String? title, int? max = 1, TextInputType? type }){
     return TextFormField(
       maxLines: max,
+      minLines: 1,
       keyboardType: type,
       decoration:  InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,

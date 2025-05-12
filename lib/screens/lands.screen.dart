@@ -92,7 +92,7 @@ class _LandsScreenState extends State<LandsScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FormScreen()),
+                  MaterialPageRoute(builder: (context) => const FormScreen(type: 1)),
                 );
               },
             )
