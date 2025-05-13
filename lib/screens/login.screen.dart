@@ -29,7 +29,7 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Mi TERRENITO",
+                "CLICK HOUSE",
                 style: TextStyle(
                   fontSize: 24,
                   fontFamily: 'InknutAntiqua',
