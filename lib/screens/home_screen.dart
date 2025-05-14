@@ -172,7 +172,9 @@ class _HomeScreenState extends State<HomeScreen> {
         future: futureProperties,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return screenBuilders[selectedCategoryIndex](snapshot.data!);
+            final propiedadesFiltradas = snapshot.data!.where((p) => p.status != 0).toList();
+            return screenBuilders[selectedCategoryIndex](propiedadesFiltradas);
+
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
