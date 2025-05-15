@@ -38,4 +38,12 @@ class ApiService {
       throw Exception('Failed to load ubicaciones');
     }
   }
+
+  Future<void> deleteProperty(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/propiedades/$id'));
+    if (response.statusCode != 200) {
+      throw Exception('Error al eliminar la propiedad');
+    }
+  }
+
 }
