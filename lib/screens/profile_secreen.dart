@@ -98,9 +98,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Perfil de Usuario',
-              style: TextStyle(
+            // Texto dinámico con el nombre del usuario
+            Text(
+              _nameController.text.isNotEmpty
+                  ? _nameController.text
+                  : 'Perfil de Usuario',
+              style: const TextStyle(
                 fontSize: 24,
                 fontFamily: 'InknutAntiqua',
                 fontWeight: FontWeight.w600,
