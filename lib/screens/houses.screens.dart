@@ -50,7 +50,7 @@ class _HousesScreenState extends State<HousesScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Text('CASAS', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('CASAS', style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'InknutAntiqua')),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(

@@ -50,7 +50,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Text('ALQUILERES', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('ALQUILERES', style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'InknutAntiqua')),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(

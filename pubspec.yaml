@@ -63,6 +63,7 @@ flutter:
         - asset: assets/fonts/InknutAntiqua-Regular.ttf
   assets:
     - assets/icono_terreno.png
+    - assets/home_terreno.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

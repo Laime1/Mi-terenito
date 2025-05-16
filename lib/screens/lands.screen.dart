@@ -48,7 +48,7 @@ class _LandsScreenState extends State<LandsScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'InknutAntiqua')),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(

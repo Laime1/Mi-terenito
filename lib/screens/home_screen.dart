@@ -91,16 +91,21 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.business, color: Colors.black),
-            SizedBox(width: 8),
-            Text(
-              'Mi Terrenito',
+            Image.asset(
+              'assets/home_terreno.png',
+              height: 35,
+              filterQuality: FilterQuality.high,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'CLICK HOUSE',
               style: TextStyle(
                 color: Colors.black,
+                fontFamily: 'InknutAntiqua',
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
+                fontSize: 10,
               ),
             ),
           ],
@@ -121,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             SizedBox(width: 6),
                             Text(
                               'Ver perfil',
-                              style: TextStyle(fontSize: 13),
+                              style: TextStyle(fontSize: 10,fontFamily: 'InknutAntiqua'),
                             ),
                           ],
                         ),
@@ -135,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             SizedBox(width: 6),
                             Text(
                               'Cerrar sesión',
-                              style: TextStyle(fontSize: 13, color: Colors.redAccent),
+                              style: TextStyle(fontSize: 10, color: Colors.redAccent,fontFamily: 'InknutAntiqua'),
                             ),
                           ],
                         ),
@@ -157,10 +162,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 : TextButton(
                     onPressed: _iniciarSesion,
                     child: const Text(
-                      'Iniciar sesión',
+                      'Iniciar Sesión',
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'InknutAntiqua',
+                        fontSize: 10,
                       ),
                     ),
                   ),
