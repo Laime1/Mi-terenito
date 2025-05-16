@@ -3,7 +3,8 @@ import 'package:mi_terrenito/models/property/picture.dart';
 import 'package:mi_terrenito/models/property/type.dart';
 import 'package:mi_terrenito/models/user.dart';
 
-class Property{
+
+class Property {
   final int id;
   final String name;
   final double size;
@@ -15,10 +16,11 @@ class Property{
   final String mapLocation;
   final int status;
   final DateTime createdAt;
-  final DateTime updatedUp;
+  final DateTime updatedAt; 
   final User user;
   final Location location;
   final Types type;
+  final int? idUsuario;
 
   
 
@@ -34,37 +36,38 @@ class Property{
     required this.mapLocation,
     required this.status,
     required this.createdAt,
-    required this.updatedUp,
+    required this.updatedAt, 
     required this.user,
     required this.type,
     required this.location,
+    required this.idUsuario,
   });
 
- factory Property.fromJson(Map<String, dynamic> json){
-   return Property(
-       name: json['titulo'] ?? 'Sin titulo',
-       size: double.tryParse(json['tamano'].toString()) ?? 0.0,
-       images: (json['imagenes'] as List<dynamic>?)
-         ?.map((img) => Picture.fromJson(img))
-         .toList() ?? [],
-       description: json['descripcion'] ?? '',
-       minPrice: double.tryParse(json['precio_min']?.toString() ?? '0') ?? 0.0,
-       maxPrice: double.tryParse(json['precio_max']?.toString() ?? '0') ?? 0.0,
-       zone: json['zona'] ?? '',
-       //location: json['location'] ?? '',
-       mapLocation: json['Enlace_ubicacion'] ?? '',
-       id: json['id_propiedad'] ?? 0,
-       status: json['estado'] ?? 1,
-       createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
-       updatedUp: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
-       user: User.fromJson(json['usuario'] ?? {}),
-       location: Location.fromJson(json['ubicacion'] ?? {}),
-       type: Types.fromJson(json['tipo'] ?? {}),
-   );
- }
+  factory Property.fromJson(Map<String, dynamic> json) {
+    return Property(
+      name: json['titulo'] ?? 'Sin titulo',
+      size: double.tryParse(json['tamano'].toString()) ?? 0.0,
+      images: (json['imagenes'] as List<dynamic>?)
+              ?.map((img) => Picture.fromJson(img))
+              .toList() ??
+          [],
+      description: json['descripcion'] ?? '',
+      minPrice: double.tryParse(json['precio_min']?.toString() ?? '0') ?? 0.0,
+      maxPrice: double.tryParse(json['precio_max']?.toString() ?? '0') ?? 0.0,
+      zone: json['zona'] ?? '',
+      idUsuario: json['idUsuario'],
+      mapLocation: json['Enlace_ubicacion'] ?? '',
+      id: json['id_propiedad'] ?? 0,
+      status: json['estado'] ?? 1,
+      createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
+      user: User.fromJson(json['usuario'] ?? {}),
+      location: Location.fromJson(json['ubicacion'] ?? {}),
+      type: Types.fromJson(json['tipo'] ?? {}),
+    );
+  }
 
   bool isLand() => type.name.toLowerCase().contains('terreno');
   bool isRental() => type.name.toLowerCase().contains('alquiler');
   bool isHouse() => type.name.toLowerCase().contains('casa');
-
 }

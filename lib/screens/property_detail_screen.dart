@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/property/property.dart';
 import '../services/api_service.dart';
+import 'package:mi_terrenito/models/user.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+
 
 class PropertyDetailScreen extends StatefulWidget {
   final Property property;
@@ -21,13 +25,27 @@ class PropertyDetailScreen extends StatefulWidget {
 class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   late String selectedImage;
   late int currentIndex;
+  
 
   @override
   void initState() {
     super.initState();
-    selectedImage = widget.property.images[0].url;
+    selectedImage = widget.property.images.isNotEmpty
+        ? widget.property.images[0].url
+        : '';
     currentIndex = 0;
+
   }
+  void _launchWhatsApp(String phone) async {
+  final whatsappUrl = Uri.parse('https://wa.me/$phone');
+  if (await canLaunchUrl(whatsappUrl)) {
+    await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No se pudo abrir WhatsApp')),
+    );
+  }
+}
 
   void _mostrarGaleria(int startIndex) {
     currentIndex = startIndex;
@@ -35,84 +53,106 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     Timer? hideTimer;
 
     showGeneralDialog(
-        context: context,
-        barrierDismissible: true,
-        barrierLabel: 'Galería',
-        barrierColor: Colors.black.withOpacity(0.9),
-        pageBuilder: (_, __, ___) {
-          return StatefulBuilder(
-            builder: (context, setStateDialog) {
-              void toggleArrows() {
-                setStateDialog(() => showArrows = true);
-                hideTimer?.cancel();
-                hideTimer = Timer(const Duration(seconds: 3), () {
-                  setStateDialog(() => showArrows = false);
-                });
-              }
-              toggleArrows();
-              return GestureDetector(
-                onTap: toggleArrows,
-                child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  body: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      InteractiveViewer(
-                        child: Center(
-                          child: Image.network(
-                            widget.property.images[currentIndex].url,
-                            fit: BoxFit.contain,
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Galería',
+      barrierColor: Colors.black.withOpacity(0.9),
+      pageBuilder: (_, __, ___) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            void toggleArrows() {
+              setStateDialog(() => showArrows = true);
+              hideTimer?.cancel();
+              hideTimer = Timer(const Duration(seconds: 3), () {
+                setStateDialog(() => showArrows = false);
+              });
+            }
+
+            toggleArrows();
+
+            return GestureDetector(
+              onTap: toggleArrows,
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    InteractiveViewer(
+                      child: Center(
+                        child: Image.network(
+                          widget.property.images[currentIndex].url,
+                          fit: BoxFit.contain,
+                          width: double.infinity,
+                          height: double.infinity,
                         ),
                       ),
-                      if (showArrows && currentIndex > 0)
-                        Positioned(
-                          left: 16,
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 32),
-                            onPressed: () {
-                              setStateDialog(() {
-                                currentIndex--;
-                              });
-                              toggleArrows();
-                            },
-                          ),
+                    ),
+                    if (showArrows && currentIndex > 0)
+                      Positioned(
+                        left: 16,
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 32),
+                          onPressed: () {
+                            setStateDialog(() {
+                              currentIndex--;
+                            });
+                            toggleArrows();
+                          },
                         ),
-                      if (showArrows && currentIndex < widget.property.images.length - 1)
-                        Positioned(
-                          right: 16,
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 32),
-                            onPressed: () {
-                              setStateDialog(() {
-                                currentIndex++;
-                              });
-                              toggleArrows();
-                            },
-                          ),
+                      ),
+                    if (showArrows && currentIndex < widget.property.images.length - 1)
+                      Positioned(
+                        right: 16,
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 32),
+                          onPressed: () {
+                            setStateDialog(() {
+                              currentIndex++;
+                            });
+                            toggleArrows();
+                          },
                         ),
-                      if (showArrows)
-                        Positioned(
-                          top: 40,
-                          right: 20,
-                          child: IconButton(
-                            icon: const Icon(Icons.close, color: Colors.white, size: 32),
-                            onPressed: () {
-                              hideTimer?.cancel();
-                              Navigator.of(context).pop();
-                            },
-                          ),
+                      ),
+                    if (showArrows)
+                      Positioned(
+                        top: 40,
+                        right: 20,
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white, size: 32),
+                          onPressed: () {
+                            hideTimer?.cancel();
+                            Navigator.of(context).pop();
+                          },
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
-              );
-            },
-          );
-        },
-      ).then((_) => hideTimer?.cancel());
+              ),
+            );
+          },
+        );
+      },
+    ).then((_) => hideTimer?.cancel());
+  }
+
+  Widget _buildDetailRow(String title, String content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            style: const TextStyle(fontSize: 14, color: Colors.black),
+            children: [
+              TextSpan(text: '$title: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(text: content),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Divider(thickness: 1, color: Colors.grey),
+        const SizedBox(height: 8),
+      ],
+    );
   }
 
   @override
@@ -202,7 +242,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 12),
             Text(
               '\$ ${property.minPrice} - \$ ${property.maxPrice}',
@@ -213,48 +252,41 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text('Descripción', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(
-              property.description,
-              style: const TextStyle(fontSize: 14),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 8),
-            RichText(
-              text: TextSpan(
-                style: const TextStyle(fontSize: 14, color: Colors.black),
-                children: [
-                  const TextSpan(text: 'Tamaño: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                  TextSpan(text: '${property.size} m²\n'),
-                  const TextSpan(text: 'Zona: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                  TextSpan(text: property.zone),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text('Contacto:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const Text('6543216 - 76543211', style: TextStyle(fontSize: 14)),
-            const Spacer(),
+            _buildDetailRow('Descripción', property.description),
+            _buildDetailRow('Tamaño', '${property.size} m²'),
+            _buildDetailRow('Zona', property.zone),
+            _buildDetailRow('Contacto', '${property.user.name} - ${property.user.numberPhone}'),
 
+            const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton.icon(
-                  onPressed: () {},
+               ElevatedButton.icon(
+  onPressed: () {
+    final phone = property.user.numberPhone.replaceAll(RegExp(r'\D'), ''); // Solo números
+    if (phone.isNotEmpty) {
+      _launchWhatsApp(phone);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Número de contacto no disponible')),
+      );
+    }
+  },
                   icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18, color: Colors.white),
-                  label: const Text('WhatsApp'),
+                  label: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: const Color(0xFF2D2D2D),
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Acción para Ubicación
+                  },
                   icon: const FaIcon(FontAwesomeIcons.mapLocationDot, size: 18, color: Colors.white),
-                  label: const Text('Ubicación'),
+                  label: const Text('Ubicación', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: const Color.fromARGB(255, 104, 131, 196),
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
@@ -271,14 +303,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               showSelectedLabels: true,
               showUnselectedLabels: true,
               items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.edit),
-                  label: 'Editar',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.delete),
-                  label: 'Eliminar',
-                ),
+                BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Editar'),
+                BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Eliminar'),
               ],
               onTap: (index) async {
                 if (index == 0) {
@@ -292,14 +318,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       title: const Text('Confirmar eliminación'),
                       content: const Text('¿Estás seguro de que deseas eliminar esta propiedad?'),
                       actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text('Cancelar'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text('Confirmar'),
-                        ),
+                        TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancelar')),
+                        TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Confirmar')),
                       ],
                     ),
                   );
@@ -309,17 +329,13 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       await api.deleteProperty(widget.property.id);
                       if (mounted) {
                         Navigator.of(context).pop(true);
-
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
                             title: const Text('Eliminación exitosa'),
                             content: const Text('La propiedad ha sido eliminada correctamente.'),
                             actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Aceptar'),
-                              ),
+                              TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Aceptar')),
                             ],
                           ),
                         );

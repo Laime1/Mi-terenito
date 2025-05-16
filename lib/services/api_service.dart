@@ -8,7 +8,6 @@ class ApiService {
 
   Future<List<Property>> fetchProperties() async {
     final response = await http.get(Uri.parse('$baseUrl/propiedades'));
-
     if (response.statusCode == 200) {
       final List<dynamic> jsonResponse = json.decode(response.body);
       return jsonResponse.map((json) => Property.fromJson(json)).toList();
@@ -19,7 +18,6 @@ class ApiService {
 
   Future<List<Property>> fetchPropertiesByUserId(int idUsuario) async {
     final response = await http.get(Uri.parse('$baseUrl/propiedades/usuario/$idUsuario'));
-
     if (response.statusCode == 200) {
       final List<dynamic> jsonResponse = json.decode(response.body);
       return jsonResponse.map((json) => Property.fromJson(json)).toList();
@@ -30,7 +28,6 @@ class ApiService {
 
   Future<List<Location>> fetchUbicaciones() async {
     final response = await http.get(Uri.parse('$baseUrl/ubicaciones'));
-
     if (response.statusCode == 200) {
       final List<dynamic> jsonResponse = json.decode(response.body);
       return jsonResponse.map<Location>((json) => Location.fromJson(json)).toList();
@@ -46,4 +43,14 @@ class ApiService {
     }
   }
 
+  // Aquí está el método nuevo que pediste:
+  Future<Map<String, dynamic>> getUserById(int idUsuario) async {
+    final response = await http.get(Uri.parse('$baseUrl/usuarios/$idUsuario'));
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Error al obtener información del usuario');
+    }
+  }
 }
