@@ -2,13 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mi_terrenito/models/property/property.dart';
 
 import '../models/property/location.dart';
 import '../services/api_service.dart';
 
 class FormScreen extends  StatefulWidget{
   final int type;
-  const FormScreen({super.key, required this.type});
+  final int idUser;
+  final Property? property;
+
+  const FormScreen({super.key, required this.type, required this.idUser, this.property});
 
   @override
   State<FormScreen> createState() => _FormScreenState();
@@ -33,6 +37,9 @@ class _FormScreenState extends State<FormScreen>{
   // Variables para el dropdown de ubicación
   List<Location> _ubicaciones = [];
   Location? _selectedUbicacion;
+  List<String> _existingImages = [];
+
+
   final ApiService _apiService = ApiService();
 
   // Variables para imágenes
@@ -44,6 +51,24 @@ class _FormScreenState extends State<FormScreen>{
   void initState() {
     super.initState();
     _fetchUbicaciones();
+    if (widget.property != null) {
+      _loadExistingData();
+    }
+  }
+
+  void _loadExistingData() {
+    final property = widget.property!;
+    _title.text = property.name;
+    _size.text = property.size.toString();
+    _description.text = property.description;
+    _priceMin.text = property.minPrice.toString();
+    _priceMax.text = property.maxPrice.toString();
+    _zoneController.text = property.zone;
+    _mapUrlController.text = property.mapLocation ?? '';
+    _existingImages = property.images.map((img) => img.url).toList();
+    //_selectedUbicacion = property.location;
+
+
   }
 
   Future<void> _submitForm() async {
@@ -55,7 +80,7 @@ class _FormScreenState extends State<FormScreen>{
         _zoneController.text.isEmpty ||
         _selectedUbicacion == null ||
         widget.type == null ||
-        _selectedImages.isEmpty) {
+        (_selectedImages.isEmpty && _existingImages.isEmpty) ) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor complete todos los campos')),
       );
@@ -74,7 +99,7 @@ class _FormScreenState extends State<FormScreen>{
     }
 
     try {
-      int idUsuario = 1; // Cambiar por el id real del usuario
+      int idUsuario = widget.idUser; // Cambiar por el id real del usuario
 
       // Mostrar indicador de carga
       showDialog(
@@ -83,27 +108,50 @@ class _FormScreenState extends State<FormScreen>{
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
-      // Crear la propiedad
-      await _apiService.createProperty(
-        _title.text,
-        _description.text,
-        tamano,
-        precioMin,
-        precioMax,
-        _zoneController.text,
-        idUsuario,
-        _selectedUbicacion!.id,
-        widget.type,
-        _selectedImages,
-      );
+      if(widget.property == null) {
+        // Crear la propiedad
+        await _apiService.createProperty(
+          _title.text,
+          _description.text,
+          tamano,
+          precioMin,
+          precioMax,
+          _zoneController.text,
+          idUsuario,
+          _selectedUbicacion!.id,
+          widget.type,
+          _selectedImages,
+          _mapUrlController.text,
+        );
+      }else{
+        await _apiService.updateProperty(
+          widget.property!.id,
+          _title.text,
+          _description.text,
+          tamano,
+          precioMin,
+          precioMax,
+          _zoneController.text,
+          _selectedUbicacion!.id,
+          widget.type,
+          _selectedImages,// Solo las nuevas imágenes seleccionadas
+          idUsuario,
+          _mapUrlController.text,
+        );
+      }
+      print('Actualizando propiedad con id_tipo: ${widget.type}');
+
 
       // Cerrar indicador de carga
       Navigator.of(context).pop();
 
       // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Propiedad creada exitosamente')),
+        SnackBar(content: Text(widget.property == null
+            ? 'Propiedad creada exitosamente'
+            : 'Propiedad actualizada exitosamente')),
       );
+
 
       // Limpiar formulario
       _clearForm();
@@ -214,7 +262,7 @@ class _FormScreenState extends State<FormScreen>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Registro de Propiedad'),
+        title: Text(widget.property == null ? 'Registro de Propiedad' : 'Editar Propiedad'),
         actions: [
           IconButton(
             icon: const Icon(Icons.close),
@@ -232,6 +280,45 @@ class _FormScreenState extends State<FormScreen>{
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 10),
+            // Mostrar imágenes existentes (solo en edición)
+            if (_existingImages.isNotEmpty)
+              SizedBox(
+                height: 120,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _existingImages.length,
+                  itemBuilder: (context, index) {
+                    return Stack(
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 120,
+                          margin: const EdgeInsets.only(right: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            image: DecorationImage(
+                              image: NetworkImage(_existingImages[index]),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 5,
+                          right: 15,
+                          child: IconButton(
+                            icon: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () {
+                              setState(() {
+                                _existingImages.removeAt(index);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
             // Mostrar imágenes seleccionadas
             if (_selectedImages.isNotEmpty)
               SizedBox(
@@ -358,14 +445,16 @@ class _FormScreenState extends State<FormScreen>{
                 ? const CircularProgressIndicator()
                 : DropdownButtonFormField<Location>(
               isExpanded: true,
-              value: _selectedUbicacion,
+              value: _selectedUbicacion ,
               decoration: const InputDecoration(
                 labelText: 'Ubicación',
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
-              hint: const Text('Seleccione ubicación'),
+              hint: widget.property != null
+                ?Text(_getDisplayText(widget.property!.location))
+                 : Text('Selecione ubicación'),
               items: _ubicaciones.map((ubicacion) {
                 return DropdownMenuItem<Location>(
                   value: ubicacion,
@@ -382,6 +471,7 @@ class _FormScreenState extends State<FormScreen>{
               },
               validator: (value) {
                 if (value == null) {
+                  value = widget.property!.location;
                   return 'Por favor seleccione una ubicación';
                 }
                 return null;
@@ -429,8 +519,7 @@ class _FormScreenState extends State<FormScreen>{
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
-                  child: const Text('Guardar'),
-                ),
+                  child: Text(widget.property == null ? 'Guardar' : 'Actualizar'),                ),
               ],
             ),
           ],

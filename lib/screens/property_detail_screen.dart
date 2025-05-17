@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/property/property.dart';
+import 'form_screen.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
   final Property property;
@@ -220,6 +221,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
             const SizedBox(height: 8),
             const Text('Contacto:', style: TextStyle(fontWeight: FontWeight.bold)),
             const Text('6543216 - 76543211', style: TextStyle(fontSize: 14)),
+             Text('id Tipo: ${property.idTipe.toString()}'),
+            Text('Mapa: ${property.mapLocation}'),
             const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -266,9 +269,21 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               ],
               onTap: (index) {
                 if (index == 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Editar presionado')),
-                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FormScreen(
+                        property: widget.property,
+                        idUser: widget.idUsuario!,
+                        type: widget.property.idTipe,
+                      ),
+                    ),
+                  ).then((updated) {
+                    if (updated == true) {
+                      // Actualizar la vista si se editó la propiedad
+                      Navigator.pop(context, true); // Para refrescar la lista anterior
+                    }
+                  });
                 } else if (index == 1) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Eliminar presionado')),

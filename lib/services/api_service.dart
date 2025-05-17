@@ -52,6 +52,7 @@ class ApiService {
       int idUbicacion,
       int idTipo,
       List<File> imagenes,
+      String urlMap,
       ) async {
     // Crear la solicitud multipart
     var request = http.MultipartRequest(
@@ -69,6 +70,8 @@ class ApiService {
     request.fields['id_usuario'] = idUsuario.toString();
     request.fields['id_ubicacion'] = idUbicacion.toString();
     request.fields['id_tipo'] = idTipo.toString();
+    request.fields['Enlace_ubicacion'] = urlMap;
+
 
     // Agregar imágenes (el nombre 'imagenes' debe coincidir con upload.array('imagenes'))
     for (var image in imagenes) {
@@ -96,4 +99,64 @@ class ApiService {
       throw Exception('Error en la conexión: $e');
     }
   }
+
+  Future<Property> updateProperty(
+      int idPropiedad,
+      String titulo,
+      String descripcion,
+      double tamano,
+      double precioMin,
+      double precioMax,
+      String zona,
+      int idUbicacion,
+      int idTipo,
+      List<File> nuevasImagenes,
+      int idUsuario,
+      String urlMap,
+      ) async {
+    var request = http.MultipartRequest(
+        'PUT',
+        Uri.parse('$baseUrl/propiedades/$idPropiedad')
+    );
+
+    // Campos de texto (deben coincidir exactamente con los nombres que espera el backend)
+    request.fields['titulo'] = titulo;
+    request.fields['descripcion'] = descripcion;
+    request.fields['tamano'] = tamano.toString();
+    request.fields['precio_min'] = precioMin.toString();
+    request.fields['precio_max'] = precioMax.toString();
+    request.fields['zona'] = zona;
+    request.fields['id_usuario'] = idUsuario.toString(); // Asume que tienes acceso al idUsuario
+    request.fields['id_ubicacion'] = idUbicacion.toString();
+    request.fields['id_tipo'] = idTipo.toString();
+    request.fields['Enlace_ubicacion'] = urlMap;
+
+
+    // Agregar nuevas imágenes (el nombre 'imagenes' debe coincidir con upload.array('imagenes'))
+    for (var image in nuevasImagenes) {
+      var stream = http.ByteStream(image.openRead());
+      var length = await image.length();
+      var multipartFile = http.MultipartFile(
+        'imagenes', // ¡Este nombre debe coincidir exactamente!
+        stream,
+        length,
+        filename: image.path.split('/').last,
+      );
+      request.files.add(multipartFile);
+    }
+
+    try {
+      var response = await request.send();
+      var responseString = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        return Property.fromJson(json.decode(responseString));
+      } else {
+        throw Exception('Error typo: $idTipo ${response.statusCode}: $responseString');
+      }
+    } catch (e) {
+      throw Exception('Error en la conexión: $e');
+    }
+  }
+
 }

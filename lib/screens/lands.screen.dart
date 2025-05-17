@@ -90,9 +90,10 @@ class _LandsScreenState extends State<LandsScreen> {
           ? FloatingActionButton(
               child: const Icon(Icons.add),
               onPressed: () {
+                final  idUser = widget.idUsuario;
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FormScreen(type: 1)),
+                  MaterialPageRoute(builder: (context) =>  FormScreen(type: 1, idUser: idUser!)),
                 );
               },
             )
