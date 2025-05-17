@@ -14,100 +14,137 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
+        backgroundColor: Colors.transparent,
+        elevation: 0, // sin sombra para que no se vea más oscuro
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
+          splashColor: Colors.transparent, // sin splash oscuro
+          highlightColor: Colors.transparent, // sin highlight oscuro
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFEAF2F8), // centro claro
+                Color(0xFFCAD6E2), // intermedio azul grisáceo
+                Color(0xFF9BA7B4), // más oscuro hacia los bordes
+                Color(0xFF7C8694), // tono azulado-púrpura en extremos
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
         ),
       ),
-      backgroundColor: Colors.white,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Mi TERRENITO",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontFamily: 'InknutAntiqua',
-                  fontWeight: FontWeight.w600,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFEAF2F8), // centro claro
+              Color(0xFFCAD6E2), // intermedio azul grisáceo
+              Color(0xFF9BA7B4), // más oscuro hacia los bordes
+              Color(0xFF7C8694), // tono azulado-púrpura en extremos
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "CLICK HOUSE",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontFamily: 'InknutAntiqua',
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Image.asset(
-                'assets/icono_terreno.png',
-                height: 300,
-              ),
-              const SizedBox(height: 30),
-              Container(
-                width: 400,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
+                const SizedBox(height: 20),
+                Image.asset(
+                  'assets/icono_terreno.png',
+                  height: 300,
                 ),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: correoController,
-                      decoration: InputDecoration(
-                        labelText: 'Correo',
-                        hintText: 'ingresar correo',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                const SizedBox(height: 30),
+
+                // Campo correo reducido
+                SizedBox(
+                  width: 350,
+                  height: 45,
+                  child: TextField(
+                    controller: correoController,
+                    decoration: InputDecoration(
+                      labelText: 'Correo',
+                      hintText: 'ingresar correo',
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.0),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    ValueListenableBuilder<bool>(
-                      valueListenable: obscurePassword,
-                      builder: (context, value, child) {
-                        return TextField(
-                          controller: contrasenaController,
-                          obscureText: value,
-                          decoration: InputDecoration(
-                            labelText: 'Contraseña',
-                            hintText: 'ingresar contraseña',
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                value ? Icons.visibility_off : Icons.visibility,
-                              ),
-                              onPressed: () {
-                                obscurePassword.value = !value;
-                              },
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Campo contraseña reducido
+                SizedBox(
+                  width: 350,
+                  height: 45,
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: obscurePassword,
+                    builder: (context, value, child) {
+                      return TextField(
+                        controller: contrasenaController,
+                        obscureText: value,
+                        decoration: InputDecoration(
+                          labelText: 'Contraseña',
+                          hintText: 'ingresar contraseña',
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.0),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              value ? Icons.visibility_off : Icons.visibility,
                             ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                            onPressed: () {
+                              obscurePassword.value = !value;
+                            },
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: 200,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {
-                          login(context, correoController.text, contrasenaController.text);
-                        },
-                        child: const Text("Iniciar sesión"),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Botón de login
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                  ],
+                    onPressed: () {
+                      login(context, correoController.text, contrasenaController.text);
+                    },
+                    child: const Text("Iniciar sesión"),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

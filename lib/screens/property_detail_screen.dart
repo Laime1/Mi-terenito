@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/property/property.dart';
 import '../services/api_service.dart';
-import 'package:mi_terrenito/models/user.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
@@ -40,6 +39,17 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No se pudo abrir WhatsApp')),
+      );
+    }
+  }
+
+  void _launchMap(double lat, double lng) async {
+    final mapUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    if (await canLaunchUrl(mapUrl)) {
+      await launchUrl(mapUrl, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo abrir el mapa')),
       );
     }
   }
@@ -158,15 +168,19 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(property.name, style: const TextStyle(fontSize: 16)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0.5,
-      ),
+  title: Text(
+    property.name,
+    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+  ),
+  leading: IconButton(
+    icon: const Icon(Icons.arrow_back),
+    onPressed: () => Navigator.pop(context),
+  ),
+  backgroundColor: Colors.white,
+  foregroundColor: Colors.black,
+  elevation: 0.5,
+),
+
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -249,15 +263,18 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        '\$ ${property.minPrice} - \$ ${property.maxPrice}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildDetailRow('Descripción', property.description),
+  '\$ ${property.minPrice} - \$ ${property.maxPrice}',
+  style: const TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Color.fromARGB(255, 9, 8, 8),
+  ),
+),
+const SizedBox(height: 8),
+const Divider(thickness: 1, color: Colors.grey), // <<--- Línea agregada
+const SizedBox(height: 8),
+_buildDetailRow('Descripción', property.description),
+
                       _buildDetailRow('Tamaño', '${property.size} m²'),
                       _buildDetailRow('Zona', property.zone),
                       _buildDetailRow('Vendedor', '${property.user.name} - ${property.user.numberPhone}'),
@@ -284,15 +301,17 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
                           ),
-                          ElevatedButton.icon(
-                            onPressed: () {},
-                            icon: const FaIcon(FontAwesomeIcons.mapLocationDot, size: 18, color: Colors.white),
-                            label: const Text('Ubicación', style: TextStyle(color: Colors.white)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 104, 131, 196),
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            ),
-                          ),
+                         ElevatedButton.icon(
+  onPressed: () {
+    // Aquí estaba la lógica del mapa
+  },
+  icon: const FaIcon(FontAwesomeIcons.mapLocationDot, size: 18, color: Colors.white),
+  label: const Text('Ubicación', style: TextStyle(color: Colors.white)),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color.fromARGB(255, 104, 131, 196),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  ),
+),
                         ],
                       ),
                       const SizedBox(height: 32),
