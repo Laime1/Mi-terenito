@@ -45,6 +45,7 @@ app.*.map.json
 /android/app/release
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 linux/
 macos/
 windows/
@@ -53,3 +54,8 @@ windows/
 /macos/
 /windows/
 >>>>>>> antonio
+=======
+linux/
+macos/
+windows/
+>>>>>>> xavi

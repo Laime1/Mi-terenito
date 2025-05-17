@@ -29,7 +29,7 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Mi TERRENITO",
+                "CLICK HOUSE",
                 style: TextStyle(
                   fontSize: 24,
                   fontFamily: 'InknutAntiqua',
@@ -101,7 +101,7 @@ class LoginScreen extends StatelessWidget {
                         onPressed: () {
                           login(context, correoController.text, contrasenaController.text);
                         },
-                        child: const Text("Iniciar sesión"),
+                        child: const Text("Iniciar Sesión"),
                       ),
                     ),
                   ],
