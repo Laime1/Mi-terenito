@@ -92,7 +92,7 @@ class _HousesScreenState extends State<HousesScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FormScreen(type: 3, idUser: widget.idUsuario!,),
+                    builder: (context) => FormScreen(type: 1, idUser: widget.idUsuario!,),
                   ),
                 );
               },

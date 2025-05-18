@@ -20,6 +20,7 @@ class Property{
   final Location location;
   final Types type;
   final int idTipe;
+  final int idLocation;
 
   
 
@@ -40,6 +41,7 @@ class Property{
     required this.type,
     required this.location,
     required this.idTipe,
+    required this.idLocation,
 
   });
 
@@ -64,6 +66,7 @@ class Property{
        location: Location.fromJson(json['ubicacion'] ?? {}),
        type: Types.fromJson(json['tipo'] ?? {}),
        idTipe: json['id_tipo'] ?? 1,
+       idLocation: json['id_ubicacion'] ?? 1,
    );
  }
 

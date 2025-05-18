@@ -50,10 +50,11 @@ class _FormScreenState extends State<FormScreen>{
   @override
   void initState() {
     super.initState();
-    _fetchUbicaciones();
-    if (widget.property != null) {
-      _loadExistingData();
-    }
+    _fetchUbicaciones().then((_) {
+      if (widget.property != null) {
+        _loadExistingData();
+      }
+    });
   }
 
   void _loadExistingData() {
@@ -66,7 +67,13 @@ class _FormScreenState extends State<FormScreen>{
     _zoneController.text = property.zone;
     _mapUrlController.text = property.mapLocation ?? '';
     _existingImages = property.images.map((img) => img.url).toList();
-    //_selectedUbicacion = property.location;
+    property.location.id = property.idLocation;
+    print(property.location.id);
+
+    _selectedUbicacion = _ubicaciones.firstWhere(
+          (ubicacion) => ubicacion.id == property.location.id,
+      orElse: () => property.location, // Fallback si no se encuentra
+    );
 
 
   }
@@ -445,16 +452,19 @@ class _FormScreenState extends State<FormScreen>{
                 ? const CircularProgressIndicator()
                 : DropdownButtonFormField<Location>(
               isExpanded: true,
-              value: _selectedUbicacion ,
+              value: _ubicaciones.isNotEmpty && _selectedUbicacion != null
+                  ? _ubicaciones.firstWhere(
+                    (u) => u.id == _selectedUbicacion?.id,
+                orElse: () => _selectedUbicacion!,
+              )
+                  : null,
               decoration: const InputDecoration(
                 labelText: 'Ubicación',
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
-              hint: widget.property != null
-                ?Text(_getDisplayText(widget.property!.location))
-                 : Text('Selecione ubicación'),
+              hint: Text('Seleccione ubicación'),
               items: _ubicaciones.map((ubicacion) {
                 return DropdownMenuItem<Location>(
                   value: ubicacion,
@@ -471,7 +481,6 @@ class _FormScreenState extends State<FormScreen>{
               },
               validator: (value) {
                 if (value == null) {
-                  value = widget.property!.location;
                   return 'Por favor seleccione una ubicación';
                 }
                 return null;

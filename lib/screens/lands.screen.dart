@@ -93,7 +93,7 @@ class _LandsScreenState extends State<LandsScreen> {
                 final  idUser = widget.idUsuario;
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>  FormScreen(type: 1, idUser: idUser!)),
+                  MaterialPageRoute(builder: (context) =>  FormScreen(type: 2, idUser: idUser!)),
                 );
               },
             )
