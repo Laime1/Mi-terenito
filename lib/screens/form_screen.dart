@@ -270,13 +270,14 @@ class _FormScreenState extends State<FormScreen>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.property == null ? 'Registro de Propiedad' : 'Editar Propiedad'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: _cancelForm,
-          ),
-        ],
+        title: Text(widget.property == null ? 'Registro de Propiedad' : 'Editar ${widget.property!.type.name}'),
+        centerTitle: true,
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.close),
+        //     onPressed: _cancelForm,
+        //   ),
+        // ],
       ),
       body: SingleChildScrollView(
         padding:  EdgeInsets.all(32),
