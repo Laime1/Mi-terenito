@@ -19,6 +19,7 @@ class Property{
   final User user;
   final Location location;
   final Types type;
+  final int? idUsuario;
   final int idTipe;
   final int idLocation;
 
@@ -43,6 +44,7 @@ class Property{
     required this.idTipe,
     required this.idLocation,
 
+    required this.idUsuario,
   });
 
  factory Property.fromJson(Map<String, dynamic> json){
@@ -67,6 +69,7 @@ class Property{
        type: Types.fromJson(json['tipo'] ?? {}),
        idTipe: json['id_tipo'] ?? 1,
        idLocation: json['id_ubicacion'] ?? 1,
+       idUsuario: json['id_usuario'] ?? 1,
    );
  }
 

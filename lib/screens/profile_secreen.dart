@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'home_screen.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -16,6 +15,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+
+  String rolNombre = '';
+
+  final Map<int, String> rolesMap = {
+    1: 'Administrador',
+    2: 'Usuario',
+    3: 'Invitado',
+  };
 
   late int idUsuario;
 
@@ -36,6 +43,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _nameController.text = data['nombre_usuario'] ?? '';
           _phoneController.text = data['contacto'] ?? '';
           _emailController.text = data['correo'] ?? '';
+          int idRol = data['id_rol'] ?? 0;
+          rolNombre = rolesMap[idRol] ?? 'Rol no definido';
         });
       } else {
         _showErrorDialog('Error al cargar los datos del usuario');
@@ -67,116 +76,150 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const gradientColors = [
+      Color(0xFFEAF2F8),
+      Color(0xFFCAD6E2),
+      Color(0xFF9BA7B4),
+      Color(0xFF7C8694),
+    ];
+
     return Scaffold(
+      extendBody: true,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: const Text(
           'Perfil de usuario',
-          style: TextStyle(fontStyle: FontStyle.italic),
+          style: TextStyle(
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.normal,
+            color: Colors.black,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 24),
-            Center(
-              child: CircleAvatar(
-                radius: 60,
-                backgroundColor: Colors.grey,
-                child: const Icon(Icons.person, size: 80, color: Colors.white),
-              ),
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: gradientColors,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Perfil de Usuario',
-              style: TextStyle(
-                fontSize: 24,
-                fontFamily: 'InknutAntiqua',
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 24),
-            _buildDisplayField(
-              label: 'Nombre de usuario: ',
-              text: _nameController.text,
-            ),
-            const SizedBox(height: 16),
-            _buildDisplayField(
-              label: 'Telefono o celular: ',
-              text: _phoneController.text,
-            ),
-            const SizedBox(height: 16),
-            _buildDisplayField(
-              label: 'Correo: ',
-              text: _emailController.text,
-            ),
-            const SizedBox(height: 80),
-          ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen(idUsuario: idUsuario)),
-            (Route<dynamic> route) => false,
-          );
-        },
-        backgroundColor: const Color.fromARGB(255, 107, 131, 150),
-        child: const Icon(Icons.home),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradientColors,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [Colors.blueAccent, Colors.purpleAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.purpleAccent.withOpacity(0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const CircleAvatar(
+                    radius: 58,
+                    backgroundColor: Colors.transparent,
+                    child: Icon(Icons.person, size: 80, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                rolNombre.isNotEmpty ? rolNombre : 'Perfil de Usuario',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 36),
+              _buildProfileItem(
+                icon: Icons.person,
+                title: 'Nombre',
+                subtitle: _nameController.text,
+              ),
+              const SizedBox(height: 24),
+              _buildProfileItem(
+                icon: Icons.phone,
+                title: 'Teléfono',
+                subtitle: _phoneController.text,
+              ),
+              const SizedBox(height: 24),
+              _buildProfileItem(
+                icon: Icons.email,
+                title: 'Correo',
+                subtitle: _emailController.text,
+              ),
+            ],
+          ),
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
-  Widget _buildDisplayField({
-    required String label,
-    required String text,
+  Widget _buildProfileItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontFamily: 'InknutAntiqua',
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 16,
-                fontFamily: 'InknutAntiqua',
-                fontWeight: FontWeight.w400,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Colors.grey[800], size: 28),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.black54,
+                  fontSize: 14,
+                ),
               ),
-            ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle.isNotEmpty ? subtitle : 'No disponible',
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        )
+      ],
     );
   }
 }
