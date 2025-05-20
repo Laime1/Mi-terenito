@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_terrenito/models/property/property.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/property/location.dart';
 import '../services/api_service.dart';
@@ -487,15 +488,51 @@ class _FormScreenState extends State<FormScreen>{
               },
             ),
             SizedBox(height: 16,),
-            TextFormField(
-              controller: _mapUrlController,
-              maxLines: 1,
-              decoration: const InputDecoration(
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                border: OutlineInputBorder(gapPadding: 5),
-                labelText: 'Url de mapa',
-              ),
-              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+            Row(
+              children: [
+                // TextFormField para ingresar la URL del mapa
+                Expanded(
+                  child: TextFormField(
+                    controller: _mapUrlController,
+                    maxLines: 1,
+                    decoration: const InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      border: OutlineInputBorder(gapPadding: 5),
+                      labelText: 'Url de mapa',
+                    ),
+                    validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+                  ),
+                ),
+                const SizedBox(width: 8), // Espacio entre el campo y el botón
+                // Botón para abrir Google Maps
+                IconButton(
+                  onPressed: () async {
+                    if (_mapUrlController.text.isEmpty) {
+                      // Abrir Google Maps sin ubicación (solo la app)
+                      final Uri googleMapsUrl = Uri.parse('https://www.google.com/maps');
+                      if (await canLaunchUrl(googleMapsUrl)) {
+                        await launchUrl(googleMapsUrl);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('No se pudo abrir Google Maps')),
+                        );
+                      }
+                    } else {
+                      // Abrir la URL específica del mapa
+                      final Uri url = Uri.parse(_mapUrlController.text.trim());
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('No se pudo abrir la URL proporcionada')),
+                        );
+                      }
+                    }
+                  },
+                  icon: const Icon(Icons.map, color: Colors.blue),
+                  tooltip: 'Abrir en Google Maps',
+                ),
+              ],
             ),
 
             const SizedBox(height: 16),
