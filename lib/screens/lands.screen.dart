@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:mi_terrenito/models/property/property.dart';
-import 'package:mi_terrenito/screens/form_screen.dart';
+import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
+import 'form_screen.dart';
 
-class LandScreen extends StatefulWidget {
+class LandsScreen extends StatefulWidget {
   final List<Property> properties;
-
-  const LandScreen({super.key, required this.properties});
+  final int? idUsuario;
+  const LandsScreen({super.key, required this.properties, required this.idUsuario});
 
   @override
-  LandScreenState createState() => LandScreenState();
+  State<LandsScreen> createState() => _LandsScreenState();
 }
 
-class LandScreenState extends State<LandScreen> {
+class _LandsScreenState extends State<LandsScreen> {
   TextEditingController searchController = TextEditingController();
   List<Property> filteredProperties = [];
-  List<Property> landsProperties = [];
-
+  List<Property> landProperties = [];
 
   @override
   void initState() {
     super.initState();
-    landsProperties = widget.properties.where((p) => p.isLand()).toList();
-    filteredProperties = landsProperties;
+    landProperties = widget.properties.where((p) => p.isLand()).toList();
+    filteredProperties = landProperties;
     searchController.addListener(_filterProperties);
   }
 
@@ -35,13 +34,11 @@ class LandScreenState extends State<LandScreen> {
   void _filterProperties() {
     final query = searchController.text.toLowerCase();
     setState(() {
-      filteredProperties = landsProperties.where((property) {
-        final title = property.name?.toLowerCase() ?? '';
-        final description = property.description?.toLowerCase() ?? '';
-        final price = property.maxPrice.toString() ?? '0';
-        return title.contains(query) ||
-            description.contains(query) ||
-            price.contains(query);
+      filteredProperties = landProperties.where((property) {
+        final title = property.name.toLowerCase();
+        final description = property.description.toLowerCase();
+        final price = property.maxPrice.toString();
+        return title.contains(query) || description.contains(query) || price.contains(query);
       }).toList();
     });
   }
@@ -51,16 +48,14 @@ class LandScreenState extends State<LandScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold),),
+          Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold)),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
                 hintText: 'Buscar terrenos...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.clear),
@@ -74,29 +69,35 @@ class LandScreenState extends State<LandScreen> {
           Expanded(
             child: filteredProperties.isEmpty
                 ? Center(
-              child: searchController.text.isEmpty
-                  ? const CircularProgressIndicator()
-                  : const Text('No se encontraron resultados'),
-            )
+                    child: landProperties.isEmpty
+                        ? const Text('No cuentas con propiedades en esta área (Terrenos)')
+                        : const Text('No se encontraron resultados'),
+                  )
                 : ListView.builder(
-              itemCount: filteredProperties.length,
-              itemBuilder: (context, index) {
-                final property = filteredProperties[index];
-                return PropertyCard(property: property);
-              },
-            ),
+                    itemCount: filteredProperties.length,
+                    itemBuilder: (context, index) {
+                      final property = filteredProperties[index];
+                      return PropertyCard(
+                        property: property,
+                        idUsuario: widget.idUsuario,
+                      );
+                    },
+                  ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const FormScreen()),
-            );
-          },
-      ),
+      floatingActionButton: widget.idUsuario != null
+          ? FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                final  idUser = widget.idUsuario;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  FormScreen(type: 2, idUser: idUser!)),
+                );
+              },
+            )
+          : null,
     );
   }
 }

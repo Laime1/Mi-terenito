@@ -21,6 +21,8 @@ class User{
     numberPhone: json['contacto'] ?? '',
     role: json['id_rol'] ?? 0,
   );
+  
   }
+  
 
 }

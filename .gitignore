@@ -44,7 +44,25 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+<<<<<<< HEAD
 linux/
 macos/
 windows/
 
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+linux/
+macos/
+windows/
+=======
+/linux/
+/macos/
+/windows/
+>>>>>>> antonio
+=======
+linux/
+macos/
+windows/
+>>>>>>> xavi
+>>>>>>> e1a1692fc135fc2eec4c1e14b5903edaf3b4260b
