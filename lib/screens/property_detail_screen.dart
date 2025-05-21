@@ -419,11 +419,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       ),
                     ).then((updated) {
                       if (updated == true) {
-                        // Actualizar la vista si se editó la propiedad
+                        
                         Navigator.pop(
                           context,
                           true,
-                        ); // Para refrescar la lista anterior
+                        ); 
                       }
                     });
                   } else if (index == 1) {
