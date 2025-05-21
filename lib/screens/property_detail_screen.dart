@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/property/property.dart';
 import 'form_screen.dart';
-
 import '../services/api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 

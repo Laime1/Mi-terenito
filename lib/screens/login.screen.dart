@@ -15,21 +15,21 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0, // sin sombra para que no se vea más oscuro
+        elevation: 0, 
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
-          splashColor: Colors.transparent, // sin splash oscuro
-          highlightColor: Colors.transparent, // sin highlight oscuro
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent, 
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFFEAF2F8), // centro claro
-                Color(0xFFCAD6E2), // intermedio azul grisáceo
-                Color(0xFF9BA7B4), // más oscuro hacia los bordes
-                Color(0xFF7C8694), // tono azulado-púrpura en extremos
+                Color(0xFFEAF2F8),
+                Color(0xFFCAD6E2), 
+                Color(0xFF9BA7B4), 
+                Color(0xFF7C8694), 
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -41,10 +41,10 @@ class LoginScreen extends StatelessWidget {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFFEAF2F8), // centro claro
-              Color(0xFFCAD6E2), // intermedio azul grisáceo
-              Color(0xFF9BA7B4), // más oscuro hacia los bordes
-              Color(0xFF7C8694), // tono azulado-púrpura en extremos
+              Color(0xFFEAF2F8), 
+              Color(0xFFCAD6E2), 
+              Color(0xFF9BA7B4), 
+              Color(0xFF7C8694), 
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,

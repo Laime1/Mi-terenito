@@ -107,9 +107,8 @@ class _FormScreenState extends State<FormScreen>{
     }
 
     try {
-      int idUsuario = widget.idUser; // Cambiar por el id real del usuario
+      int idUsuario = widget.idUser; 
 
-      // Mostrar indicador de carga
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -117,7 +116,7 @@ class _FormScreenState extends State<FormScreen>{
       );
 
       if(widget.property == null) {
-        // Crear la propiedad
+     
         await _apiService.createProperty(
           _title.text,
           _description.text,
@@ -142,7 +141,7 @@ class _FormScreenState extends State<FormScreen>{
           _zoneController.text,
           _selectedUbicacion!.id,
           widget.type,
-          _selectedImages,// Solo las nuevas imágenes seleccionadas
+          _selectedImages,
           idUsuario,
           _mapUrlController.text,
         );
@@ -159,14 +158,7 @@ class _FormScreenState extends State<FormScreen>{
             ? 'Propiedad creada exitosamente'
             : 'Propiedad actualizada exitosamente')),
       );
-
-
-      // Limpiar formulario
       _clearForm();
-
-      // Opcional: regresar a la pantalla anterior
-      // Navigator.of(context).pop();
-
     } catch (e) {
       // Cerrar indicador de carga si está abierto
       if (Navigator.of(context).canPop()) {
