@@ -29,12 +29,19 @@ class PropertyCard extends StatelessWidget {
             children: [
               Expanded(
                 flex: 4,
-                child: Image.network(
-                  property.images.first.url,
-                  height: 120,
-                  fit: BoxFit.cover,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                  ),
+                  child: Image.network(
+                    property.images.first.url,
+                    height: 120,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
+
               const SizedBox(width: 16),
               Expanded(
                 flex: 6,
