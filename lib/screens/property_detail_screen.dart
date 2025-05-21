@@ -34,15 +34,20 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   }
 
   void _launchWhatsApp(String phone) async {
-    final whatsappUrl = Uri.parse('https://wa.me/$phone');
-    if (await canLaunchUrl(whatsappUrl)) {
-      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+    final whatsappUri = Uri.parse('whatsapp://send?phone=$phone');
+    final fallbackUri = Uri.parse('https://wa.me/$phone');
+
+    if (await canLaunchUrl(whatsappUri)) {
+      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+    } else if (await canLaunchUrl(fallbackUri)) {
+      await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No se pudo abrir WhatsApp')),
       );
     }
   }
+
 
   void _launchMap(double lat, double lng) async {
     final mapUrl = Uri.parse(
@@ -51,9 +56,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     if (await canLaunchUrl(mapUrl)) {
       await launchUrl(mapUrl, mode: LaunchMode.externalApplication);
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('No se pudo abrir el mapa')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo abrir el mapa')),
+      );
     }
   }
 
