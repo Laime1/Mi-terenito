@@ -32,25 +32,24 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     currentIndex = 0;
   }
 
-  void _launchWhatsApp(String phone) async {
-  final whatsappUri = Uri.parse('whatsapp://send?phone=$phone&text=Hola%20quiero%20más%20información');
-  
-  try {
-    await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
-  } catch (e) {
-    // Intenta abrir versión web si falla
-    final webWhatsappUri = Uri.parse('https://wa.me/$phone?text=Hola%20quiero%20más%20información');
-    if (await canLaunchUrl(webWhatsappUri)) {
-      await launchUrl(webWhatsappUri, mode: LaunchMode.externalApplication);
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se pudo abrir WhatsApp')),
-        );
+  void _launchWhatsAppConMensaje(String phone, String mensaje) async {
+    final whatsappUri = Uri.parse('whatsapp://send?phone=$phone&text=$mensaje');
+
+    try {
+      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      final webWhatsappUri = Uri.parse('https://wa.me/$phone?text=$mensaje');
+      if (await canLaunchUrl(webWhatsappUri)) {
+        await launchUrl(webWhatsappUri, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No se pudo abrir WhatsApp')),
+          );
+        }
       }
     }
   }
-}
 
   void _launchMap(double lat, double lng) async {
     final mapUrl = Uri.parse(
@@ -109,11 +108,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       Positioned(
                         left: 16,
                         child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.white,
-                            size: 32,
-                          ),
+                          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 32),
                           onPressed: () {
                             setStateDialog(() {
                               currentIndex--;
@@ -122,16 +117,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                           },
                         ),
                       ),
-                    if (showArrows &&
-                        currentIndex < widget.property.images.length - 1)
+                    if (showArrows && currentIndex < widget.property.images.length - 1)
                       Positioned(
                         right: 16,
                         child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.white,
-                            size: 32,
-                          ),
+                          icon: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 32),
                           onPressed: () {
                             setStateDialog(() {
                               currentIndex++;
@@ -145,11 +135,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                         top: 40,
                         right: 20,
                         child: IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 32,
-                          ),
+                          icon: const Icon(Icons.close, color: Colors.white, size: 32),
                           onPressed: () {
                             hideTimer?.cancel();
                             Navigator.of(context).pop();
@@ -207,7 +193,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
         foregroundColor: Colors.black,
         elevation: 0.5,
       ),
-
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -219,6 +204,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Imagen principal
                       Center(
                         child: GestureDetector(
                           onTap: () => _mostrarGaleria(currentIndex),
@@ -233,19 +219,18 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               child: Image.network(
                                 selectedImage,
                                 fit: BoxFit.cover,
-                                alignment: Alignment.center,
                               ),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 12),
+                      // Miniaturas
                       SizedBox(
                         height: 60,
                         child: Center(
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
                             itemCount: property.images.length,
                             itemBuilder: (context, index) {
                               final img = property.images[index].url;
@@ -258,18 +243,13 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                                   });
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 4,
-                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
                                   child: Opacity(
                                     opacity: isSelected ? 1.0 : 0.4,
                                     child: Container(
                                       decoration: BoxDecoration(
                                         border: Border.all(
-                                          color:
-                                              isSelected
-                                                  ? Colors.blue
-                                                  : Colors.transparent,
+                                          color: isSelected ? Colors.blue : Colors.transparent,
                                           width: 2,
                                         ),
                                         borderRadius: BorderRadius.circular(8),
@@ -297,62 +277,41 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 9, 8, 8),
+                          color: Colors.black87,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Divider(
-                        thickness: 1,
-                        color: Colors.grey,
-                      ), // <<--- Línea agregada
+                      const Divider(thickness: 1, color: Colors.grey),
                       const SizedBox(height: 8),
                       _buildDetailRow('Descripción', property.description),
-
                       _buildDetailRow('Tamaño', '${property.size} m²'),
                       _buildDetailRow('Zona', property.zone),
-                      _buildDetailRow(
-                        'Vendedor',
-                        '${property.user.name} - ${property.user.numberPhone}',
-                      ),
+                      _buildDetailRow('Vendedor', '${property.user.name} - ${property.user.numberPhone}'),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              final rawPhone = property.user.numberPhone
-                                  .replaceAll(RegExp(r'\D'), '');
-                              final phone =
-                                  rawPhone.length < 10
-                                      ? '+591$rawPhone'
-                                      : rawPhone;
+                              final rawPhone = property.user.numberPhone.replaceAll(RegExp(r'\D'), '');
+                              final phone = rawPhone.length < 10 ? '+591$rawPhone' : rawPhone;
+
                               if (phone.isNotEmpty) {
-                                _launchWhatsApp(phone);
+                                final mensaje = Uri.encodeComponent(
+                                  'Hola, estoy interesado en "${property.name}" ubicado en la zona "${property.zone}". ¿Podría brindarme más información? 🏠'
+                                );
+                                _launchWhatsAppConMensaje(phone, mensaje);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Número de contacto no disponible',
-                                    ),
-                                  ),
+                                  const SnackBar(content: Text('Número de contacto no disponible')),
                                 );
                               }
                             },
-                            icon: const FaIcon(
-                              FontAwesomeIcons.whatsapp,
-                              size: 18,
-                              color: Colors.white,
-                            ),
-                            label: const Text(
-                              'WhatsApp',
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 18),
+                            label: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF2D2D2D),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
                           ),
                           ElevatedButton.icon(
@@ -361,27 +320,16 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               if (await canLaunchUrl(url)) {
                                 await launchUrl(url);
                               } else {
-                                // Manejo de error si no se puede abrir la URL
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text('No se pudo abrir Google Maps')),
                                 );
                               }
                             },
-                            icon: const FaIcon(
-                              FontAwesomeIcons.mapLocationDot,
-                              size: 18,
-                              color: Colors.white,
-                            ),
-                            label:  Text(
-                              'Ubicación',
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            icon: const FaIcon(FontAwesomeIcons.mapLocationDot, color: Colors.white, size: 18),
+                            label: const Text('Ubicación', style: TextStyle(color: Colors.white)),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 104, 131, 196,),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
+                              backgroundColor: const Color.fromARGB(255, 104, 131, 196),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
                           ),
                         ],
@@ -395,102 +343,66 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
           },
         ),
       ),
-      bottomNavigationBar:
-          widget.idUsuario != null
-              ? BottomNavigationBar(
-                selectedItemColor: const Color.fromARGB(255, 176, 34, 34),
-                unselectedItemColor: const Color.fromARGB(221, 4, 43, 239),
-                backgroundColor: Colors.white,
-                showSelectedLabels: true,
-                showUnselectedLabels: true,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.edit),
-                    label: 'Editar',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.delete),
-                    label: 'Eliminar',
-                  ),
-                ],
-                onTap: (index) async {
-                  if (index == 0) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => FormScreen(
-                              property: widget.property,
-                              idUser: widget.idUsuario!,
-                              type: widget.property.idTipe,
-                            ),
+      bottomNavigationBar: widget.idUsuario != null
+          ? BottomNavigationBar(
+              selectedItemColor: const Color.fromARGB(255, 176, 34, 34),
+              unselectedItemColor: const Color.fromARGB(221, 4, 43, 239),
+              backgroundColor: Colors.white,
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Editar'),
+                BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Eliminar'),
+              ],
+              onTap: (index) async {
+                if (index == 0) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FormScreen(
+                        property: widget.property,
+                        idUser: widget.idUsuario!,
+                        type: widget.property.idTipe,
                       ),
-                    ).then((updated) {
-                      if (updated == true) {
-                        
-                        Navigator.pop(
-                          context,
-                          true,
-                        ); 
-                      }
-                    });
-                  } else if (index == 1) {
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder:
-                          (context) => AlertDialog(
-                            title: const Text('Confirmar eliminación'),
-                            content: const Text(
-                              '¿Estás seguro de que deseas eliminar esta propiedad?',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed:
-                                    () => Navigator.of(context).pop(false),
-                                child: const Text('Cancelar'),
-                              ),
-                              TextButton(
-                                onPressed:
-                                    () => Navigator.of(context).pop(true),
-                                child: const Text('Confirmar'),
-                              ),
-                            ],
+                    ),
+                  ).then((updated) {
+                    if (updated == true) Navigator.pop(context, true);
+                  });
+                } else if (index == 1) {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Confirmar eliminación'),
+                      content: const Text('¿Estás seguro de que deseas eliminar esta propiedad?'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+                        TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Confirmar')),
+                      ],
+                    ),
+                  );
+                  if (confirm == true) {
+                    try {
+                      final api = ApiService();
+                      await api.deleteProperty(widget.property.id);
+                      if (mounted) {
+                        Navigator.pop(context, true);
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Eliminación exitosa'),
+                            content: const Text('La propiedad ha sido eliminada correctamente.'),
+                            actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Aceptar'))],
                           ),
-                    );
-                    if (confirm == true) {
-                      try {
-                        final api = ApiService();
-                        await api.deleteProperty(widget.property.id);
-                        if (mounted) {
-                          Navigator.of(context).pop(true);
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: const Text('Eliminación exitosa'),
-                                  content: const Text(
-                                    'La propiedad ha sido eliminada correctamente.',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.of(context).pop(),
-                                      child: const Text('Aceptar'),
-                                    ),
-                                  ],
-                                ),
-                          );
-                        }
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error al eliminar: $e')),
                         );
                       }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error al eliminar: $e')),
+                      );
                     }
                   }
-                },
-              )
-              : null,
+                }
+              },
+            )
+          : null,
     );
   }
 }
