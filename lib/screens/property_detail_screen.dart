@@ -34,20 +34,24 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   }
 
   void _launchWhatsApp(String phone) async {
-    final whatsappUri = Uri.parse('whatsapp://send?phone=$phone');
-    final fallbackUri = Uri.parse('https://wa.me/$phone');
-
-    if (await canLaunchUrl(whatsappUri)) {
-      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
-    } else if (await canLaunchUrl(fallbackUri)) {
-      await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
+  final whatsappUri = Uri.parse('whatsapp://send?phone=$phone&text=Hola%20quiero%20más%20información');
+  
+  try {
+    await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+  } catch (e) {
+    // Intenta abrir versión web si falla
+    final webWhatsappUri = Uri.parse('https://wa.me/$phone?text=Hola%20quiero%20más%20información');
+    if (await canLaunchUrl(webWhatsappUri)) {
+      await launchUrl(webWhatsappUri, mode: LaunchMode.externalApplication);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se pudo abrir WhatsApp')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo abrir WhatsApp')),
+        );
+      }
     }
   }
-
+}
 
   void _launchMap(double lat, double lng) async {
     final mapUrl = Uri.parse(
@@ -321,7 +325,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                                   .replaceAll(RegExp(r'\D'), '');
                               final phone =
                                   rawPhone.length < 10
-                                      ? '591$rawPhone'
+                                      ? '+591$rawPhone'
                                       : rawPhone;
                               if (phone.isNotEmpty) {
                                 _launchWhatsApp(phone);
