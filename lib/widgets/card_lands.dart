@@ -25,52 +25,79 @@ class PropertyCard extends StatelessWidget {
           );
         },
         child: Card(
-          child: Row(
-            children: [
-              Expanded(
-                flex: 4,
-                child: Image.network(
-                  property.images.first.url,
-                  height: 120,
-                  fit: BoxFit.cover,
-                ),
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFEAF2F8),
+                  Color(0xFFCAD6E2),
+                  Color(0xFF9BA7B4),
+                  Color(0xFF7C8694),
+                  
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                flex: 6,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      property.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                      ),
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      bottomLeft: Radius.circular(12),
                     ),
-                    Text(
-                      property.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13),
+                    child: Image.network(
+                      property.images.first.url,
+                      height: 120,
+                      fit: BoxFit.cover,
                     ),
-                    Text('${property.size.toInt()} m²'),
-                    Row(
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\$${property.minPrice} - \$${property.maxPrice}",
+                          property.name,
                           style: const TextStyle(
-                            fontSize: 15,
                             fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
                           ),
+                        ),
+                        Text(
+                          property.description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                        Text('${property.size.toInt()} m²'),
+                        Row(
+                          children: [
+                            Text(
+                              "\$${property.minPrice} - \$${property.maxPrice}",
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              )
-            ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

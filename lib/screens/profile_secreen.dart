@@ -140,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.purpleAccent.withOpacity(0.4),
+                        color: const Color.fromARGB(255, 81, 135, 234).withOpacity(0.4),
                         blurRadius: 12,
                         offset: const Offset(0, 6),
                       ),

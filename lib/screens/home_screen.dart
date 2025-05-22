@@ -198,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: _onItemTapped,
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.black54,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 210, 210, 219),
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.landscape_sharp),

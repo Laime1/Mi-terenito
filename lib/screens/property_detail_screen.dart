@@ -189,158 +189,184 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.black,
         elevation: 0.5,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFFEAF2F8),
+                Color(0xFFCAD6E2),
+                Color(0xFF9BA7B4),
+                Color(0xFF7C8694),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Imagen principal
-                      Center(
-                        child: GestureDetector(
-                          onTap: () => _mostrarGaleria(currentIndex),
-                          child: Container(
-                            height: 200,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                selectedImage,
-                                fit: BoxFit.cover,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFEAF2F8),
+              Color(0xFFCAD6E2),
+              Color(0xFF9BA7B4),
+              Color(0xFF7C8694),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: GestureDetector(
+                            onTap: () => _mostrarGaleria(currentIndex),
+                            child: Container(
+                              height: 200,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  selectedImage,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Miniaturas
-                      SizedBox(
-                        height: 60,
-                        child: Center(
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: property.images.length,
-                            itemBuilder: (context, index) {
-                              final img = property.images[index].url;
-                              final isSelected = img == selectedImage;
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedImage = img;
-                                    currentIndex = index;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                                  child: Opacity(
-                                    opacity: isSelected ? 1.0 : 0.4,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: isSelected ? Colors.blue : Colors.transparent,
-                                          width: 2,
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          height: 60,
+                          child: Center(
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: property.images.length,
+                              itemBuilder: (context, index) {
+                                final img = property.images[index].url;
+                                final isSelected = img == selectedImage;
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedImage = img;
+                                      currentIndex = index;
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                    child: Opacity(
+                                      opacity: isSelected ? 1.0 : 0.4,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: isSelected ? Colors.blue : Colors.transparent,
+                                            width: 2,
+                                          ),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(6),
-                                        child: Image.network(
-                                          img,
-                                          height: 40,
-                                          width: 40,
-                                          fit: BoxFit.cover,
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(6),
+                                          child: Image.network(
+                                            img,
+                                            height: 40,
+                                            width: 40,
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        '\$ ${property.minPrice} - \$ ${property.maxPrice}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                        const SizedBox(height: 12),
+                        Text(
+                          '\$ ${property.minPrice} - \$ ${property.maxPrice}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Divider(thickness: 1, color: Colors.grey),
-                      const SizedBox(height: 8),
-                      _buildDetailRow('Descripción', property.description),
-                      _buildDetailRow('Tamaño', '${property.size} m²'),
-                      _buildDetailRow('Zona', property.zone),
-                      _buildDetailRow('Vendedor', '${property.user.name} - ${property.user.numberPhone}'),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              final rawPhone = property.user.numberPhone.replaceAll(RegExp(r'\D'), '');
-                              final phone = rawPhone.length < 10 ? '+591$rawPhone' : rawPhone;
+                        const SizedBox(height: 8),
+                        const Divider(thickness: 1, color: Colors.grey),
+                        const SizedBox(height: 8),
+                        _buildDetailRow('Descripción', property.description),
+                        _buildDetailRow('Tamaño', '${property.size} m²'),
+                        _buildDetailRow('Zona', property.zone),
+                        _buildDetailRow('Vendedor', '${property.user.name} - ${property.user.numberPhone}'),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                final rawPhone = property.user.numberPhone.replaceAll(RegExp(r'\D'), '');
+                                final phone = rawPhone.length < 10 ? '+591$rawPhone' : rawPhone;
 
-                              if (phone.isNotEmpty) {
-                                final mensaje = Uri.encodeComponent(
-                                  'Hola, estoy interesado en "${property.name}" ubicado en la zona "${property.zone}". ¿Podría brindarme más información? 🏠'
-                                );
-                                _launchWhatsAppConMensaje(phone, mensaje);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Número de contacto no disponible')),
-                                );
-                              }
-                            },
-                            icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 18),
-                            label: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2D2D2D),
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                if (phone.isNotEmpty) {
+                                  final mensaje = Uri.encodeComponent(
+                                    'Hola, estoy interesado en "${property.name}" ubicado en la zona "${property.zone}". ¿Podría brindarme más información? 🏠'
+                                  );
+                                  _launchWhatsAppConMensaje(phone, mensaje);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Número de contacto no disponible')),
+                                  );
+                                }
+                              },
+                              icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 18),
+                              label: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF2D2D2D),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              ),
                             ),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              final Uri url = Uri.parse(property.mapLocation);
-                              if (await canLaunchUrl(url)) {
-                                await launchUrl(url);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('No se pudo abrir Google Maps')),
-                                );
-                              }
-                            },
-                            icon: const FaIcon(FontAwesomeIcons.mapLocationDot, color: Colors.white, size: 18),
-                            label: const Text('Ubicación', style: TextStyle(color: Colors.white)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 104, 131, 196),
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            ElevatedButton.icon(
+                              onPressed: () async {
+                                final Uri url = Uri.parse(property.mapLocation);
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('No se pudo abrir Google Maps')),
+                                  );
+                                }
+                              },
+                              icon: const FaIcon(FontAwesomeIcons.mapLocationDot, color: Colors.white, size: 18),
+                              label: const Text('Ubicación', style: TextStyle(color: Colors.white)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 104, 131, 196),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
       bottomNavigationBar: widget.idUsuario != null
