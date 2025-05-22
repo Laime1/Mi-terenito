@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mi_terrenito/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -70,7 +71,6 @@ class LoginScreen extends StatelessWidget {
                   height: 300,
                 ),
                 const SizedBox(height: 30),
-
                 SizedBox(
                   width: 350,
                   height: 45,
@@ -89,7 +89,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-
                 SizedBox(
                   width: 350,
                   height: 45,
@@ -106,9 +105,7 @@ class LoginScreen extends StatelessWidget {
                           fillColor: Colors.white.withOpacity(0.0),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              value ? Icons.visibility_off : Icons.visibility,
-                            ),
+                            icon: Icon(value ? Icons.visibility_off : Icons.visibility),
                             onPressed: () {
                               obscurePassword.value = !value;
                             },
@@ -122,7 +119,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-
                 SizedBox(
                   width: 200,
                   child: ElevatedButton(
@@ -156,17 +152,17 @@ class LoginScreen extends StatelessWidget {
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'correo': correo, 'contraseña': contrasena}),
     );
-
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-
       if (data.containsKey('id_usuario')) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('id_usuario', data['id_usuario']);
         Navigator.pop(context, data['id_usuario']);
       } else {
         _showErrorDialog(context, 'Credenciales incorrectas');
       }
     } else {
-      _showErrorDialog(context, 'Error al iniciar sesión');
+      _showErrorDialog(context, '!Por favor trate otra vez¡');
     }
   }
 
@@ -175,7 +171,7 @@ class LoginScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Error'),
+          title: const Text('Credenciales Incorrectas'),
           content: Text(message),
           actions: <Widget>[
             TextButton(

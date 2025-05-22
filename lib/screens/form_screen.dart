@@ -45,7 +45,7 @@ class _FormScreenState extends State<FormScreen>{
 
   // Variables para imágenes
   final ImagePicker _picker = ImagePicker();
-  List<File> _selectedImages = [];
+  final List<File> _selectedImages = [];
 
 
   @override
@@ -87,7 +87,6 @@ class _FormScreenState extends State<FormScreen>{
         _priceMax.text.isEmpty ||
         _zoneController.text.isEmpty ||
         _selectedUbicacion == null ||
-        widget.type == null ||
         (_selectedImages.isEmpty && _existingImages.isEmpty) ) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor complete todos los campos')),

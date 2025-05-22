@@ -6,12 +6,11 @@ import '../models/property/property.dart';
 import '../services/api_service.dart';
 import 'houses.screens.dart';
 import 'lands.screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   final int? idUsuario;
-
   const HomeScreen({super.key, this.idUsuario});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -26,11 +25,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    idUsuario = widget.idUsuario;
-    estaLogueado = idUsuario != null;
-    futureProperties = estaLogueado
-        ? apiService.fetchPropertiesByUserId(idUsuario!)
-        : apiService.fetchProperties();
+    _loadUserId();
+  }
+
+  Future<void> _loadUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    idUsuario = prefs.getInt('id_usuario') ?? widget.idUsuario;
+    setState(() {
+      estaLogueado = idUsuario != null;
+      futureProperties = estaLogueado
+          ? apiService.fetchPropertiesByUserId(idUsuario!)
+          : apiService.fetchProperties();
+    });
   }
 
   void _onItemTapped(int index) {
@@ -42,7 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _cerrarSesion() {
+  void _cerrarSesion() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('id_usuario');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -198,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: _onItemTapped,
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.black54,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 210, 210, 219),
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.landscape_sharp),
