@@ -20,8 +20,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final Map<int, String> rolesMap = {
     1: 'Administrador',
-    2: 'Usuario',
-    3: 'Invitado',
+    2: 'Vendedor',
+    3: 'Premium',
+    4: 'Usuario',
   };
 
   late int idUsuario;

@@ -6,10 +6,10 @@ import '../models/property/property.dart';
 import '../services/api_service.dart';
 import 'houses.screens.dart';
 import 'lands.screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   final int? idUsuario;
-
   const HomeScreen({super.key, this.idUsuario});
 
   @override
@@ -26,23 +26,66 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    idUsuario = widget.idUsuario;
+    _loadUserId();
+  }
+  int? idRol;
+  Future<void> _loadUserId() async {
+  final prefs = await SharedPreferences.getInstance();
+  idUsuario = prefs.getInt('id_usuario') ?? widget.idUsuario;
+  idRol = prefs.getInt('id_rol'); // <-- Agrega esto
+  print('idUsuario: $idUsuario, idRol: $idRol');
+
+  setState(() {
     estaLogueado = idUsuario != null;
     futureProperties = estaLogueado
         ? apiService.fetchPropertiesByUserId(idUsuario!)
         : apiService.fetchProperties();
+  });
+}
+
+void _onItemTapped(int index) {
+  if (idRol == 2 && (index == 1 || index == 2)) { // Rol 2: vendedor
+    _mostrarDialogoPremium();
+    return;
+  }
+  setState(() {
+    selectedCategoryIndex = index;
+    futureProperties = estaLogueado
+        ? apiService.fetchPropertiesByUserId(idUsuario!)
+        : apiService.fetchProperties();
+  });
+}
+
+
+
+
+  void _mostrarDialogoPremium() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Acceso restringido"),
+          content: const Text("Debes convertirte en usuario premium para acceder a esta sección."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Aceptar"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void _onItemTapped(int index) {
+  void _cerrarSesion() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('id_usuario');
     setState(() {
-      selectedCategoryIndex = index;
-      futureProperties = estaLogueado
-          ? apiService.fetchPropertiesByUserId(idUsuario!)
-          : apiService.fetchProperties();
+      idUsuario = null;
+      estaLogueado = false;
+      selectedCategoryIndex = 0;
+      futureProperties = apiService.fetchProperties();
     });
-  }
-
-  void _cerrarSesion() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -53,10 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                );
               },
               child: const Text('Aceptar'),
             ),
@@ -66,18 +105,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _iniciarSesion() async {
-    final nuevoUsuarioId = await Navigator.push<int?>(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
-    if (nuevoUsuarioId != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen(idUsuario: nuevoUsuarioId)),
-      );
-    }
+ void _iniciarSesion() async {
+  final nuevoUsuarioId = await Navigator.push<int?>(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+  
+  if (nuevoUsuarioId != null) {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('id_usuario', nuevoUsuarioId);
+
+    // Obtener el id_rol desde la API y guardarlo
+    final userData = await apiService.getUserById(nuevoUsuarioId);
+    final idRol = userData['id_rol'];
+    await prefs.setInt('id_rol', idRol);
+
+    setState(() {
+      idUsuario = nuevoUsuarioId;
+      estaLogueado = true;
+      selectedCategoryIndex = 0;
+      futureProperties = apiService.fetchPropertiesByUserId(idUsuario!);
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             SizedBox(width: 6),
                             Text(
                               'Ver perfil',
-                              style: TextStyle(fontSize: 10,fontFamily: 'InknutAntiqua'),
+                              style: TextStyle(fontSize: 10, fontFamily: 'InknutAntiqua'),
                             ),
                           ],
                         ),
@@ -140,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             SizedBox(width: 6),
                             Text(
                               'Cerrar sesión',
-                              style: TextStyle(fontSize: 10, color: Colors.redAccent,fontFamily: 'InknutAntiqua'),
+                              style: TextStyle(fontSize: 10, color: Colors.redAccent, fontFamily: 'InknutAntiqua'),
                             ),
                           ],
                         ),
@@ -181,38 +229,40 @@ class _HomeScreenState extends State<HomeScreen> {
           if (snapshot.hasData) {
             final propiedadesFiltradas = snapshot.data!.where((p) => p.status != 0).toList();
             return screenBuilders[selectedCategoryIndex](propiedadesFiltradas);
-
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           return const Center(child: CircularProgressIndicator());
         },
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-    );
-  }
+      bottomNavigationBar: BottomNavigationBar(
+  currentIndex: selectedCategoryIndex,
+  onTap: _onItemTapped,
+  selectedItemColor: Colors.black,
+  unselectedItemColor: Colors.black54,
+  backgroundColor: const Color.fromARGB(255, 210, 210, 219),
+  items: [
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.landscape_sharp),
+      label: 'Terrenos',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(
+        Icons.home_work_sharp,
+        color: idUsuario == 2 ? Colors.grey : null,  // grisar icono si restringido
+      ),
+      label: 'Alquileres',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(
+        Icons.home_sharp,
+        color: idUsuario == 2 ? Colors.grey : null,
+      ),
+      label: 'Casas',
+    ),
+  ],
+),
 
-  BottomNavigationBar _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      currentIndex: selectedCategoryIndex,
-      onTap: _onItemTapped,
-      selectedItemColor: Colors.black,
-      unselectedItemColor: Colors.black54,
-      backgroundColor: const Color.fromARGB(255, 210, 210, 219),
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.landscape_sharp),
-          label: 'Terrenos',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_work_sharp),
-          label: 'Alquileres',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_sharp),
-          label: 'Casas',
-        ),
-      ],
     );
   }
 }

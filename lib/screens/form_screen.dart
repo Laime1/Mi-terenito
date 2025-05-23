@@ -45,7 +45,7 @@ class _FormScreenState extends State<FormScreen>{
 
   // Variables para imágenes
   final ImagePicker _picker = ImagePicker();
-  List<File> _selectedImages = [];
+  final List<File> _selectedImages = [];
 
 
   @override
@@ -87,7 +87,6 @@ class _FormScreenState extends State<FormScreen>{
         _priceMax.text.isEmpty ||
         _zoneController.text.isEmpty ||
         _selectedUbicacion == null ||
-        widget.type == null ||
         (_selectedImages.isEmpty && _existingImages.isEmpty) ) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor complete todos los campos')),
@@ -107,8 +106,9 @@ class _FormScreenState extends State<FormScreen>{
     }
 
     try {
-      int idUsuario = widget.idUser; 
+      int idUsuario = widget.idUser; // Cambiar por el id real del usuario
 
+      // Mostrar indicador de carga
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -116,7 +116,7 @@ class _FormScreenState extends State<FormScreen>{
       );
 
       if(widget.property == null) {
-     
+        // Crear la propiedad
         await _apiService.createProperty(
           _title.text,
           _description.text,
@@ -141,7 +141,7 @@ class _FormScreenState extends State<FormScreen>{
           _zoneController.text,
           _selectedUbicacion!.id,
           widget.type,
-          _selectedImages,
+          _selectedImages,// Solo las nuevas imágenes seleccionadas
           idUsuario,
           _mapUrlController.text,
         );
@@ -158,7 +158,14 @@ class _FormScreenState extends State<FormScreen>{
             ? 'Propiedad creada exitosamente'
             : 'Propiedad actualizada exitosamente')),
       );
+
+
+      // Limpiar formulario
       _clearForm();
+
+      // Opcional: regresar a la pantalla anterior
+      // Navigator.of(context).pop();
+
     } catch (e) {
       // Cerrar indicador de carga si está abierto
       if (Navigator.of(context).canPop()) {

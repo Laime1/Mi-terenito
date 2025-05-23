@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mi_terrenito/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -15,21 +16,21 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0, 
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
           splashColor: Colors.transparent,
-          highlightColor: Colors.transparent, 
+          highlightColor: Colors.transparent,
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
                 Color(0xFFEAF2F8),
-                Color(0xFFCAD6E2), 
-                Color(0xFF9BA7B4), 
-                Color(0xFF7C8694), 
+                Color(0xFFCAD6E2),
+                Color(0xFF9BA7B4),
+                Color(0xFF7C8694),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -41,10 +42,10 @@ class LoginScreen extends StatelessWidget {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFFEAF2F8), 
-              Color(0xFFCAD6E2), 
-              Color(0xFF9BA7B4), 
-              Color(0xFF7C8694), 
+              Color(0xFFEAF2F8),
+              Color(0xFFCAD6E2),
+              Color(0xFF9BA7B4),
+              Color(0xFF7C8694),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -70,8 +71,6 @@ class LoginScreen extends StatelessWidget {
                   height: 300,
                 ),
                 const SizedBox(height: 30),
-
-                // Campo correo reducido
                 SizedBox(
                   width: 350,
                   height: 45,
@@ -82,7 +81,8 @@ class LoginScreen extends StatelessWidget {
                       hintText: 'ingresar correo',
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.0),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -90,8 +90,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-
-                // Campo contraseña reducido
                 SizedBox(
                   width: 350,
                   height: 45,
@@ -106,11 +104,11 @@ class LoginScreen extends StatelessWidget {
                           hintText: 'ingresar contraseña',
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.0),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              value ? Icons.visibility_off : Icons.visibility,
-                            ),
+                            icon:
+                                Icon(value ? Icons.visibility_off : Icons.visibility),
                             onPressed: () {
                               obscurePassword.value = !value;
                             },
@@ -124,8 +122,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Botón de login
                 SizedBox(
                   width: 200,
                   child: ElevatedButton(
@@ -138,7 +134,8 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      login(context, correoController.text, contrasenaController.text);
+                      login(
+                          context, correoController.text, contrasenaController.text);
                     },
                     child: const Text("Iniciar sesión"),
                   ),
@@ -151,7 +148,8 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Future<void> login(BuildContext context, String correo, String contrasena) async {
+  Future<void> login(
+      BuildContext context, String correo, String contrasena) async {
     final url = Uri.parse('${ApiService.baseUrl}/usuarios/login/');
 
     final response = await http.post(
@@ -159,17 +157,17 @@ class LoginScreen extends StatelessWidget {
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'correo': correo, 'contraseña': contrasena}),
     );
-
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-
       if (data.containsKey('id_usuario')) {
-        Navigator.pop(context, data['id_usuario']);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('id_usuario', data['id_usuario']);
+        Navigator.pop(context, data['id_usuario']); // Devuelve el id_usuario
       } else {
         _showErrorDialog(context, 'Credenciales incorrectas');
       }
     } else {
-      _showErrorDialog(context, 'Error al iniciar sesión');
+      _showErrorDialog(context, '!Por favor trate otra vez¡');
     }
   }
 
@@ -178,7 +176,7 @@ class LoginScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Error'),
+          title: const Text('Credenciales Incorrectas'),
           content: Text(message),
           actions: <Widget>[
             TextButton(

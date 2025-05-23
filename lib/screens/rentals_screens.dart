@@ -1,4 +1,3 @@
-//import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
@@ -45,12 +44,29 @@ class _RentalsScreenState extends State<RentalsScreen> {
     });
   }
 
+  void _mostrarDialogoPremium(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Acceso restringido"),
+        content: const Text("Debes convertirte en usuario premium para acceder a esta funcionalidad."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Aceptar"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          Text('ALQUILERES', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
+          const Text('ALQUILERES', style: TextStyle(fontWeight: FontWeight.bold)),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -86,17 +102,26 @@ class _RentalsScreenState extends State<RentalsScreen> {
         ],
       ),
       floatingActionButton: widget.idUsuario != null
-          ? FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FormScreen(type: 3, idUser: widget.idUsuario!),
-                  ),
-                );
-              },
-            )
+          ? (widget.idUsuario == 2
+              ? FloatingActionButton(
+                  onPressed: () {
+                    _mostrarDialogoPremium(context);
+                  },
+                  backgroundColor: Colors.grey,
+                  child: const Icon(Icons.lock),
+                  tooltip: 'Acceso restringido',
+                )
+              : FloatingActionButton(
+                  child: const Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FormScreen(type: 3, idUser: widget.idUsuario!),
+                      ),
+                    );
+                  },
+                ))
           : null,
     );
   }
