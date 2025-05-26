@@ -62,11 +62,18 @@ class _RentalsScreenState extends State<RentalsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+      return Scaffold(
+      backgroundColor: const Color(0xFF163A10), // Fondo verde oscuro
       body: Column(
         children: [
           const SizedBox(height: 10),
-          const Text('ALQUILERES', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+         'ALQUILERES',
+         style: TextStyle(
+         fontWeight: FontWeight.bold,
+         color: Colors.white,
+         ),
+         ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -88,8 +95,14 @@ class _RentalsScreenState extends State<RentalsScreen> {
             child: filteredProperties.isEmpty
                 ? Center(
                     child: rentalProperties.isEmpty
-                        ? const Text('No cuentas con propiedades en esta área (Alquileres)')
-                        : const Text('No se encontraron resultados'),
+                    ? const Text(
+                   'No cuentas con propiedades en esta área (Alquileres)',
+                    style: TextStyle(color: Colors.white),
+                    )
+                    : const Text(
+                    'No se encontraron resultados',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   )
                 : ListView.builder(
                     itemCount: filteredProperties.length,

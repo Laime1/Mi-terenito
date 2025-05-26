@@ -55,10 +55,6 @@ void _onItemTapped(int index) {
         : apiService.fetchProperties();
   });
 }
-
-
-
-
   void _mostrarDialogoPremium() {
     showDialog(
       context: context,
@@ -137,7 +133,7 @@ void _onItemTapped(int index) {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF1E3D3D),
         elevation: 0.5,
         title: Row(
           children: [
@@ -150,7 +146,7 @@ void _onItemTapped(int index) {
             const Text(
               'CLICK HOUSE',
               style: TextStyle(
-                color: Colors.black,
+                color: Color.fromARGB(255, 243, 245, 246),
                 fontFamily: 'InknutAntiqua',
                 fontWeight: FontWeight.bold,
                 fontSize: 10,
@@ -212,7 +208,7 @@ void _onItemTapped(int index) {
                     child: const Text(
                       'Iniciar Sesión',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Color.fromARGB(255, 244, 232, 232),
                         fontWeight: FontWeight.bold,
                         fontFamily: 'InknutAntiqua',
                         fontSize: 10,
@@ -240,7 +236,7 @@ void _onItemTapped(int index) {
   onTap: _onItemTapped,
   selectedItemColor: Colors.black,
   unselectedItemColor: Colors.black54,
-  backgroundColor: const Color.fromARGB(255, 210, 210, 219),
+  backgroundColor: const Color(0xFF1E3D3D),
   items: [
     const BottomNavigationBarItem(
       icon: Icon(Icons.landscape_sharp),
@@ -249,14 +245,14 @@ void _onItemTapped(int index) {
     BottomNavigationBarItem(
       icon: Icon(
         Icons.home_work_sharp,
-        color: idUsuario == 2 ? Colors.grey : null,  // grisar icono si restringido
+        color: idRol == 2 ? Colors.grey : null,  
       ),
       label: 'Alquileres',
     ),
     BottomNavigationBarItem(
       icon: Icon(
         Icons.home_sharp,
-        color: idUsuario == 2 ? Colors.grey : null,
+        color: idRol == 2 ? Colors.grey : null,
       ),
       label: 'Casas',
     ),

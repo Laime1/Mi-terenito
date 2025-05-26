@@ -29,17 +29,7 @@ class PropertyCard extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Container(
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFFEAF2F8),
-                  Color(0xFFCAD6E2),
-                  Color(0xFF9BA7B4),
-                  Color(0xFF7C8694),
-                  
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: Color(0xFF1E3D3D), // Fondo verde oscuro
               borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
             child: Row(
@@ -72,15 +62,24 @@ class PropertyCard extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic,
+                            color: Colors.white, // Texto blanco
                           ),
                         ),
                         Text(
                           property.description,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 13),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.white, // Texto blanco
+                          ),
                         ),
-                        Text('${property.size.toInt()} m²'),
+                        Text(
+                          '${property.size.toInt()} m²',
+                          style: const TextStyle(
+                            color: Colors.white, // Texto blanco
+                          ),
+                        ),
                         Row(
                           children: [
                             Text(
@@ -88,6 +87,7 @@ class PropertyCard extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.white, // Texto blanco
                               ),
                             ),
                           ],

@@ -63,10 +63,17 @@ class _HousesScreenState extends State<HousesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+    backgroundColor: const Color(0xFF163A10), 
+       body: Column(
         children: [
           const SizedBox(height: 10),
-          const Text('CASAS', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+      'CASAS',
+       style: TextStyle(
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+    ),
+   ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -88,8 +95,14 @@ class _HousesScreenState extends State<HousesScreen> {
             child: filteredProperties.isEmpty
                 ? Center(
                     child: houseProperties.isEmpty
-                        ? const Text('No cuentas con propiedades en esta área (Casas)')
-                        : const Text('No se encontraron resultados'),
+                    ? const Text(
+                    'No cuentas con propiedades en esta área (Casas)',
+                     style: TextStyle(color: Colors.white),
+                    )
+                    : const Text(
+                    'No se encontraron resultados',
+                     style: TextStyle(color: Colors.white),
+                   ),
                   )
                 : ListView.builder(
                     itemCount: filteredProperties.length,

@@ -18,39 +18,17 @@ class LoginScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
         ),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFFEAF2F8),
-                Color(0xFFCAD6E2),
-                Color(0xFF9BA7B4),
-                Color(0xFF7C8694),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
+          color: const Color(0xFF6E6E6E), // Fondo fijo
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFEAF2F8),
-              Color(0xFFCAD6E2),
-              Color(0xFF9BA7B4),
-              Color(0xFF7C8694),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: const Color(0xFF6E6E6E), // Fondo gris oscuro
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
@@ -63,6 +41,7 @@ class LoginScreen extends StatelessWidget {
                     fontSize: 24,
                     fontFamily: 'InknutAntiqua',
                     fontWeight: FontWeight.w600,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -76,15 +55,26 @@ class LoginScreen extends StatelessWidget {
                   height: 45,
                   child: TextField(
                     controller: correoController,
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Correo',
+                      labelStyle: const TextStyle(color: Colors.white),
                       hintText: 'ingresar correo',
+                      hintStyle: const TextStyle(color: Colors.white70),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.0),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      fillColor: Colors.transparent,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Colors.white),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Colors.white),
                       ),
                     ),
                   ),
@@ -99,22 +89,35 @@ class LoginScreen extends StatelessWidget {
                       return TextField(
                         controller: contrasenaController,
                         obscureText: value,
+                        style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
+                          labelStyle: const TextStyle(color: Colors.white),
                           hintText: 'ingresar contraseña',
+                          hintStyle: const TextStyle(color: Colors.white70),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.0),
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          fillColor: Colors.transparent,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           suffixIcon: IconButton(
-                            icon:
-                                Icon(value ? Icons.visibility_off : Icons.visibility),
+                            icon: Icon(
+                              value ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.white,
+                            ),
                             onPressed: () {
                               obscurePassword.value = !value;
                             },
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.white),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.white),
                           ),
                         ),
                       );
@@ -134,8 +137,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      login(
-                          context, correoController.text, contrasenaController.text);
+                      login(context, correoController.text, contrasenaController.text);
                     },
                     child: const Text("Iniciar sesión"),
                   ),
