@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadUserId() async {
   final prefs = await SharedPreferences.getInstance();
   idUsuario = prefs.getInt('id_usuario') ?? widget.idUsuario;
-  idRol = prefs.getInt('id_rol'); // <-- Agrega esto
+  idRol = prefs.getInt('id_rol'); 
   print('idUsuario: $idUsuario, idRol: $idRol');
 
   setState(() {
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 void _onItemTapped(int index) {
-  if (idRol == 2 && (index == 1 || index == 2)) { // Rol 2: vendedor
+  if (idRol == 2 && (index == 1 || index == 2)) { // id 2
     _mostrarDialogoPremium();
     return;
   }
