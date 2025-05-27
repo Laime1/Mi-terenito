@@ -234,25 +234,31 @@ void _onItemTapped(int index) {
       bottomNavigationBar: BottomNavigationBar(
   currentIndex: selectedCategoryIndex,
   onTap: _onItemTapped,
-  selectedItemColor: Colors.black,
-  unselectedItemColor: Colors.black54,
-  backgroundColor: const Color(0xFF1E3D3D),
+        selectedItemColor: Color(0xFFFFD700),
+        unselectedItemColor: Colors.grey[400],
+        backgroundColor: const Color(0xFF1E3D3D),
   items: [
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.landscape_sharp),
+     BottomNavigationBarItem(
+       icon: _buildRoundedIcon(
+         icon: Icons.landscape_sharp,
+         isActive: selectedCategoryIndex == 0,
+         isRestricted: false,
+       ),
       label: 'Terrenos',
     ),
     BottomNavigationBarItem(
-      icon: Icon(
-        Icons.home_work_sharp,
-        color: idRol == 2 ? Colors.grey : null,  
+      icon: _buildRoundedIcon(
+        icon: Icons.home_work_sharp,
+        isActive: selectedCategoryIndex == 1,
+        isRestricted: idRol == 2,
       ),
       label: 'Alquileres',
     ),
     BottomNavigationBarItem(
-      icon: Icon(
-        Icons.home_sharp,
-        color: idRol == 2 ? Colors.grey : null,
+      icon: _buildRoundedIcon(
+        icon: Icons.home_sharp,
+        isActive: selectedCategoryIndex == 2,
+        isRestricted: idRol == 2,
       ),
       label: 'Casas',
     ),
@@ -261,4 +267,29 @@ void _onItemTapped(int index) {
 
     );
   }
+}
+
+Widget _buildRoundedIcon({
+  required IconData icon,
+  required bool isActive,
+  required bool isRestricted,
+}) {
+  final color = isRestricted
+      ? Colors.grey
+      : (isActive ? Color(0xFFFFD700) : Colors.grey[400]);
+
+  return Container(
+    padding: EdgeInsets.all(6),
+    decoration: isActive && !isRestricted
+        ? BoxDecoration(
+      color: Color(0xFFFFD700).withOpacity(0.2),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: Color(0xFFFFD700),
+        width: 1.5,
+      ),
+    )
+        : null,
+    child: Icon(icon, color: color),
+  );
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_terrenito/models/property/property.dart';
+import 'package:mi_terrenito/screens/home_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/property/location.dart';
@@ -164,7 +165,10 @@ class _FormScreenState extends State<FormScreen>{
       _clearForm();
 
       // Opcional: regresar a la pantalla anterior
-      // Navigator.of(context).pop();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) =>  HomeScreen()),
+      );
 
     } catch (e) {
       // Cerrar indicador de carga si está abierto
