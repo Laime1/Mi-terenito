@@ -45,10 +45,19 @@ class _LandsScreenState extends State<LandsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
+        return Scaffold(
+        backgroundColor: const Color(0xFF163A10), 
+        body: Column(
         children: [
-          Text('TERRENOS', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
+          const Text(
+          'TERRENOS',
+           style: TextStyle(
+           fontWeight: FontWeight.bold,
+           color: Colors.white,
+          ),
+          ),
+
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -70,10 +79,16 @@ class _LandsScreenState extends State<LandsScreen> {
             child: filteredProperties.isEmpty
                 ? Center(
                     child: landProperties.isEmpty
-                        ? const Text('No cuentas con propiedades en esta área (Terrenos)')
-                        : const Text('No se encontraron resultados'),
+                    ? const Text(
+                   'No cuentas con propiedades en esta área (Terrenos)',
+                    style: TextStyle(color: Colors.white),
+                    )
+                    : const Text(
+                    'No se encontraron resultados',
+                     style: TextStyle(color: Colors.white),
+                    ),
                   )
-                : ListView.builder(
+                : ListView.builder( 
                     itemCount: filteredProperties.length,
                     itemBuilder: (context, index) {
                       final property = filteredProperties[index];

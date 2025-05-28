@@ -163,7 +163,6 @@ class ApiService {
     }
   }
 
-  // Aquí está el método nuevo que pediste:
   Future<Map<String, dynamic>> getUserById(int idUsuario) async {
     final response = await http.get(Uri.parse('$baseUrl/usuarios/$idUsuario'));
 
