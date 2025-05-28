@@ -31,7 +31,7 @@ class _FormScreenState extends State<FormScreen>{
   final TextEditingController _priceMax = TextEditingController();
 
   final TextEditingController _mapLocationController = TextEditingController();
-  final TextEditingController _zoneController = TextEditingController();
+  //final TextEditingController _zoneController = TextEditingController();
   final TextEditingController _mapUrlController = TextEditingController();
 
 
@@ -66,7 +66,7 @@ class _FormScreenState extends State<FormScreen>{
     _description.text = property.description;
     _priceMin.text = property.minPrice.toString();
     _priceMax.text = property.maxPrice.toString();
-    _zoneController.text = property.zone;
+    //_zoneController.text = property.zone;
     _mapUrlController.text = property.mapLocation ?? '';
     _existingImages = property.images.map((img) => img.url).toList();
     property.location.id = property.idLocation;
@@ -86,7 +86,7 @@ class _FormScreenState extends State<FormScreen>{
         _description.text.isEmpty ||
         _priceMin.text.isEmpty ||
         _priceMax.text.isEmpty ||
-        _zoneController.text.isEmpty ||
+        //_zoneController.text.isEmpty ||
         _selectedUbicacion == null ||
         (_selectedImages.isEmpty && _existingImages.isEmpty) ) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -124,7 +124,7 @@ class _FormScreenState extends State<FormScreen>{
           tamano,
           precioMin,
           precioMax,
-          _zoneController.text,
+          //_zoneController.text,
           idUsuario,
           _selectedUbicacion!.id,
           widget.type,
@@ -139,7 +139,7 @@ class _FormScreenState extends State<FormScreen>{
           tamano,
           precioMin,
           precioMax,
-          _zoneController.text,
+          //_zoneController.text,
           _selectedUbicacion!.id,
           widget.type,
           _selectedImages,// Solo las nuevas imágenes seleccionadas
@@ -187,7 +187,7 @@ class _FormScreenState extends State<FormScreen>{
     _size.clear();
     _description.clear();
     _mapUrlController.clear();
-    _zoneController.clear();
+    //_zoneController.clear();
     setState(() {
       _selectedUbicacion = null;
       _selectedImages.clear();
@@ -273,7 +273,15 @@ class _FormScreenState extends State<FormScreen>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.property == null ? 'Registro de Propiedad' : 'Editar ${widget.property!.type.name}'),
+        title: Text(
+          widget.property == null
+              ? 'Registro de ${switch (widget.type) {
+            1 => 'Casa',
+            2 => 'Terreno',
+            _ => 'Alquiler',
+          }}'
+              : 'Editar ${widget.property!.type.name}',
+        ),
         centerTitle: true,
         // actions: [
         //   IconButton(
@@ -427,6 +435,7 @@ class _FormScreenState extends State<FormScreen>{
                   flex: 5,
                   child: TextFormField(
                     controller: _priceMin,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       border: OutlineInputBorder(gapPadding: 5),
@@ -440,6 +449,7 @@ class _FormScreenState extends State<FormScreen>{
                   flex: 5,
                     child:  TextFormField(
                       controller: _priceMax,
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         border: OutlineInputBorder(gapPadding: 5),
@@ -541,16 +551,16 @@ class _FormScreenState extends State<FormScreen>{
 
             const SizedBox(height: 16),
 
-            TextFormField(
-              controller: _zoneController,
-              maxLines: 1,
-              decoration: const InputDecoration(
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                border: OutlineInputBorder(gapPadding: 5),
-                labelText: 'Zona',
-              ),
-              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
-            ),
+            // TextFormField(
+            //   controller: _zoneController,
+            //   maxLines: 1,
+            //   decoration: const InputDecoration(
+            //     floatingLabelBehavior: FloatingLabelBehavior.always,
+            //     border: OutlineInputBorder(gapPadding: 5),
+            //     labelText: 'Zona',
+            //   ),
+            //   validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+            // ),
 
             const SizedBox(height: 32),
             Row(
