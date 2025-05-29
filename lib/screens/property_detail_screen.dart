@@ -323,7 +323,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
 
                                 if (phone.isNotEmpty) {
                                   final mensaje = Uri.encodeComponent(
-                                    'Hola, estoy interesado en "${property.name}" ubicado en la zona "${property.zone}". ¿Podría brindarme más información? 🏠'
+                                    'Hola, estoy interesado en "${property.name}" ubicado en "${property.mapLocation}". ¿Podría brindarme más información? 🏠'
                                   );
                                   _launchWhatsAppConMensaje(phone, mensaje);
                                 } else {
