@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/models/app_colors.dart';
 import 'package:mi_terrenito/screens/login.screen.dart';
 import 'package:mi_terrenito/screens/profile_secreen.dart';
 import 'package:mi_terrenito/screens/rentals_screens.dart';
@@ -118,10 +119,11 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false,
+            (route) => false,
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E3D3D),
+        backgroundColor: AppColors.appBarBackground,
         elevation: 0.5,
         title: Row(
           children: [
@@ -146,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const Text(
               'CLICK HOUSE',
               style: TextStyle(
-                color: Color.fromARGB(255, 243, 245, 246),
+                color: AppColors.gold,
                 fontFamily: 'InknutAntiqua',
                 fontWeight: FontWeight.bold,
                 fontSize: 10,
@@ -172,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             nombreUsuario,
                             style: const TextStyle(
-                              color: Colors.black,
+                              color: AppColors.gold,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'InknutAntiqua',
                               fontSize: 12,
@@ -232,16 +234,38 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
           ),
         ],
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Color(0xFFD4AF37)),
       ),
       body: FutureBuilder<List<Property>>(
         future: futureProperties,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final propiedadesFiltradas = snapshot.data!.where((p) => p.status != 0).toList();
+            final propiedadesFiltradas =
+                snapshot.data!.where((p) => p.status != 0).toList();
             return screenBuilders[selectedCategoryIndex](propiedadesFiltradas);
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            Future.delayed(const Duration(seconds: 5), () {
+              setState(() {
+                futureProperties = estaLogueado
+                    ? apiService.fetchPropertiesByUserId(idUsuario!)
+                    : apiService.fetchProperties();
+              });
+            });
+
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Error al obtener propiedades. Por favor, espere...',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 12),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            );
           }
           return const Center(child: CircularProgressIndicator());
         },
@@ -249,25 +273,31 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedCategoryIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black54,
-        backgroundColor: const Color(0xFF1E3D3D),
+        selectedItemColor: Color(0xFFFFD700),
+        unselectedItemColor: AppColors.appBarText,
+        backgroundColor: AppColors.appBarBackground,
         items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.landscape_sharp),
+          BottomNavigationBarItem(
+            icon: _buildRoundedIcon(
+              icon: Icons.landscape_sharp,
+              isActive: selectedCategoryIndex == 0,
+              isRestricted: false,
+            ),
             label: 'Terrenos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home_work_sharp,
-              color: idRol == 2 ? Colors.grey : null,
+            icon: _buildRoundedIcon(
+              icon: Icons.home_work_sharp,
+              isActive: selectedCategoryIndex == 1,
+              isRestricted: idRol == 2,
             ),
             label: 'Alquileres',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home_sharp,
-              color: idRol == 2 ? Colors.grey : null,
+            icon: _buildRoundedIcon(
+              icon: Icons.home_sharp,
+              isActive: selectedCategoryIndex == 2,
+              isRestricted: idRol == 2,
             ),
             label: 'Casas',
           ),
@@ -275,4 +305,28 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+Widget _buildRoundedIcon({
+  required IconData icon,
+  required bool isActive,
+  required bool isRestricted,
+}) {
+  final color =
+      isRestricted
+          ? Colors.grey
+          : (isActive ? Color(0xFFFFD700) : Colors.grey[400]);
+
+  return Container(
+    padding: EdgeInsets.all(6),
+    decoration:
+        isActive && !isRestricted
+            ? BoxDecoration(
+              color: AppColors.gold.withAlpha(50),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.gold, width: 1.5),
+            )
+            : null,
+    child: Icon(icon, color: color),
+  );
 }

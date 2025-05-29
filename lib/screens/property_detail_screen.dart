@@ -310,7 +310,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                         const SizedBox(height: 8),
                         _buildDetailRow('Descripción', property.description),
                         _buildDetailRow('Tamaño', '${property.size} m²'),
-                        _buildDetailRow('Zona', property.zone),
+                        //_buildDetailRow('Zona', property.zone),
                         _buildDetailRow('Vendedor', '${property.user.name} - ${property.user.numberPhone}'),
                         const SizedBox(height: 16),
                         Row(
@@ -323,7 +323,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
 
                                 if (phone.isNotEmpty) {
                                   final mensaje = Uri.encodeComponent(
-                                    'Hola, estoy interesado en "${property.name}" ubicado en "${property.mapLocation}". ¿Podría brindarme más información? 🏠'
+                                      'Hola, estoy interesado en "${property.name}" ubicado en "${property.mapLocation}". ¿Podría brindarme más información? 🏠'
                                   );
                                   _launchWhatsAppConMensaje(phone, mensaje);
                                 } else {

@@ -45,7 +45,7 @@ class ApiService {
       double tamano,
       double precioMin,
       double precioMax,
-      String zona,
+     // String zona,
       int idUsuario,
       int idUbicacion,
       int idTipo,
@@ -64,7 +64,7 @@ class ApiService {
     request.fields['tamano'] = tamano.toString();
     request.fields['precio_min'] = precioMin.toString();
     request.fields['precio_max'] = precioMax.toString();
-    request.fields['zona'] = zona;
+    //request.fields['zona'] = zona;
     request.fields['id_usuario'] = idUsuario.toString();
     request.fields['id_ubicacion'] = idUbicacion.toString();
     request.fields['id_tipo'] = idTipo.toString();
@@ -105,7 +105,7 @@ class ApiService {
       double tamano,
       double precioMin,
       double precioMax,
-      String zona,
+      //String zona,
       int idUbicacion,
       int idTipo,
       List<File> nuevasImagenes,
@@ -123,7 +123,7 @@ class ApiService {
     request.fields['tamano'] = tamano.toString();
     request.fields['precio_min'] = precioMin.toString();
     request.fields['precio_max'] = precioMax.toString();
-    request.fields['zona'] = zona;
+    //request.fields['zona'] = zona;
     request.fields['id_usuario'] = idUsuario.toString(); // Asume que tienes acceso al idUsuario
     request.fields['id_ubicacion'] = idUbicacion.toString();
     request.fields['id_tipo'] = idTipo.toString();
