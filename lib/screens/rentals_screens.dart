@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/app_colors.dart';
 import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
 import 'form_screen.dart';
@@ -63,7 +64,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-      backgroundColor: const Color(0xFF163A10), // Fondo verde oscuro
+        backgroundColor: AppColors.bodyBackground,
       body: Column(
         children: [
           const SizedBox(height: 10),
@@ -71,7 +72,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
          'ALQUILERES',
          style: TextStyle(
          fontWeight: FontWeight.bold,
-         color: Colors.white,
+           color: AppColors.gold,
          ),
          ),
           Padding(

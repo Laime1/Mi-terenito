@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/property/property.dart';
 import '../screens/property_detail_screen.dart';
+import 'package:mi_terrenito/models/app_colors.dart';
+
 
 class PropertyCard extends StatelessWidget {
   final Property property;
@@ -28,8 +30,8 @@ class PropertyCard extends StatelessWidget {
           elevation: 4,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF1E3D3D), // Fondo verde oscuro
+            decoration:  BoxDecoration(
+              color: AppColors.cardBackground, // Fondo verde oscuro
               borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
             child: Row(
@@ -62,7 +64,7 @@ class PropertyCard extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic,
-                            color: Colors.white, // Texto blanco
+                            color: AppColors.cardText, // Texto blanco
                           ),
                         ),
                         Text(
@@ -71,13 +73,13 @@ class PropertyCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 13,
-                            color: Colors.white, // Texto blanco
+                            color: AppColors.cardText, // Texto blanco
                           ),
                         ),
                         Text(
                           '${property.size.toInt()} m²',
                           style: const TextStyle(
-                            color: Colors.white, // Texto blanco
+                            color: AppColors.cardText, // Texto blanco
                           ),
                         ),
                         Row(
@@ -87,7 +89,7 @@ class PropertyCard extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white, // Texto blanco
+                                color: AppColors.cardText, // Texto blanco
                               ),
                             ),
                           ],

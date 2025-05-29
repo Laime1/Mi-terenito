@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/models/app_colors.dart';
 import 'package:mi_terrenito/screens/login.screen.dart';
 import 'package:mi_terrenito/screens/profile_secreen.dart';
 import 'package:mi_terrenito/screens/rentals_screens.dart';
@@ -28,40 +29,47 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _loadUserId();
   }
+
   int? idRol;
   Future<void> _loadUserId() async {
-  final prefs = await SharedPreferences.getInstance();
-  idUsuario = prefs.getInt('id_usuario') ?? widget.idUsuario;
-  idRol = prefs.getInt('id_rol'); 
-  print('idUsuario: $idUsuario, idRol: $idRol');
+    final prefs = await SharedPreferences.getInstance();
+    idUsuario = prefs.getInt('id_usuario') ?? widget.idUsuario;
+    idRol = prefs.getInt('id_rol');
+    print('idUsuario: $idUsuario, idRol: $idRol');
 
-  setState(() {
-    estaLogueado = idUsuario != null;
-    futureProperties = estaLogueado
-        ? apiService.fetchPropertiesByUserId(idUsuario!)
-        : apiService.fetchProperties();
-  });
-}
-
-void _onItemTapped(int index) {
-  if (idRol == 2 && (index == 1 || index == 2)) { // id 2
-    _mostrarDialogoPremium();
-    return;
+    setState(() {
+      estaLogueado = idUsuario != null;
+      futureProperties =
+          estaLogueado
+              ? apiService.fetchPropertiesByUserId(idUsuario!)
+              : apiService.fetchProperties();
+    });
   }
-  setState(() {
-    selectedCategoryIndex = index;
-    futureProperties = estaLogueado
-        ? apiService.fetchPropertiesByUserId(idUsuario!)
-        : apiService.fetchProperties();
-  });
-}
+
+  void _onItemTapped(int index) {
+    if (idRol == 2 && (index == 1 || index == 2)) {
+      // id 2
+      _mostrarDialogoPremium();
+      return;
+    }
+    setState(() {
+      selectedCategoryIndex = index;
+      futureProperties =
+          estaLogueado
+              ? apiService.fetchPropertiesByUserId(idUsuario!)
+              : apiService.fetchProperties();
+    });
+  }
+
   void _mostrarDialogoPremium() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Acceso restringido"),
-          content: const Text("Debes convertirte en usuario premium para acceder a esta sección."),
+          content: const Text(
+            "Debes convertirte en usuario premium para acceder a esta sección.",
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -101,27 +109,29 @@ void _onItemTapped(int index) {
     );
   }
 
- void _iniciarSesion() async {
-  final nuevoUsuarioId = await Navigator.push<int?>(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
-  
-  if (nuevoUsuarioId != null) {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('id_usuario', nuevoUsuarioId);
+  void _iniciarSesion() async {
+    final nuevoUsuarioId = await Navigator.push<int?>(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
 
-    // Obtener el id_rol desde la API y guardarlo
-    final userData = await apiService.getUserById(nuevoUsuarioId);
-    final idRol = userData['id_rol'];
-    await prefs.setInt('id_rol', idRol);
+    if (nuevoUsuarioId != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('id_usuario', nuevoUsuarioId);
 
-    setState(() {
-      idUsuario = nuevoUsuarioId;
-      estaLogueado = true;
-      selectedCategoryIndex = 0;
-      futureProperties = apiService.fetchPropertiesByUserId(idUsuario!);
-    });
+      // Obtener el id_rol desde la API y guardarlo
+      final userData = await apiService.getUserById(nuevoUsuarioId);
+      final idRol = userData['id_rol'];
+      await prefs.setInt('id_rol', idRol);
+
+      setState(() {
+        idUsuario = nuevoUsuarioId;
+        estaLogueado = true;
+        selectedCategoryIndex = 0;
+        futureProperties = apiService.fetchPropertiesByUserId(idUsuario!);
+      });
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +143,7 @@ void _onItemTapped(int index) {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E3D3D),
+        backgroundColor: AppColors.appBarBackground,
         elevation: 0.5,
         title: Row(
           children: [
@@ -146,7 +156,7 @@ void _onItemTapped(int index) {
             const Text(
               'CLICK HOUSE',
               style: TextStyle(
-                color: Color.fromARGB(255, 243, 245, 246),
+                color: AppColors.gold,
                 fontFamily: 'InknutAntiqua',
                 fontWeight: FontWeight.bold,
                 fontSize: 10,
@@ -157,73 +167,97 @@ void _onItemTapped(int index) {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: estaLogueado
-                ? PopupMenuButton<String>(
-                    icon: const Icon(Icons.person_2_rounded, color: Colors.black, size: 24),
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      PopupMenuItem<String>(
-                        value: 'perfil',
-                        height: 36,
-                        child: Row(
-                          children: const [
-                            Icon(Icons.person, color: Colors.black54, size: 18),
-                            SizedBox(width: 6),
-                            Text(
-                              'Ver perfil',
-                              style: TextStyle(fontSize: 10, fontFamily: 'InknutAntiqua'),
+            child:
+                estaLogueado
+                    ? PopupMenuButton<String>(
+                      icon: const Icon(
+                        Icons.person_2_rounded,
+                        color: Colors.black,
+                        size: 24,
+                      ),
+                      itemBuilder:
+                          (BuildContext context) => <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'perfil',
+                              height: 36,
+                              child: Row(
+                                children: const [
+                                  Icon(
+                                    Icons.person,
+                                    color: Colors.black54,
+                                    size: 18,
+                                  ),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'Ver perfil',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontFamily: 'InknutAntiqua',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'cerrar',
+                              height: 36,
+                              child: Row(
+                                children: const [
+                                  Icon(
+                                    Icons.logout,
+                                    color: Colors.redAccent,
+                                    size: 18,
+                                  ),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'Cerrar sesión',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.redAccent,
+                                      fontFamily: 'InknutAntiqua',
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
-                        ),
-                      ),
-                      PopupMenuItem<String>(
-                        value: 'cerrar',
-                        height: 36,
-                        child: Row(
-                          children: const [
-                            Icon(Icons.logout, color: Colors.redAccent, size: 18),
-                            SizedBox(width: 6),
-                            Text(
-                              'Cerrar sesión',
-                              style: TextStyle(fontSize: 10, color: Colors.redAccent, fontFamily: 'InknutAntiqua'),
+                      onSelected: (String result) {
+                        if (result == 'perfil') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      ProfileScreen(idUsuario: idUsuario!),
                             ),
-                          ],
+                          );
+                        } else if (result == 'cerrar') {
+                          _cerrarSesion();
+                        }
+                      },
+                    )
+                    : TextButton(
+                      onPressed: _iniciarSesion,
+                      child: const Text(
+                        'Iniciar Sesión',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 244, 232, 232),
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'InknutAntiqua',
+                          fontSize: 10,
                         ),
-                      ),
-                    ],
-                    onSelected: (String result) {
-                      if (result == 'perfil') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfileScreen(idUsuario: idUsuario!),
-                          ),
-                        );
-                      } else if (result == 'cerrar') {
-                        _cerrarSesion();
-                      }
-                    },
-                  )
-                : TextButton(
-                    onPressed: _iniciarSesion,
-                    child: const Text(
-                      'Iniciar Sesión',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 244, 232, 232),
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'InknutAntiqua',
-                        fontSize: 10,
                       ),
                     ),
-                  ),
           ),
         ],
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Color(0xFFD4AF37)),
       ),
       body: FutureBuilder<List<Property>>(
         future: futureProperties,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final propiedadesFiltradas = snapshot.data!.where((p) => p.status != 0).toList();
+            final propiedadesFiltradas =
+                snapshot.data!.where((p) => p.status != 0).toList();
             return screenBuilders[selectedCategoryIndex](propiedadesFiltradas);
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -232,39 +266,38 @@ void _onItemTapped(int index) {
         },
       ),
       bottomNavigationBar: BottomNavigationBar(
-  currentIndex: selectedCategoryIndex,
-  onTap: _onItemTapped,
+        currentIndex: selectedCategoryIndex,
+        onTap: _onItemTapped,
         selectedItemColor: Color(0xFFFFD700),
-        unselectedItemColor: Colors.grey[400],
-        backgroundColor: const Color(0xFF1E3D3D),
-  items: [
-     BottomNavigationBarItem(
-       icon: _buildRoundedIcon(
-         icon: Icons.landscape_sharp,
-         isActive: selectedCategoryIndex == 0,
-         isRestricted: false,
-       ),
-      label: 'Terrenos',
-    ),
-    BottomNavigationBarItem(
-      icon: _buildRoundedIcon(
-        icon: Icons.home_work_sharp,
-        isActive: selectedCategoryIndex == 1,
-        isRestricted: idRol == 2,
+        unselectedItemColor: AppColors.appBarText,
+        backgroundColor: AppColors.appBarBackground,
+        items: [
+          BottomNavigationBarItem(
+            icon: _buildRoundedIcon(
+              icon: Icons.landscape_sharp,
+              isActive: selectedCategoryIndex == 0,
+              isRestricted: false,
+            ),
+            label: 'Terrenos',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildRoundedIcon(
+              icon: Icons.home_work_sharp,
+              isActive: selectedCategoryIndex == 1,
+              isRestricted: idRol == 2,
+            ),
+            label: 'Alquileres',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildRoundedIcon(
+              icon: Icons.home_sharp,
+              isActive: selectedCategoryIndex == 2,
+              isRestricted: idRol == 2,
+            ),
+            label: 'Casas',
+          ),
+        ],
       ),
-      label: 'Alquileres',
-    ),
-    BottomNavigationBarItem(
-      icon: _buildRoundedIcon(
-        icon: Icons.home_sharp,
-        isActive: selectedCategoryIndex == 2,
-        isRestricted: idRol == 2,
-      ),
-      label: 'Casas',
-    ),
-  ],
-),
-
     );
   }
 }
@@ -274,22 +307,21 @@ Widget _buildRoundedIcon({
   required bool isActive,
   required bool isRestricted,
 }) {
-  final color = isRestricted
-      ? Colors.grey
-      : (isActive ? Color(0xFFFFD700) : Colors.grey[400]);
+  final color =
+      isRestricted
+          ? Colors.grey
+          : (isActive ? Color(0xFFFFD700) : Colors.grey[400]);
 
   return Container(
     padding: EdgeInsets.all(6),
-    decoration: isActive && !isRestricted
-        ? BoxDecoration(
-      color: Color(0xFFFFD700).withOpacity(0.2),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(
-        color: Color(0xFFFFD700),
-        width: 1.5,
-      ),
-    )
-        : null,
+    decoration:
+        isActive && !isRestricted
+            ? BoxDecoration(
+              color: AppColors.gold.withAlpha(50),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.gold, width: 1.5),
+            )
+            : null,
     child: Icon(icon, color: color),
   );
 }
