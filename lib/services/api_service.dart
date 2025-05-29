@@ -6,6 +6,7 @@ import '../models/property/property.dart';
 
 class ApiService {
   static const String baseUrl = 'https://api-terrenito-nodejs.onrender.com/api';
+  
 
   Future<List<Property>> fetchProperties() async {
     final response = await http.get(Uri.parse('$baseUrl/propiedades'));
@@ -44,7 +45,7 @@ class ApiService {
       double tamano,
       double precioMin,
       double precioMax,
-      String zona,
+     // String zona,
       int idUsuario,
       int idUbicacion,
       int idTipo,
@@ -63,7 +64,7 @@ class ApiService {
     request.fields['tamano'] = tamano.toString();
     request.fields['precio_min'] = precioMin.toString();
     request.fields['precio_max'] = precioMax.toString();
-    request.fields['zona'] = zona;
+    //request.fields['zona'] = zona;
     request.fields['id_usuario'] = idUsuario.toString();
     request.fields['id_ubicacion'] = idUbicacion.toString();
     request.fields['id_tipo'] = idTipo.toString();
@@ -104,7 +105,7 @@ class ApiService {
       double tamano,
       double precioMin,
       double precioMax,
-      String zona,
+      //String zona,
       int idUbicacion,
       int idTipo,
       List<File> nuevasImagenes,
@@ -122,7 +123,7 @@ class ApiService {
     request.fields['tamano'] = tamano.toString();
     request.fields['precio_min'] = precioMin.toString();
     request.fields['precio_max'] = precioMax.toString();
-    request.fields['zona'] = zona;
+    //request.fields['zona'] = zona;
     request.fields['id_usuario'] = idUsuario.toString(); // Asume que tienes acceso al idUsuario
     request.fields['id_ubicacion'] = idUbicacion.toString();
     request.fields['id_tipo'] = idTipo.toString();
@@ -163,6 +164,7 @@ class ApiService {
     }
   }
 
+  // Aquí está el método nuevo que pediste:
   Future<Map<String, dynamic>> getUserById(int idUsuario) async {
     final response = await http.get(Uri.parse('$baseUrl/usuarios/$idUsuario'));
 

@@ -11,7 +11,7 @@ class Property{
   final String description;
   final double minPrice;
   final double maxPrice;
-  final String zone;
+  //final String zone;
   final String mapLocation;
   final int status;
   final DateTime createdAt;
@@ -33,7 +33,7 @@ class Property{
     required this.description,
     required this.minPrice,
     required this.maxPrice,
-    required this.zone,
+    //required this.zone,
     required this.mapLocation,
     required this.status,
     required this.createdAt,
@@ -57,7 +57,7 @@ class Property{
        description: json['descripcion'] ?? '',
        minPrice: double.tryParse(json['precio_min']?.toString() ?? '0') ?? 0.0,
        maxPrice: double.tryParse(json['precio_max']?.toString() ?? '0') ?? 0.0,
-       zone: json['zona'] ?? '',
+       //zone: json['zona'] ?? '',
        //location: json['location'] ?? '',
        mapLocation: json['Enlace_ubicacion'] ?? '',
        id: json['id_propiedad'] ?? 0,

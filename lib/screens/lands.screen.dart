@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/models/app_colors.dart';
 import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
 import 'form_screen.dart';
@@ -46,7 +47,7 @@ class _LandsScreenState extends State<LandsScreen> {
   @override
   Widget build(BuildContext context) {
         return Scaffold(
-        backgroundColor: const Color(0xFF163A10), 
+        backgroundColor: AppColors.bodyBackground,
         body: Column(
         children: [
           const SizedBox(height: 10),
@@ -54,7 +55,7 @@ class _LandsScreenState extends State<LandsScreen> {
           'TERRENOS',
            style: TextStyle(
            fontWeight: FontWeight.bold,
-           color: Colors.white,
+           color: AppColors.gold,
           ),
           ),
 
