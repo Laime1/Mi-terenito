@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:mi_terrenito/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,11 +25,11 @@ class LoginScreen extends StatelessWidget {
           highlightColor: Colors.transparent,
         ),
         flexibleSpace: Container(
-          color: const Color(0xFF6E6E6E), // Fondo fijo
+          color: const Color(0xFF6E6E6E),
         ),
       ),
       body: Container(
-        color: const Color(0xFF6E6E6E), // Fondo gris oscuro
+        color: const Color(0xFF6E6E6E),
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
@@ -90,6 +91,9 @@ class LoginScreen extends StatelessWidget {
                         controller: contrasenaController,
                         obscureText: value,
                         style: const TextStyle(color: Colors.white),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
                           labelStyle: const TextStyle(color: Colors.white),
@@ -164,7 +168,7 @@ class LoginScreen extends StatelessWidget {
       if (data.containsKey('id_usuario')) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt('id_usuario', data['id_usuario']);
-        Navigator.pop(context, data['id_usuario']); // Devuelve el id_usuario
+        Navigator.pop(context, data['id_usuario']);
       } else {
         _showErrorDialog(context, 'Credenciales incorrectas');
       }
