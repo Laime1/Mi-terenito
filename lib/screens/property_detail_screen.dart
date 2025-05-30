@@ -255,20 +255,21 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                           height: 60,
                           child: Center(
                             child: ListView.builder(
+                              shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
                               itemCount: property.images.length,
                               itemBuilder: (context, index) {
                                 final img = property.images[index].url;
                                 final isSelected = img == selectedImage;
-                                return GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedImage = img;
-                                      currentIndex = index;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedImage = img;
+                                        currentIndex = index;
+                                      });
+                                    },
                                     child: Opacity(
                                       opacity: isSelected ? 1.0 : 0.4,
                                       child: Container(
@@ -296,6 +297,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             ),
                           ),
                         ),
+
                         const SizedBox(height: 12),
                         Text(
                           '\$ ${property.minPrice} - \$ ${property.maxPrice}',
