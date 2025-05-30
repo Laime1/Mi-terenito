@@ -261,31 +261,43 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               itemBuilder: (context, index) {
                                 final img = property.images[index].url;
                                 final isSelected = img == selectedImage;
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        selectedImage = img;
-                                        currentIndex = index;
-                                      });
-                                    },
-                                    child: Opacity(
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedImage = img;
+                                      currentIndex = index;
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                                    child: AnimatedOpacity(
+                                      duration: const Duration(milliseconds: 300),
                                       opacity: isSelected ? 1.0 : 0.4,
-                                      child: Container(
+                                      child: AnimatedContainer(
+                                        duration: const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                        height: isSelected ? 50 : 40,
+                                        width: isSelected ? 50 : 40,
                                         decoration: BoxDecoration(
                                           border: Border.all(
                                             color: isSelected ? Colors.blue : Colors.transparent,
                                             width: 2,
                                           ),
-                                          borderRadius: BorderRadius.circular(8),
+                                          boxShadow: isSelected
+                                              ? [
+                                                  BoxShadow(
+                                                    color: Colors.blue.withOpacity(0.3),
+                                                    blurRadius: 6,
+                                                    offset: const Offset(0, 3),
+                                                  ),
+                                                ]
+                                              : [],
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(6),
+                                          borderRadius: BorderRadius.circular(8),
                                           child: Image.network(
                                             img,
-                                            height: 40,
-                                            width: 40,
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -293,7 +305,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                                     ),
                                   ),
                                 );
-                              },
+                              }
+
                             ),
                           ),
                         ),
