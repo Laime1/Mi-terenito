@@ -261,16 +261,18 @@ class _FormScreenState extends State<FormScreen>{
     });
   }
 
-
-
-
-
   String _getDisplayText(Location location) {
     return '${location.detailLocation} - ${location.province}';
   }
 
   @override
   Widget build(BuildContext context) {
+    const gradientColors = [
+      Color(0xFFEAF2F8),
+      Color(0xFFCAD6E2),
+      Color(0xFF9BA7B4),
+      Color(0xFF7C8694),
+    ];
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -283,306 +285,317 @@ class _FormScreenState extends State<FormScreen>{
               : 'Editar ${widget.property!.type.name}',
         ),
         centerTitle: true,
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.close),
-        //     onPressed: _cancelForm,
-        //   ),
-        // ],
+        elevation: 0,
+        backgroundColor: Color(0xFFEAF2F8) ,
       ),
-      body: SingleChildScrollView(
-        padding:  EdgeInsets.all(32),
-        child: Column(
-          children: [
-            // Sección de imágenes
-            Text(
-              'Imágenes de la propiedad (Máx. 3)',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 10),
-            // Mostrar imágenes existentes (solo en edición)
-            if (_existingImages.isNotEmpty)
-              SizedBox(
-                height: 120,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _existingImages.length,
-                  itemBuilder: (context, index) {
-                    return Stack(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          margin: const EdgeInsets.only(right: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            image: DecorationImage(
-                              image: NetworkImage(_existingImages[index]),
-                              fit: BoxFit.cover,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradientColors,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding:  EdgeInsets.all(32),
+          child: Column(
+            children: [
+              // Sección de imágenes
+              Text(
+          'Imagenes de ${switch (widget.type) {
+          1 => 'Casa',
+          2 => 'Terreno',
+          _ => 'Alquiler',
+          }}(Máximo 3)',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 10),
+              // Mostrar imágenes existentes (solo en edición)
+              if (_existingImages.isNotEmpty)
+                SizedBox(
+                  height: 120,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _existingImages.length,
+                    itemBuilder: (context, index) {
+                      return Stack(
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 120,
+                            margin: const EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              image: DecorationImage(
+                                image: NetworkImage(_existingImages[index]),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: 5,
-                          right: 15,
-                          child: IconButton(
-                            icon: const Icon(Icons.close, color: Colors.white),
-                            onPressed: () {
-                              setState(() {
-                                _existingImages.removeAt(index);
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            // Mostrar imágenes seleccionadas
-            if (_selectedImages.isNotEmpty)
-              SizedBox(
-                height: 120,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _selectedImages.length,
-                  itemBuilder: (context, index) {
-                    return Stack(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          margin: const EdgeInsets.only(right: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            image: DecorationImage(
-                              image: FileImage(_selectedImages[index]),
-                              fit: BoxFit.cover,
+                          Positioned(
+                            top: 5,
+                            right: 15,
+                            child: IconButton(
+                              icon: const Icon(Icons.close, color: Colors.white),
+                              onPressed: () {
+                                setState(() {
+                                  _existingImages.removeAt(index);
+                                });
+                              },
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: 5,
-                          right: 15,
-                          child: IconButton(
-                            icon: const Icon(Icons.close, color: Colors.white),
-                            onPressed: () => _removeImage(index),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            const SizedBox(height: 10),
-            // Botones para agregar imágenes
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.photo_library),
-                  label: const Text('Galería'),
-                  onPressed: () => _pickImage(ImageSource.gallery),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text('Cámara'),
-                  onPressed: () => _pickImage(ImageSource.camera),
-                ),
-              ],
-            ),
-            Divider(),
-            SizedBox(height: 16,),
-            TextFormField(
-              controller: _title,
-              decoration: const InputDecoration(
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                border: OutlineInputBorder(gapPadding: 5),
-                labelText: 'Título de propiedad',
-              ),
-              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
-            ),
-
-            const SizedBox(height: 16),
-
-            TextFormField(
-              controller: _size,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                border: OutlineInputBorder(gapPadding: 5),
-                labelText: 'Tamaño de Terreno',
-              ),
-              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
-            ),
-
-            const SizedBox(height: 16),
-
-            TextFormField(
-              controller: _description,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                border: OutlineInputBorder(gapPadding: 5),
-                labelText: 'Descripción',
-              ),
-              validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
-            ),
-            SizedBox(height: 16,),
-            Row(
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: TextFormField(
-                    controller: _priceMin,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      border: OutlineInputBorder(gapPadding: 5),
-                      labelText: 'Precio minimo',
-                    ),
-                    validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+                        ],
+                      );
+                    },
                   ),
                 ),
-                SizedBox(width: 5,),
-                Expanded(
-                  flex: 5,
-                    child:  TextFormField(
-                      controller: _priceMax,
+              // Mostrar imágenes seleccionadas
+              if (_selectedImages.isNotEmpty)
+                SizedBox(
+                  height: 120,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _selectedImages.length,
+                    itemBuilder: (context, index) {
+                      return Stack(
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 120,
+                            margin: const EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              image: DecorationImage(
+                                image: FileImage(_selectedImages[index]),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 5,
+                            right: 15,
+                            child: IconButton(
+                              icon: const Icon(Icons.close, color: Colors.white),
+                              onPressed: () => _removeImage(index),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 10),
+              // Botones para agregar imágenes
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.photo_library),
+                    label: const Text('Galería'),
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                  ),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.camera_alt),
+                    label: const Text('Cámara'),
+                    onPressed: () => _pickImage(ImageSource.camera),
+                  ),
+                ],
+              ),
+              Divider(),
+              SizedBox(height: 16,),
+              TextFormField(
+                controller: _title,
+                decoration: const InputDecoration(
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  border: OutlineInputBorder(gapPadding: 5),
+                  labelText: 'Título de propiedad',
+                ),
+                validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+              ),
+
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _size,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  border: OutlineInputBorder(gapPadding: 5),
+                  labelText: 'Tamaño de Terreno',
+                ),
+                validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+              ),
+
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _description,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  border: OutlineInputBorder(gapPadding: 5),
+                  labelText: 'Descripción',
+                ),
+                validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+              ),
+              SizedBox(height: 16,),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: TextFormField(
+                      controller: _priceMin,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         border: OutlineInputBorder(gapPadding: 5),
-                        labelText: 'Precio maximo',
+                        labelText: 'Precio minimo',
                       ),
                       validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
                     ),
-                )
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            _ubicaciones.isEmpty
-                ? const CircularProgressIndicator()
-                : DropdownButtonFormField<Location>(
-              isExpanded: true,
-              value: _ubicaciones.isNotEmpty && _selectedUbicacion != null
-                  ? _ubicaciones.firstWhere(
-                    (u) => u.id == _selectedUbicacion?.id,
-                orElse: () => _selectedUbicacion!,
-              )
-                  : null,
-              decoration: const InputDecoration(
-                labelText: 'Ubicación',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  SizedBox(width: 5,),
+                  Expanded(
+                    flex: 5,
+                      child:  TextFormField(
+                        controller: _priceMax,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          border: OutlineInputBorder(gapPadding: 5),
+                          labelText: 'Precio maximo',
+                        ),
+                        validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+                      ),
+                  )
+                ],
               ),
-              hint: Text('Seleccione ubicación'),
-              items: _ubicaciones.map((ubicacion) {
-                return DropdownMenuItem<Location>(
-                  value: ubicacion,
-                  child: Text(
-                    _getDisplayText(ubicacion),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              }).toList(),
-              onChanged: (Location? value) {
-                setState(() {
-                  _selectedUbicacion = value;
-                });
-              },
-              validator: (value) {
-                if (value == null) {
-                  return 'Por favor seleccione una ubicación';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 16,),
-            Row(
-              children: [
-                // TextFormField para ingresar la URL del mapa
-                Expanded(
-                  child: TextFormField(
-                    controller: _mapUrlController,
-                    maxLines: 1,
-                    decoration: const InputDecoration(
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      border: OutlineInputBorder(gapPadding: 5),
-                      labelText: 'Url de mapa',
+
+              const SizedBox(height: 16),
+
+              _ubicaciones.isEmpty
+                  ? const CircularProgressIndicator()
+                  : DropdownButtonFormField<Location>(
+                isExpanded: true,
+                value: _ubicaciones.isNotEmpty && _selectedUbicacion != null
+                    ? _ubicaciones.firstWhere(
+                      (u) => u.id == _selectedUbicacion?.id,
+                  orElse: () => _selectedUbicacion!,
+                )
+                    : null,
+                decoration: const InputDecoration(
+                  labelText: 'Ubicación',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                hint: Text('Seleccione ubicación'),
+                items: _ubicaciones.map((ubicacion) {
+                  return DropdownMenuItem<Location>(
+                    value: ubicacion,
+                    child: Text(
+                      _getDisplayText(ubicacion),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+                  );
+                }).toList(),
+                onChanged: (Location? value) {
+                  setState(() {
+                    _selectedUbicacion = value;
+                  });
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Por favor seleccione una ubicación';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16,),
+              Row(
+                children: [
+                  // TextFormField para ingresar la URL del mapa
+                  Expanded(
+                    child: TextFormField(
+                      controller: _mapUrlController,
+                      maxLines: 1,
+                      decoration: const InputDecoration(
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: OutlineInputBorder(gapPadding: 5),
+                        labelText: 'Url de mapa',
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8), // Espacio entre el campo y el botón
-                // Botón para abrir Google Maps
-                IconButton(
-                  onPressed: () async {
-                    if (_mapUrlController.text.isEmpty) {
-                      // Abrir Google Maps sin ubicación (solo la app)
-                      final Uri googleMapsUrl = Uri.parse('https://www.google.com/maps');
-                      if (await canLaunchUrl(googleMapsUrl)) {
-                        await launchUrl(googleMapsUrl);
+                  const SizedBox(width: 8), // Espacio entre el campo y el botón
+                  // Botón para abrir Google Maps
+                  IconButton(
+                    onPressed: () async {
+                      if (_mapUrlController.text.isEmpty) {
+                        // Abrir Google Maps sin ubicación (solo la app)
+                        final Uri googleMapsUrl = Uri.parse('https://www.google.com/maps');
+                        if (await canLaunchUrl(googleMapsUrl)) {
+                          await launchUrl(googleMapsUrl);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('No se pudo abrir Google Maps')),
+                          );
+                        }
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('No se pudo abrir Google Maps')),
-                        );
+                        // Abrir la URL específica del mapa
+                        final Uri url = Uri.parse(_mapUrlController.text.trim());
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('No se pudo abrir la URL proporcionada')),
+                          );
+                        }
                       }
-                    } else {
-                      // Abrir la URL específica del mapa
-                      final Uri url = Uri.parse(_mapUrlController.text.trim());
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('No se pudo abrir la URL proporcionada')),
-                        );
-                      }
-                    }
-                  },
-                  icon: const Icon(Icons.map, color: Colors.blue),
-                  tooltip: 'Abrir en Google Maps',
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // TextFormField(
-            //   controller: _zoneController,
-            //   maxLines: 1,
-            //   decoration: const InputDecoration(
-            //     floatingLabelBehavior: FloatingLabelBehavior.always,
-            //     border: OutlineInputBorder(gapPadding: 5),
-            //     labelText: 'Zona',
-            //   ),
-            //   validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
-            // ),
-
-            const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: _cancelForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    },
+                    icon: const Icon(Icons.map, color: Colors.blue),
+                    tooltip: 'Abrir en Google Maps',
                   ),
-                  child: const Text('Cancelar'),
-                ),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // TextFormField(
+              //   controller: _zoneController,
+              //   maxLines: 1,
+              //   decoration: const InputDecoration(
+              //     floatingLabelBehavior: FloatingLabelBehavior.always,
+              //     border: OutlineInputBorder(gapPadding: 5),
+              //     labelText: 'Zona',
+              //   ),
+              //   validator: (value) => value!.isEmpty ? 'Este campo es requerido' : null,
+              // ),
+
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: _cancelForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    ),
+                    child: const Text('Cancelar'),
                   ),
-                  child: Text(widget.property == null ? 'Guardar' : 'Actualizar'),                ),
-              ],
-            ),
-          ],
+                  ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    ),
+                    child: Text(widget.property == null ? 'Guardar' : 'Actualizar'),                ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

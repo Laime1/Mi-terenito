@@ -174,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             nombreUsuario,
                             style: const TextStyle(
-                              color: Colors.black,
+                              color: AppColors.gold,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'InknutAntiqua',
                               fontSize: 12,
@@ -244,7 +244,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 snapshot.data!.where((p) => p.status != 0).toList();
             return screenBuilders[selectedCategoryIndex](propiedadesFiltradas);
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            Future.delayed(const Duration(seconds: 5), () {
+              setState(() {
+                futureProperties = estaLogueado
+                    ? apiService.fetchPropertiesByUserId(idUsuario!)
+                    : apiService.fetchProperties();
+              });
+            });
+
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Error al obtener propiedades. Por favor, espere...',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 12),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            );
           }
           return const Center(child: CircularProgressIndicator());
         },
