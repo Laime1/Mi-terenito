@@ -45,36 +45,20 @@ class _HousesScreenState extends State<HousesScreen> {
     });
   }
 
-  void _mostrarDialogoPremium(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Acceso restringido"),
-        content: const Text("Debes convertirte en usuario premium para acceder a esta funcionalidad."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Aceptar"),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bodyBackground,
-       body: Column(
+      body: Column(
         children: [
           const SizedBox(height: 10),
           const Text(
-      'CASAS',
-       style: TextStyle(
-      fontWeight: FontWeight.bold,
-         color: AppColors.gold,
-    ),
-   ),
+            'CASAS',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.gold,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -96,14 +80,14 @@ class _HousesScreenState extends State<HousesScreen> {
             child: filteredProperties.isEmpty
                 ? Center(
                     child: houseProperties.isEmpty
-                    ? const Text(
-                    'No cuentas con propiedades en esta área (Casas)',
-                     style: TextStyle(color: Colors.white),
-                    )
-                    : const Text(
-                    'No se encontraron resultados',
-                     style: TextStyle(color: Colors.white),
-                   ),
+                        ? const Text(
+                            'No cuentas con propiedades en esta área (Casas)',
+                            style: TextStyle(color: Colors.white),
+                          )
+                        : const Text(
+                            'No se encontraron resultados',
+                            style: TextStyle(color: Colors.white),
+                          ),
                   )
                 : ListView.builder(
                     itemCount: filteredProperties.length,
@@ -116,26 +100,17 @@ class _HousesScreenState extends State<HousesScreen> {
         ],
       ),
       floatingActionButton: widget.idUsuario != null
-          ? (widget.idUsuario == 2
-              ? FloatingActionButton(
-                  onPressed: () {
-                    _mostrarDialogoPremium(context);
-                  },
-                  backgroundColor: Colors.grey,
-                  child: const Icon(Icons.lock),
-                  tooltip: 'Acceso restringido',
-                )
-              : FloatingActionButton(
-                  child: const Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FormScreen(type: 1, idUser: widget.idUsuario!),
-                      ),
-                    );
-                  },
-                ))
+          ? FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FormScreen(type: 1, idUser: widget.idUsuario!),
+                  ),
+                );
+              },
+            )
           : null,
     );
   }

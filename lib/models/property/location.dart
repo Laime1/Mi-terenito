@@ -9,10 +9,8 @@ class Location{
     required this.province,
   }): _id = id;
 
-   // Getter para id
    int get id => _id;
 
-   // Setter para id
    set id(int value) {
      _id = value;
    }

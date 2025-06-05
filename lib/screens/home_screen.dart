@@ -8,6 +8,8 @@ import '../services/api_service.dart';
 import 'houses.screens.dart';
 import 'lands.screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'departments_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final int? idUsuario;
@@ -59,34 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onItemTapped(int index) {
-    if (idRol == 2 && (index == 1 || index == 2)) {
-      _mostrarDialogoPremium();
-      return;
-    }
     setState(() {
       selectedCategoryIndex = index;
       futureProperties = estaLogueado
           ? apiService.fetchPropertiesByUserId(idUsuario!)
           : apiService.fetchProperties();
     });
-  }
-
-  void _mostrarDialogoPremium() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Acceso restringido"),
-          content: const Text("Debes convertirte en usuario premium para acceder a esta sección."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Aceptar"),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _cerrarSesion() async {
@@ -119,11 +99,10 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
-            (route) => false,
+        (route) => false,
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
       (props) => LandsScreen(properties: props, idUsuario: idUsuario),
       (props) => RentalsScreen(properties: props, idUsuario: idUsuario),
       (props) => HousesScreen(properties: props, idUsuario: idUsuario),
+      (props) => DepartmentsScreen(properties: props, idUsuario: idUsuario),
     ];
 
     return Scaffold(
@@ -273,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedCategoryIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Color(0xFFFFD700),
+        selectedItemColor: const Color(0xFFFFD700),
         unselectedItemColor: AppColors.appBarText,
         backgroundColor: AppColors.appBarBackground,
         items: [
@@ -281,7 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: _buildRoundedIcon(
               icon: Icons.landscape_sharp,
               isActive: selectedCategoryIndex == 0,
-              isRestricted: false,
             ),
             label: 'Terrenos',
           ),
@@ -289,7 +268,6 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: _buildRoundedIcon(
               icon: Icons.home_work_sharp,
               isActive: selectedCategoryIndex == 1,
-              isRestricted: idRol == 2,
             ),
             label: 'Alquileres',
           ),
@@ -297,10 +275,16 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: _buildRoundedIcon(
               icon: Icons.home_sharp,
               isActive: selectedCategoryIndex == 2,
-              isRestricted: idRol == 2,
             ),
             label: 'Casas',
           ),
+          BottomNavigationBarItem(
+      icon: _buildRoundedIcon(
+        icon: Icons.apartment,
+        isActive: selectedCategoryIndex == 3,
+      ),
+      label: 'Departamentos',
+    ),
         ],
       ),
     );
@@ -310,23 +294,18 @@ class _HomeScreenState extends State<HomeScreen> {
 Widget _buildRoundedIcon({
   required IconData icon,
   required bool isActive,
-  required bool isRestricted,
 }) {
-  final color =
-      isRestricted
-          ? Colors.grey
-          : (isActive ? Color(0xFFFFD700) : Colors.grey[400]);
+  final color = isActive ? const Color(0xFFFFD700) : Colors.grey[400];
 
   return Container(
-    padding: EdgeInsets.all(6),
-    decoration:
-        isActive && !isRestricted
-            ? BoxDecoration(
-              color: AppColors.gold.withAlpha(50),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.gold, width: 1.5),
-            )
-            : null,
+    padding: const EdgeInsets.all(6),
+    decoration: isActive
+        ? BoxDecoration(
+            color: AppColors.gold.withAlpha(50),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.gold, width: 1.5),
+          )
+        : null,
     child: Icon(icon, color: color),
   );
 }

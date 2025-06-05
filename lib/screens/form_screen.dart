@@ -74,7 +74,7 @@ class _FormScreenState extends State<FormScreen>{
 
     _selectedUbicacion = _ubicaciones.firstWhere(
           (ubicacion) => ubicacion.id == property.location.id,
-      orElse: () => property.location, // Fallback si no se encuentra
+      orElse: () => property.location, 
     );
 
 
@@ -107,7 +107,7 @@ class _FormScreenState extends State<FormScreen>{
     }
 
     try {
-      int idUsuario = widget.idUser; // Cambiar por el id real del usuario
+      int idUsuario = widget.idUser; 
 
       // Mostrar indicador de carga
       showDialog(
@@ -274,14 +274,17 @@ class _FormScreenState extends State<FormScreen>{
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.property == null
-              ? 'Registro de ${switch (widget.type) {
-            1 => 'Casa',
-            2 => 'Terreno',
-            _ => 'Alquiler',
-          }}'
-              : 'Editar ${widget.property!.type.name}',
-        ),
+        widget.property == null
+      ? 'Registro de ${switch (widget.type) {
+          1 => 'Casa',
+          2 => 'Terreno',
+          3 => 'Alquiler',
+          4 => 'Departamento',
+          _ => 'Propiedad',
+        }}'
+      : 'Editar ${widget.property!.type.name}',
+),
+
         centerTitle: true,
         // actions: [
         //   IconButton(

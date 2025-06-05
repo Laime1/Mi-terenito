@@ -4,26 +4,27 @@ import '../models/property/property.dart';
 import '../widgets/card_lands.dart';
 import 'form_screen.dart';
 
-class RentalsScreen extends StatefulWidget {
+class DepartmentsScreen extends StatefulWidget {
   final List<Property> properties;
   final int? idUsuario;
 
-  const RentalsScreen({super.key, required this.properties, required this.idUsuario});
+  const DepartmentsScreen({super.key, required this.properties, this.idUsuario});
 
   @override
-  State<RentalsScreen> createState() => _RentalsScreenState();
+  State<DepartmentsScreen> createState() => _DepartmentsScreenState();
 }
 
-class _RentalsScreenState extends State<RentalsScreen> {
+class _DepartmentsScreenState extends State<DepartmentsScreen> {
   TextEditingController searchController = TextEditingController();
   List<Property> filteredProperties = [];
-  List<Property> rentalProperties = [];
+  List<Property> departmentProperties = [];
 
   @override
   void initState() {
     super.initState();
-    rentalProperties = widget.properties.where((p) => p.isRental()).toList();
-    filteredProperties = rentalProperties;
+    
+    departmentProperties = widget.properties.where((p) => p.isDepartment()).toList();
+    filteredProperties = departmentProperties;
     searchController.addListener(_filterProperties);
   }
 
@@ -36,7 +37,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
   void _filterProperties() {
     final query = searchController.text.toLowerCase();
     setState(() {
-      filteredProperties = rentalProperties.where((property) {
+      filteredProperties = departmentProperties.where((property) {
         final title = property.name.toLowerCase();
         final description = property.description.toLowerCase();
         final price = property.maxPrice.toString();
@@ -53,7 +54,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
         children: [
           const SizedBox(height: 10),
           const Text(
-            'ALQUILERES',
+            'DEPARTAMENTOS',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: AppColors.gold,
@@ -64,7 +65,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
-                hintText: 'Buscar alquileres...',
+                hintText: 'Buscar departamentos...',
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
@@ -79,9 +80,9 @@ class _RentalsScreenState extends State<RentalsScreen> {
           Expanded(
             child: filteredProperties.isEmpty
                 ? Center(
-                    child: rentalProperties.isEmpty
+                    child: departmentProperties.isEmpty
                         ? const Text(
-                            'No cuentas con propiedades en esta área (Alquileres)',
+                            'No cuentas con propiedades en esta área (Departamentos)',
                             style: TextStyle(color: Colors.white),
                           )
                         : const Text(
@@ -106,7 +107,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FormScreen(type: 3, idUser: widget.idUsuario!),
+                    builder: (context) => FormScreen(type: 4, idUser: widget.idUsuario!), 
                   ),
                 );
               },

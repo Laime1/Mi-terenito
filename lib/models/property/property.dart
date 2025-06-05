@@ -76,5 +76,5 @@ class Property{
   bool isLand() => type.name.toLowerCase().contains('terreno');
   bool isRental() => type.name.toLowerCase().contains('alquiler');
   bool isHouse() => type.name.toLowerCase().contains('casa');
-
+  bool isDepartment() => type.name.toLowerCase().contains('departamento');
 }
