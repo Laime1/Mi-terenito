@@ -1,332 +1,110 @@
 import 'package:flutter/material.dart';
-import 'package:mi_terrenito/models/app_colors.dart';
-import 'package:mi_terrenito/screens/login.screen.dart';
-import 'package:mi_terrenito/screens/profile_secreen.dart';
-import 'package:mi_terrenito/screens/rentals_screens.dart';
-import '../models/property/property.dart';
-import '../services/api_service.dart';
-import 'houses.screens.dart';
-import 'lands.screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
-  final int? idUsuario;
-  const HomeScreen({super.key, this.idUsuario});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int selectedCategoryIndex = 0;
-  late Future<List<Property>> futureProperties;
-  final ApiService apiService = ApiService();
-  bool estaLogueado = false;
-  int? idUsuario;
-  int? idRol;
-  String nombreUsuario = 'Usuario';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    idUsuario = prefs.getInt('id_usuario') ?? widget.idUsuario;
-    idRol = prefs.getInt('id_rol');
-    String? nombreGuardado = prefs.getString('nombre_usuario');
-
-    if (idUsuario != null) {
-      estaLogueado = true;
-
-      if (nombreGuardado == null) {
-        final userData = await apiService.getUserById(idUsuario!);
-        nombreUsuario = userData['nombre_usuario'] ?? 'Usuario';
-        await prefs.setString('nombre_usuario', nombreUsuario);
-      } else {
-        nombreUsuario = nombreGuardado;
-      }
-
-      futureProperties = apiService.fetchPropertiesByUserId(idUsuario!);
-    } else {
-      estaLogueado = false;
-      futureProperties = apiService.fetchProperties();
-    }
-
-    setState(() {});
-  }
-
-  void _onItemTapped(int index) {
-    if (idRol == 2 && (index == 1 || index == 2)) {
-      _mostrarDialogoPremium();
-      return;
-    }
-    setState(() {
-      selectedCategoryIndex = index;
-      futureProperties = estaLogueado
-          ? apiService.fetchPropertiesByUserId(idUsuario!)
-          : apiService.fetchProperties();
-    });
-  }
-
-  void _mostrarDialogoPremium() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Acceso restringido"),
-          content: const Text("Debes convertirte en usuario premium para acceder a esta sección."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Aceptar"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _cerrarSesion() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('id_usuario');
-    await prefs.remove('id_rol');
-    await prefs.remove('nombre_usuario');
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
-      (route) => false,
-    );
-  }
-
-  void _iniciarSesion() async {
-    final nuevoUsuarioId = await Navigator.push<int?>(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
-
-    if (nuevoUsuarioId != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('id_usuario', nuevoUsuarioId);
-      final userData = await apiService.getUserById(nuevoUsuarioId);
-      final idRolUsuario = userData['id_rol'];
-      final nombre = userData['nombre_usuario'] ?? 'Usuario';
-      await prefs.setInt('id_rol', idRolUsuario);
-      await prefs.setString('nombre_usuario', nombre);
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-            (route) => false,
-      );
-    }
-  }
-
+  String selectedCity = 'COCHABAMBA';
+  List<String> cities = ['COCHABAMBA', 'LA PAZ', 'SANTA CRUZ', 'ORURO', 'POTOSÍ'];
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget Function(List<Property>)> screenBuilders = [
-      (props) => LandsScreen(properties: props, idUsuario: idUsuario),
-      (props) => RentalsScreen(properties: props, idUsuario: idUsuario),
-      (props) => HousesScreen(properties: props, idUsuario: idUsuario),
-    ];
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.appBarBackground,
-        elevation: 0.5,
-        title: Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              'assets/home_terreno.png',
-              height: 35,
-              filterQuality: FilterQuality.high,
+            Text(
+              '9:30',
+              style: TextStyle(fontSize: 14),
             ),
-            const SizedBox(width: 8),
-            const Text(
-              'CLICK HOUSE',
-              style: TextStyle(
-                color: AppColors.gold,
-                fontFamily: 'InknutAntiqua',
-                fontWeight: FontWeight.bold,
-                fontSize: 10,
-              ),
+            Text(
+              'Mi Terrenito',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0, top: 8.0, bottom: 8.0, left: 8.0),
-            child: estaLogueado
-                ? PopupMenuButton<String>(
-                    padding: EdgeInsets.zero,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.person_2_rounded, color: Colors.black, size: 20),
-                          const SizedBox(width: 4),
-                          Text(
-                            nombreUsuario,
-                            style: const TextStyle(
-                              color: AppColors.gold,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'InknutAntiqua',
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      PopupMenuItem<String>(
-                        value: 'perfil',
-                        child: Row(
-                          children: const [
-                            Icon(Icons.person, size: 18, color: Colors.black54),
-                            SizedBox(width: 6),
-                            Text('Ver perfil', style: TextStyle(fontSize: 10, fontFamily: 'InknutAntiqua')),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem<String>(
-                        value: 'cerrar',
-                        child: Row(
-                          children: const [
-                            Icon(Icons.logout, size: 18, color: Colors.redAccent),
-                            SizedBox(width: 6),
-                            Text('Cerrar sesión', style: TextStyle(fontSize: 10, color: Colors.redAccent, fontFamily: 'InknutAntiqua')),
-                          ],
-                        ),
-                      ),
-                    ],
-                    onSelected: (String result) {
-                      if (result == 'perfil') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ProfileScreen(idUsuario: idUsuario!)),
-                        );
-                      } else if (result == 'cerrar') {
-                        _cerrarSesion();
-                      }
-                    },
-                  )
-                : TextButton(
-                    onPressed: _iniciarSesion,
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    ),
-                    child: const Text(
-                      'Iniciar Sesión',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'InknutAntiqua',
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
+          IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () {
+              // Navegar a favoritos
+            },
           ),
         ],
-        iconTheme: const IconThemeData(color: Color(0xFFD4AF37)),
       ),
-      body: FutureBuilder<List<Property>>(
-        future: futureProperties,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final propiedadesFiltradas =
-                snapshot.data!.where((p) => p.status != 0).toList();
-            return screenBuilders[selectedCategoryIndex](propiedadesFiltradas);
-          } else if (snapshot.hasError) {
-            Future.delayed(const Duration(seconds: 5), () {
-              setState(() {
-                futureProperties = estaLogueado
-                    ? apiService.fetchPropertiesByUserId(idUsuario!)
-                    : apiService.fetchProperties();
-              });
-            });
-
-            return const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Error al obtener propiedades. Por favor, espere...',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 12),
-                  CircularProgressIndicator(),
-                ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: DropdownButton<String>(
+              value: selectedCity,
+              isExpanded: true,
+              underline: Container(
+                height: 1,
+                color: Colors.grey,
               ),
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
+              items: cities.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedCity = newValue!;
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 2,
+              padding: EdgeInsets.all(16),
+              children: [
+                _buildMenuItem('Casas', Icons.home),
+                _buildMenuItem('Terrenos', Icons.landscape),
+                _buildMenuItem('Departamentos', Icons.apartment),
+                _buildMenuItem('Alquileres', Icons.home_work),
+              ],
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedCategoryIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Color(0xFFFFD700),
-        unselectedItemColor: AppColors.appBarText,
-        backgroundColor: AppColors.appBarBackground,
-        items: [
+        items: const [
           BottomNavigationBarItem(
-            icon: _buildRoundedIcon(
-              icon: Icons.landscape_sharp,
-              isActive: selectedCategoryIndex == 0,
-              isRestricted: false,
-            ),
-            label: 'Terrenos',
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: _buildRoundedIcon(
-              icon: Icons.home_work_sharp,
-              isActive: selectedCategoryIndex == 1,
-              isRestricted: idRol == 2,
-            ),
-            label: 'Alquileres',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildRoundedIcon(
-              icon: Icons.home_sharp,
-              isActive: selectedCategoryIndex == 2,
-              isRestricted: idRol == 2,
-            ),
-            label: 'Casas',
+            icon: Icon(Icons.favorite),
+            label: 'Favoritos',
           ),
         ],
       ),
     );
   }
-}
 
-Widget _buildRoundedIcon({
-  required IconData icon,
-  required bool isActive,
-  required bool isRestricted,
-}) {
-  final color =
-      isRestricted
-          ? Colors.grey
-          : (isActive ? Color(0xFFFFD700) : Colors.grey[400]);
-
-  return Container(
-    padding: EdgeInsets.all(6),
-    decoration:
-        isActive && !isRestricted
-            ? BoxDecoration(
-              color: AppColors.gold.withAlpha(50),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.gold, width: 1.5),
-            )
-            : null,
-    child: Icon(icon, color: color),
-  );
+  Widget _buildMenuItem(String title, IconData icon) {
+    return Card(
+      child: InkWell(
+        onTap: () {
+          // Acción al hacer clic
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40),
+            SizedBox(height: 10),
+            Text(title),
+          ],
+        ),
+      ),
+    );
+  }
 }
