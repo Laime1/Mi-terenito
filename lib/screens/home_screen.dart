@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../widgets/empresa_card.dart';
 import '../services/api_service.dart';
 import 'casas_screen.dart';
+import 'terrenos_screen.dart';
+
 
 
 class HomeScreen extends StatefulWidget {
@@ -171,21 +173,35 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  Widget _buildMenuItem(String title, IconData icon) {
+Widget _buildMenuItem(String title, IconData icon) {
   return Card(
     child: InkWell(
       onTap: () async {
-        if (title == 'Casas' && selectedEmpresaId != null && selectedCity != null) {
+        if (selectedEmpresaId != null && selectedCity != null) {
           final cityId = await apiService.getCityIdByName(selectedCity!);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CasasScreen(
-                empresaId: selectedEmpresaId!,
-                cityId: cityId,
+
+          if (title == 'Casas') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CasasScreen(
+                  empresaId: selectedEmpresaId!,
+                  cityId: cityId,
+                ),
               ),
-            ),
-          );
+            );
+          } else if (title == 'Terrenos') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TerrenosScreen(
+                  empresaId: selectedEmpresaId!,
+                  cityId: cityId,
+                ),
+              ),
+            );
+          }
+          // Puedes seguir agregando lógica para Departamentos y Alquileres
         }
       },
       child: Column(
@@ -199,4 +215,5 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
   );
 }
+
 }
