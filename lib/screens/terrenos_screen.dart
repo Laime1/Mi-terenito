@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../services/api_service.dart';
-
+import '../models/land.dart';
+import 'detalle_terreno_screen.dart';
 
 class TerrenosScreen extends StatefulWidget {
   final int empresaId;
@@ -14,7 +16,9 @@ class TerrenosScreen extends StatefulWidget {
 
 class _TerrenosScreenState extends State<TerrenosScreen> {
   bool isLoading = true;
-  List<dynamic> terrenos = [];
+  List<Land> terrenos = [];
+  List<Land> filteredTerrenos = [];
+  String searchText = '';
   final ApiService apiService = ApiService();
 
   @override
@@ -25,93 +29,130 @@ class _TerrenosScreenState extends State<TerrenosScreen> {
 
   Future<void> loadTerrenos() async {
     try {
-      final loadedTerrenos = await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      final response = await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      final loaded = response.map<Land>((json) => Land.fromJson(json)).toList();
       setState(() {
-        terrenos = loadedTerrenos;
+        terrenos = loaded;
+        filteredTerrenos = loaded;
         isLoading = false;
       });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+    } catch (_) {
+      setState(() => isLoading = false);
     }
+  }
+
+  void filterTerrenos(String query) {
+    setState(() {
+      searchText = query.toLowerCase();
+      filteredTerrenos = terrenos.where((t) {
+        final title = t.title.toLowerCase();
+        final descripcion = t.description.toLowerCase();
+        return title.contains(searchText) || descripcion.contains(searchText);
+      }).toList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Terrenos'),
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : terrenos.isEmpty
-              ? const Center(child: Text('No hay terrenos disponibles para esta empresa y ciudad.'))
-              : ListView.builder(
-                  itemCount: terrenos.length,
-                  itemBuilder: (context, index) {
-                    final terreno = terrenos[index];
-                    final imagenUrl = (terreno['imagenes'] != null && terreno['imagenes'].isNotEmpty)
-                        ? 'http://localhost:3000${terreno['imagenes'][0]}'
-                        : null;
+      appBar: AppBar(title: const Text('Terrenos')),
+      body: Column(
+        children: [
+          // 🔍 Buscador
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Buscar terrenos...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onChanged: filterTerrenos,
+            ),
+          ),
 
-                    final usuario = terreno['usuario'] ?? {};
-                    final ciudad = terreno['ciudad'] ?? {};
-                    final empresa = terreno['empresa'] ?? {};
+          // 📋 Lista de terrenos
+          Expanded(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : filteredTerrenos.isEmpty
+                    ? const Center(child: Text('No hay terrenos disponibles.'))
+                    : ListView.builder(
+                        itemCount: filteredTerrenos.length,
+                        itemBuilder: (context, index) {
+                          final terreno = filteredTerrenos[index];
+                          final imagenUrl = terreno.images.isNotEmpty
+                              ? 'http://localhost:3000${terreno.images[0]}'
+                              : null;
 
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (imagenUrl != null)
-                              Image.network(
-                                imagenUrl,
-                                height: 180,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetalleTerrenoScreen(terreno: terreno),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              elevation: 5,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: imagenUrl != null
+                                          ? Image.network(
+                                              imagenUrl,
+                                              width: 120,
+                                              height: 120,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Container(
+                                              width: 120,
+                                              height: 120,
+                                              color: Colors.grey[300],
+                                              child: const Icon(Icons.image_not_supported, size: 50),
+                                            ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            terreno.title,
+                                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            terreno.description.length > 60
+                                                ? '${terreno.description.substring(0, 60)}...'
+                                                : terreno.description,
+                                            style: TextStyle(color: Colors.grey[700]),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            '\$${NumberFormat('#,##0.00').format(terreno.price)}',
+                                            style: const TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
-                            const SizedBox(height: 8),
-                            Text(
-                              terreno['titulo'] ?? 'Sin título',
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(height: 4),
-                            Text(terreno['descripcion'] ?? ''),
-                            const SizedBox(height: 8),
-                            Text('Precio: \$${terreno['precio'] ?? '-'}'),
-                            Text('Estado: ${terreno['estado'] == 1 ? 'Disponible' : 'No disponible'}'),
-                            Text('Fecha publicación: ${DateTime.tryParse(terreno['fecha_publicacion'] ?? '')?.toLocal().toString().split(' ')[0] ?? '-'}'),
-                            const SizedBox(height: 8),
-                            Text('Tamaño: ${terreno['tamano'] ?? '-'} m²'),
-                            Text('Servicios básicos: ${terreno['servicios_basicos'] ?? 'No'}'),
-                            const SizedBox(height: 8),
-                            Text('Usuario: ${usuario['nombre_usuario'] ?? '-'}'),
-                            Text('Contacto: ${usuario['contacto'] ?? '-'}'),
-                            const SizedBox(height: 8),
-                            Text('Ciudad: ${ciudad['nombre_ciudad'] ?? '-'}'),
-                            Text('Empresa: ${empresa['nombre_empresa'] ?? '-'}'),
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: () {
-                                final url = terreno['enlace_ubicacion'];
-                                if (url != null && url.isNotEmpty) {
-                              
-                                }
-                              },
-                              child: Text(
-                                'Ver ubicación',
-                                style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-                              ),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
+          ),
+        ],
+      ),
     );
   }
 }

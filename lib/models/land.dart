@@ -42,9 +42,15 @@ class Land {
       mapLocation: json['enlace_ubicacion'] ?? '',
       size: double.tryParse(json['tamano'].toString()) ?? 0.0,
       basicServices: json['servicios_basicos'] ?? 'No',
-      images: (json['imagenes'] as List<dynamic>? ?? [])
-          .map((img) => img['url_imagen'].toString())
-          .toList(),
+      images: (json['imagenes'] as List<dynamic>? ?? []).map((img) {
+        if (img is String) {
+          return img;
+        } else if (img is Map<String, dynamic>) {
+          return img['url_imagen'].toString();
+        } else {
+          return '';
+        }
+      }).where((url) => url.isNotEmpty).toList(),
       user: User.fromJson(json['usuario'] ?? {}),
       idUsuario: json['id_usuario'] ?? 0,
       idCiudad: json['id_ciudad'] ?? 0,

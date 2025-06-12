@@ -3,8 +3,7 @@ import '../widgets/empresa_card.dart';
 import '../services/api_service.dart';
 import 'casas_screen.dart';
 import 'terrenos_screen.dart';
-
-
+import 'home2_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -173,47 +172,64 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-Widget _buildMenuItem(String title, IconData icon) {
-  return Card(
-    child: InkWell(
-      onTap: () async {
-        if (selectedEmpresaId != null && selectedCity != null) {
-          final cityId = await apiService.getCityIdByName(selectedCity!);
 
-          if (title == 'Casas') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CasasScreen(
+  Widget _buildMenuItem(String title, IconData icon) {
+    return Card(
+      child: InkWell(
+        onTap: () async {
+          if (selectedEmpresaId != null && selectedCity != null) {
+            final cityId = await apiService.getCityIdByName(selectedCity!);
+            String tipo = title.toLowerCase();
+
+            Widget destino;
+
+            switch (tipo) {
+              case 'casas':
+                destino = CasasScreen(
                   empresaId: selectedEmpresaId!,
                   cityId: cityId,
-                ),
-              ),
+                );
+                break;
+              case 'terrenos':
+                destino = TerrenosScreen(
+                  empresaId: selectedEmpresaId!,
+                  cityId: cityId,
+                );
+                break;
+              case 'departamentos':
+              case 'alquileres':
+                destino = Home2Screen(
+                  tipo: tipo,
+                  empresaId: selectedEmpresaId!,
+                  cityId: cityId,
+                );
+                break;
+              default:
+                destino = CasasScreen(
+                  empresaId: selectedEmpresaId!,
+                  cityId: cityId,
+                );
+            }
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => destino),
             );
-          } else if (title == 'Terrenos') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TerrenosScreen(
-                  empresaId: selectedEmpresaId!,
-                  cityId: cityId,
-                ),
-              ),
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Selecciona ciudad y empresa")),
             );
           }
-          // Puedes seguir agregando lógica para Departamentos y Alquileres
-        }
-      },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 40),
-          const SizedBox(height: 10),
-          Text(title),
-        ],
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40),
+            const SizedBox(height: 10),
+            Text(title),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }
