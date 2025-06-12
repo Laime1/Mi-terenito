@@ -1,49 +1,55 @@
-class Rental {
+import 'package:mi_terrenito/models/user.dart';
+
+class House {
   final int id;
   final String title;
   final String description;
-  final double monthlyPrice;
+  final double price;
   final int status;
   final DateTime publishedAt;
   final String mapLocation;
-  final String furnished;
-  final int minimumMonths;
-  final String includedServices;
+  final int bedrooms;
+  final int bathrooms;
+  final String garage;
+  final int floors;
   final List<String> images;
-  final int cityId;
+  final int idCiudad;
 
-  Rental({
+  House({
     required this.id,
     required this.title,
     required this.description,
-    required this.monthlyPrice,
+    required this.price,
     required this.status,
     required this.publishedAt,
     required this.mapLocation,
-    required this.furnished,
-    required this.minimumMonths,
-    required this.includedServices,
+    required this.bedrooms,
+    required this.bathrooms,
+    required this.garage,
+    required this.floors,
     required this.images,
-    required this.cityId,
+    required this.idCiudad,
   });
 
-  factory Rental.fromJson(Map<String, dynamic> json) {
-    return Rental(
-      id: _parseInt(json['id_alquiler']),
+  factory House.fromJson(Map<String, dynamic> json) {
+    return House(
+      id: _parseInt(json['id_casa']),
       title: json['titulo']?.toString() ?? '',
       description: json['descripcion']?.toString() ?? '',
-      monthlyPrice: _parseDouble(json['precio_mensual']),
+      price: _parseDouble(json['precio']),
       status: _parseInt(json['estado']),
       publishedAt: _parseDateTime(json['fecha_publicacion']),
       mapLocation: json['enlace_ubicacion']?.toString() ?? '',
-      furnished: json['amoblado']?.toString() ?? 'No',
-      minimumMonths: _parseInt(json['tiempo_minimo_meses']),
-      includedServices: json['incluye_servicios']?.toString() ?? '',
+      bedrooms: _parseInt(json['habitaciones']),
+      bathrooms: _parseInt(json['banos']),
+      garage: json['cochera']?.toString() ?? 'No',
+      floors: _parseInt(json['pisos']),
       images: _parseImages(json['imagenes']),
-      cityId: _parseInt(json['ciudad']?['id_ciudad']),
+      idCiudad: _parseInt(json['id_ciudad']),
     );
   }
 
+  // Métodos auxiliares para parseo seguro
   static int _parseInt(dynamic value) {
     if (value == null) return 0;
     if (value is int) return value;

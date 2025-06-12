@@ -10,6 +10,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String selectedCity = 'COCHABAMBA';
   List<String> cities = ['COCHABAMBA', 'LA PAZ', 'SANTA CRUZ', 'ORURO', 'POTOSÍ'];
+  String selectedFactory = 'FACTORY1';
+  List<String> factories = ['FACTORY1', 'FACTORY2', 'FACTORY3', 'FACTORY4'];
 
   @override
   Widget build(BuildContext context) {
@@ -41,24 +43,51 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: DropdownButton<String>(
-              value: selectedCity,
-              isExpanded: true,
-              underline: Container(
-                height: 1,
-                color: Colors.grey,
-              ),
-              items: cities.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedCity = newValue!;
-                });
-              },
+            child: Row(
+              children: [
+                Expanded(
+                  child: DropdownButton<String>(
+                    value: selectedCity,
+                    isExpanded: true,
+                    underline: Container(
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                    items: cities.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedCity = newValue!;
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: DropdownButton<String>(
+                    value: selectedFactory,
+                    isExpanded: true,
+                    underline: Container(
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                    items: factories.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedCity = newValue!;
+                      });
+                    },
+                  ),
+                )
+              ],
             ),
           ),
           Expanded(
