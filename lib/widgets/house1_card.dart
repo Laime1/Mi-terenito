@@ -54,7 +54,7 @@ class HouseCard extends StatelessWidget {
                   children: [
                     _buildFeatureItem(Icons.bed, '${house.bedrooms} hab.'),
                     _buildFeatureItem(Icons.bathtub, '${house.bathrooms} baños'),
-                    _buildFeatureItem(Icons.garage, house.garage),
+                    _buildFeatureItem(Icons.garage, house.garage.toString()),
                     _buildFeatureItem(Icons.stairs, '${house.floors} pisos'),
                   ],
                 ),
