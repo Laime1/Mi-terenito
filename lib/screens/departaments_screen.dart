@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../models/apartament.dart';
 import '../services/api_service.dart';
 //import 'detalle_departamento_screen.dart';
@@ -54,20 +53,9 @@ class _DepartmentsScreenState extends State<DepartmentsScreen> {
     });
   }
 
-  String formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return '-';
-    try {
-      final date = DateTime.parse(dateStr);
-      return DateFormat('dd/MM/yyyy').format(date);
-    } catch (_) {
-      return '-';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Departamentos')),
       body: Column(
         children: [
           Padding(
@@ -97,13 +85,13 @@ class _DepartmentsScreenState extends State<DepartmentsScreen> {
 
                           return GestureDetector(
                             onTap: () {
-                              //final departamento = Department.fromJson(depto);
-                              //Navigator.push(
-                                //context,
-                                //MaterialPageRoute(
-                                //  builder: (context) => DetalleDepartamentoScreen(departamento: departamento),
-                               // ),
-                              //);
+                              // final departamento = Department.fromJson(depto);
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => DetalleDepartamentoScreen(departamento: departamento),
+                              //   ),
+                              // );
                             },
                             child: Card(
                               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),

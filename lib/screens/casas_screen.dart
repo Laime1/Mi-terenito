@@ -81,7 +81,6 @@ class _CasasScreenState extends State<CasasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Casas')),
       body: Column(
         children: [
           // 🔍 Buscador
@@ -201,34 +200,6 @@ class _CasasScreenState extends State<CasasScreen> {
                         },
                       ),
           ),
-        ],
-      ),
-
-      // 🔽 Botones inferiores que redirigen a Home2Screen
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildBottomButton('Casas', Icons.home, () => navigateTo('casas')),
-            _buildBottomButton('Terrenos', Icons.terrain, () => navigateTo('terrenos')),
-            _buildBottomButton('Alquiler', Icons.apartment, () => navigateTo('alquileres')),
-            _buildBottomButton('Departamentos', Icons.location_city, () => navigateTo('departamentos')),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomButton(String label, IconData icon, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.blue),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 12)),
         ],
       ),
     );

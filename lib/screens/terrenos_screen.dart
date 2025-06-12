@@ -55,12 +55,11 @@ class _TerrenosScreenState extends State<TerrenosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Terrenos')),
       body: Column(
         children: [
-          // 🔍 Buscador
+          const SizedBox(height: 12),
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Buscar terrenos...',
@@ -70,8 +69,7 @@ class _TerrenosScreenState extends State<TerrenosScreen> {
               onChanged: filterTerrenos,
             ),
           ),
-
-          // 📋 Lista de terrenos
+          const SizedBox(height: 8),
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())

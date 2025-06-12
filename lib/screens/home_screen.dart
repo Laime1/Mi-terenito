@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/empresa_card.dart';
 import '../services/api_service.dart';
-import 'casas_screen.dart';
-import 'terrenos_screen.dart';
 import 'home2_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -62,8 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            Text('9:30', style: TextStyle(fontSize: 14)),
-            Text('Mi Terrenito', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text('', style: TextStyle(fontSize: 14)),
+            Text('Click House', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
@@ -181,35 +179,11 @@ class _HomeScreenState extends State<HomeScreen> {
             final cityId = await apiService.getCityIdByName(selectedCity!);
             String tipo = title.toLowerCase();
 
-            Widget destino;
-
-            switch (tipo) {
-              case 'casas':
-                destino = CasasScreen(
-                  empresaId: selectedEmpresaId!,
-                  cityId: cityId,
-                );
-                break;
-              case 'terrenos':
-                destino = TerrenosScreen(
-                  empresaId: selectedEmpresaId!,
-                  cityId: cityId,
-                );
-                break;
-              case 'departamentos':
-              case 'alquileres':
-                destino = Home2Screen(
-                  tipo: tipo,
-                  empresaId: selectedEmpresaId!,
-                  cityId: cityId,
-                );
-                break;
-              default:
-                destino = CasasScreen(
-                  empresaId: selectedEmpresaId!,
-                  cityId: cityId,
-                );
-            }
+            Widget destino = Home2Screen(
+              tipo: tipo,
+              empresaId: selectedEmpresaId!,
+              cityId: cityId,
+            );
 
             Navigator.push(
               context,
