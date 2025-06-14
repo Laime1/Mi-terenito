@@ -1,98 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import '../models/apartament.dart';
 import '../services/api_service.dart';
-import '../models/house.dart';
-import 'detalle_casa_screen.dart';
-import 'home2_screen.dart';
+//import 'detalle_departamento_screen.dart';
 
-class CasasScreen extends StatefulWidget {
+class DepartmentsScreen extends StatefulWidget {
   final int empresaId;
   final int cityId;
 
-  const CasasScreen({Key? key, required this.empresaId, required this.cityId}) : super(key: key);
+  const DepartmentsScreen({Key? key, required this.empresaId, required this.cityId}) : super(key: key);
 
   @override
-  State<CasasScreen> createState() => _CasasScreenState();
+  State<DepartmentsScreen> createState() => _DepartmentsScreenState();
 }
 
-class _CasasScreenState extends State<CasasScreen> {
+class _DepartmentsScreenState extends State<DepartmentsScreen> {
   bool isLoading = true;
-  List<dynamic> casas = [];
-  List<dynamic> filteredCasas = [];
+  List<dynamic> departamentos = [];
+  List<dynamic> filteredDepartamentos = [];
   String searchText = '';
-
-  // Flags para indicar existencia de propiedades en cada tipo
-  bool hasCasas = false;
-  bool hasTerrenos = false;
-  bool hasDepartamentos = false;
-  bool hasAlquileres = false;
 
   final ApiService apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
-    loadAllData();
+    loadDepartamentos();
   }
 
-  Future<void> loadAllData() async {
-    setState(() => isLoading = true);
+  Future<void> loadDepartamentos() async {
     try {
-      final loadedCasas = await apiService.fetchCasasByEmpresaAndCiudad(widget.empresaId, widget.cityId);
-      final loadedTerrenos = await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
-      final loadedDepartamentos = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
-      final loadedAlquileres = await apiService.fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
-
+      final loaded = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
       setState(() {
-        casas = loadedCasas;
-        filteredCasas = loadedCasas;
-        hasCasas = loadedCasas.isNotEmpty;
-        hasTerrenos = loadedTerrenos.isNotEmpty;
-        hasDepartamentos = loadedDepartamentos.isNotEmpty;
-        hasAlquileres = loadedAlquileres.isNotEmpty;
+        departamentos = loaded;
+        filteredDepartamentos = loaded;
         isLoading = false;
       });
     } catch (e) {
-      setState(() => isLoading = false);
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
-  void filterCasas(String query) {
+  void filterDepartamentos(String query) {
     setState(() {
       searchText = query.toLowerCase();
-      filteredCasas = casas.where((casa) {
-        final title = casa['titulo']?.toLowerCase() ?? '';
-        final ciudad = casa['ciudad']?['nombre_ciudad']?.toLowerCase() ?? '';
+      filteredDepartamentos = departamentos.where((item) {
+        final title = item['titulo']?.toLowerCase() ?? '';
+        final ciudad = item['ciudad']?['nombre_ciudad']?.toLowerCase() ?? '';
         return title.contains(searchText) || ciudad.contains(searchText);
       }).toList();
     });
-  }
-
-  void navigateTo(String tipo) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Home2Screen(
-          tipo: tipo,
-          empresaId: widget.empresaId,
-          cityId: widget.cityId,
-          hasCasas: hasCasas,
-          hasTerrenos: hasTerrenos,
-          hasDepartamentos: hasDepartamentos,
-          hasAlquileres: hasAlquileres,
-        ),
-      ),
-    );
-  }
-
-  String formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return '-';
-    try {
-      final date = DateTime.parse(dateStr);
-      return DateFormat('dd/MM/yyyy').format(date);
-    } catch (_) {
-      return '-';
-    }
   }
 
   @override
@@ -100,43 +58,40 @@ class _CasasScreenState extends State<CasasScreen> {
     return Scaffold(
       body: Column(
         children: [
-          // 🔍 Buscador
           Padding(
             padding: const EdgeInsets.all(12),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Buscar casas...',
+                hintText: 'Buscar departamentos...',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              onChanged: filterCasas,
+              onChanged: filterDepartamentos,
             ),
           ),
-
-          // 🏠 Lista de casas
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : filteredCasas.isEmpty
-                    ? const Center(child: Text('No hay casas disponibles.'))
+                : filteredDepartamentos.isEmpty
+                    ? const Center(child: Text('No hay departamentos disponibles.'))
                     : ListView.builder(
-                        itemCount: filteredCasas.length,
+                        itemCount: filteredDepartamentos.length,
                         itemBuilder: (context, index) {
-                          final casa = filteredCasas[index];
-                          final imagenUrl = (casa['imagenes'] != null && casa['imagenes'].isNotEmpty)
-                              ? '${ApiService.baseImageUrl}${casa['imagenes'][0]}'
+                          final depto = filteredDepartamentos[index];
+                          final imagenUrl = (depto['imagenes'] != null && depto['imagenes'].isNotEmpty)
+                              ? '${ApiService.baseImageUrl}${depto['imagenes'][0]}'
                               : null;
-                          final ciudad = casa['ciudad'] ?? {};
+                          final ciudad = depto['ciudad'] ?? {};
 
                           return GestureDetector(
                             onTap: () {
-                              final houseModel = House.fromJson(casa);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetalleCasaScreen(casa: houseModel),
-                                ),
-                              );
+                              // final departamento = Department.fromJson(depto);
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => DetalleDepartamentoScreen(departamento: departamento),
+                              //   ),
+                              // );
                             },
                             child: Card(
                               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -173,7 +128,7 @@ class _CasasScreenState extends State<CasasScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            casa['titulo'] ?? 'Sin título',
+                                            depto['titulo'] ?? 'Sin título',
                                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                           ),
                                           const SizedBox(height: 6),
@@ -194,16 +149,16 @@ class _CasasScreenState extends State<CasasScreen> {
                                             children: [
                                               const Icon(Icons.king_bed, size: 20),
                                               const SizedBox(width: 4),
-                                              Text('${casa['habitaciones'] ?? '-'} hab'),
+                                              Text('${depto['habitaciones'] ?? '-'} hab'),
                                               const SizedBox(width: 16),
                                               const Icon(Icons.bathtub, size: 20),
                                               const SizedBox(width: 4),
-                                              Text('${casa['banos'] ?? '-'} baños'),
+                                              Text('${depto['banos'] ?? '-'} baños'),
                                             ],
                                           ),
                                           const SizedBox(height: 10),
                                           Text(
-                                            '\$${casa['precio'] ?? '-'}',
+                                            '\$${depto['precio'] ?? '-'}',
                                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green[700]),
                                           ),
                                         ],
