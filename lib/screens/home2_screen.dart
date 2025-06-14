@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
+import 'casas_screen.dart';
+import 'terrenos_screen.dart';
+import 'departaments_screen.dart';
+import 'rentals_screens.dart';
 
 class Home2Screen extends StatefulWidget {
-  final String tipo; // casas, terrenos, departamentos, alquileres
+  final String tipo; // 'casas', 'terrenos', 'departamentos', 'alquileres'
   final int empresaId;
   final int cityId;
 
@@ -19,45 +22,44 @@ class Home2Screen extends StatefulWidget {
 
 class _Home2ScreenState extends State<Home2Screen> {
   late String currentTipo;
-  final ApiService apiService = ApiService();
-
-  List<dynamic> items = [];
-  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     currentTipo = widget.tipo;
-    loadItems();
-  }
-
-  Future<void> loadItems() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      List<dynamic> fetchedItems = [];
-     
-      setState(() {
-        items = fetchedItems;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        items = [];
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error cargando $currentTipo')),
-      );
-    }
   }
 
   void onTipoChanged(String tipo) {
     setState(() {
       currentTipo = tipo;
     });
-    loadItems();
+  }
+
+  Widget getCurrentScreen() {
+    switch (currentTipo) {
+      case 'casas':
+        return CasasScreen(
+          empresaId: widget.empresaId,
+          cityId: widget.cityId,
+        );
+      case 'terrenos':
+        return TerrenosScreen(
+          empresaId: widget.empresaId,
+          cityId: widget.cityId,
+        );
+      case 'departamentos':
+        return DepartmentsScreen(
+          empresaId: widget.empresaId,
+          cityId: widget.cityId,
+        );
+      case 'alquileres':
+        return RentalsScreen(
+          empresaId: widget.empresaId,
+          cityId: widget.cityId,
+        );
+      default:
+        return const Center(child: Text('Tipo no válido'));
+    }
   }
 
   @override
@@ -66,28 +68,7 @@ class _Home2ScreenState extends State<Home2Screen> {
       appBar: AppBar(
         title: Text(currentTipo[0].toUpperCase() + currentTipo.substring(1)),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : items.isEmpty
-              ? Center(child: Text('No hay $currentTipo disponibles.'))
-              : ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: ListTile(
-                        title: Text(item['nombre'] ?? 'Sin nombre'),
-                        subtitle: Text(item['descripcion'] ?? ''),
-                        onTap: () {
-                          // Aquí puedes navegar a detalle del item según tipo
-                          // Por ejemplo, si es terreno:
-                          // Navigator.push(context, MaterialPageRoute(builder: (_) => DetalleTerrenoScreen(item: item)));
-                        },
-                      ),
-                    );
-                  },
-                ),
+      body: getCurrentScreen(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _tipoToIndex(currentTipo),
         onTap: (index) {
