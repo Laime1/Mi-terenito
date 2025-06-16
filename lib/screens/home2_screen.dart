@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/screens/rentals_screen.dart';
-import 'casas_screen.dart';
+import 'houses/houses_screen.dart';
 import 'terrenos_screen.dart';
-import 'departaments_screen.dart';
+import 'apartaments/apartaments_screen.dart';
 import 'rentalsscreens.dart';
 
 class Home2Screen extends StatefulWidget {
@@ -39,12 +39,12 @@ class _Home2ScreenState extends State<Home2Screen> {
   Widget getCurrentScreen() {
     switch (currentTipo) {
       case 'casas':
-        return CasasScreen(
+        return HousesScreen(
           empresaId: widget.empresaId,
           cityId: widget.cityId,
         );
       case 'terrenos':
-        return TerrenosScreen(
+        return LandsScreen(
           empresaId: widget.empresaId,
           cityId: widget.cityId,
         );

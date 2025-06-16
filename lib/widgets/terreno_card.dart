@@ -18,7 +18,7 @@ class TerrenoCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetalleTerrenoScreen(terreno: terreno),
+            builder: (context) => DetailLandScrenn(terreno: terreno),
           ),
         );
       },

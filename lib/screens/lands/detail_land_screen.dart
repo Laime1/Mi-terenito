@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/land.dart';
 
-class DetalleTerrenoScreen extends StatelessWidget {
+class DetailLandScrenn extends StatelessWidget {
   final Land terreno;
 
-  const DetalleTerrenoScreen({Key? key, required this.terreno}) : super(key: key);
+  const DetailLandScrenn({Key? key, required this.terreno}) : super(key: key);
 
   String formatDate(DateTime date) {
     return DateFormat('dd/MM/yyyy').format(date);

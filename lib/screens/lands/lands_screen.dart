@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/land.dart';
-import 'detalle_terreno_screen.dart';
+import 'lands/detail_land_screen.dart';
 
-class TerrenosScreen extends StatefulWidget {
+class LandsScreen extends StatefulWidget {
   final int empresaId;
   final int cityId;
 
-  const TerrenosScreen({Key? key, required this.empresaId, required this.cityId}) : super(key: key);
+  const LandsScreen({Key? key, required this.empresaId, required this.cityId}) : super(key: key);
 
   @override
-  State<TerrenosScreen> createState() => _TerrenosScreenState();
+  State<LandsScreen> createState() => _LandsScreenState();
 }
 
-class _TerrenosScreenState extends State<TerrenosScreen> {
+class _LandsScreenState extends State<LandsScreen> {
   bool isLoading = true;
   List<Land> terrenos = [];
   List<Land> filteredTerrenos = [];
@@ -88,7 +88,7 @@ class _TerrenosScreenState extends State<TerrenosScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => DetalleTerrenoScreen(terreno: terreno),
+                                  builder: (_) => DetailLandScrenn(terreno: terreno),
                                 ),
                               );
                             },
