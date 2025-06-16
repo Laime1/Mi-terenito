@@ -1,66 +1,77 @@
-class Department{
+class Apartment {
   final int id;
   final String title;
   final String description;
-  final double? price;
-  final String status;
-  final DateTime? publishDate;
-  final String locationLink;
-  final int? bedrooms;
+  final double price;
+  final int status;
+  final DateTime publishedAt;
+  final String mapLocation;
+  final int bedrooms;
   final int bathrooms;
-  final int floor;
-  final int userId;
+  final List<String> images;
   final int cityId;
+  final int companyId;
 
-  Department({
+  Apartment({
     required this.id,
     required this.title,
     required this.description,
     required this.price,
     required this.status,
-    required this.publishDate,
-    required this.locationLink,
+    required this.publishedAt,
+    required this.mapLocation,
     required this.bedrooms,
     required this.bathrooms,
-    required this.floor,
-    required this.userId,
-    required this.cityId
- });
+    required this.images,
+    required this.cityId,
+    required this.companyId,
+  });
 
-
-  factory Department.fromJson(Map<String, dynamic> json) {
-    return Department(
-      id: json['id_departamento'],
-      title: json['titulo'],
-      description: json['descripcion'],
-      price: json['precio'] != null ? (json['precio'] as num).toDouble() : null,
-      status: json['estado'],
-      publishDate: json['fecha_publicacion'] != null
-          ? DateTime.parse(json['fecha_publicacion'])
-          : null,
-      locationLink: json['enlace_ubicacion'],
-      bedrooms: json['habitaciones'],
-      bathrooms: json['banos'],
-      floor: json['piso'],
-      userId: json['id_usuario'],
-      cityId: json['id_ciudad'],
+  factory Apartment.fromJson(Map<String, dynamic> json) {
+    return Apartment(
+      id: _parseInt(json['id_departamento']),
+      title: json['titulo']?.toString() ?? '',
+      description: json['descripcion']?.toString() ?? '',
+      price: _parseDouble(json['precio']),
+      status: _parseInt(json['estado']),
+      publishedAt: _parseDateTime(json['fecha_publicacion']),
+      mapLocation: json['enlace_ubicacion']?.toString() ?? '',
+      bedrooms: _parseInt(json['habitaciones']),
+      bathrooms: _parseInt(json['banos']),
+      images: _parseImages(json['imagenes']),
+      cityId: _parseInt(json['ciudad']?['id_ciudad']),
+      companyId: _parseInt(json['empresa']?['id_empresa']),
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id_departamento': id,
-      'titulo': title,
-      'descripcion': description,
-      'precio': price,
-      'estado': status,
-      'fecha_publicacion': publishDate?.toIso8601String(),
-      'enlace_ubicacion': locationLink,
-      'habitaciones': bedrooms,
-      'banos': bathrooms,
-      'piso': floor,
-      'id_usuario': userId,
-      'id_ciudad': cityId,
-    };
+  // Métodos auxiliares para parseo seguro (igual que en los otros modelos)
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
+
+  static DateTime _parseDateTime(dynamic value) {
+    if (value == null) return DateTime.now();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+    return DateTime.now();
+  }
+
+  static List<String> _parseImages(dynamic value) {
+    if (value == null) return [];
+    if (value is List) {
+      return value.map((e) => e.toString()).where((e) => e.isNotEmpty).toList();
+    }
+    return [];
   }
 }

@@ -1,8 +1,51 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../models/Rent.dart';
+import '../models/apartament.dart';
+
 class ApiService {
-  final String baseUrl = 'http://localhost:3000/api';
+  static const String baseUrl = 'http://192.168.0.10:3000/api';
+
+  static Future<List<Apartment>> getApartmentsByCompanyAndCity({
+    required int companyId,
+    required int cityId,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/departamentos/empresa/$companyId/ciudad/$cityId'),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Apartment.fromJson(json)).toList();
+      } else {
+        throw Exception('Error al cargar departamentos: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
+  static Future<List<Rental>> getRentalsByCompanyAndCity({
+    required int companyId,
+    required int cityId,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/alquileres/empresa/$companyId/ciudad/$cityId'),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Rental.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load rentals: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to load rentals: $e');
+    }
+  }
 
   Future<List<String>> fetchCities() async {
     final response = await http.get(Uri.parse('$baseUrl/ciudades'));

@@ -1,54 +1,65 @@
 import 'package:flutter/material.dart';
-import '../models/apartament.dart';
-import '../services/api_service.dart';
-//import 'detalle_departamento_screen.dart';
+import 'package:mi_terrenito/services/api_service.dart';
 
-class DepartmentsScreen extends StatefulWidget {
-  final int empresaId;
+import '../models/apartament.dart';
+import '../widgets/card_apartament.dart';
+
+class ApartmentsScreen extends StatefulWidget {
+  final int companyId;
   final int cityId;
 
-  const DepartmentsScreen({Key? key, required this.empresaId, required this.cityId}) : super(key: key);
+  const ApartmentsScreen({
+    super.key,
+    required this.companyId,
+    required this.cityId,
+  });
 
   @override
-  State<DepartmentsScreen> createState() => _DepartmentsScreenState();
+  State<ApartmentsScreen> createState() => _ApartmentsScreenState();
 }
 
-class _DepartmentsScreenState extends State<DepartmentsScreen> {
+class _ApartmentsScreenState extends State<ApartmentsScreen> {
+  late TextEditingController searchController;
+  List<Apartment> filteredApartments = [];
+  List<Apartment> allApartments = [];
   bool isLoading = true;
-  List<dynamic> departamentos = [];
-  List<dynamic> filteredDepartamentos = [];
-  String searchText = '';
-
-  final ApiService apiService = ApiService();
+  String errorMessage = '';
 
   @override
   void initState() {
     super.initState();
-    loadDepartamentos();
+    searchController = TextEditingController();
+    _loadApartments();
+    searchController.addListener(_filterApartments);
   }
 
-  Future<void> loadDepartamentos() async {
+  Future<void> _loadApartments() async {
     try {
-      final loaded = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      final apartments = await ApiService.getApartmentsByCompanyAndCity(
+        companyId: widget.companyId,
+        cityId: widget.cityId,
+      );
+
       setState(() {
-        departamentos = loaded;
-        filteredDepartamentos = loaded;
+        allApartments = apartments;
+        filteredApartments = apartments;
         isLoading = false;
       });
     } catch (e) {
       setState(() {
         isLoading = false;
+        errorMessage = 'Error: ${e.toString()}';
       });
     }
   }
 
-  void filterDepartamentos(String query) {
+  void _filterApartments() {
+    final query = searchController.text.toLowerCase();
     setState(() {
-      searchText = query.toLowerCase();
-      filteredDepartamentos = departamentos.where((item) {
-        final title = item['titulo']?.toLowerCase() ?? '';
-        final ciudad = item['ciudad']?['nombre_ciudad']?.toLowerCase() ?? '';
-        return title.contains(searchText) || ciudad.contains(searchText);
+      filteredApartments = allApartments.where((apt) {
+        return apt.title.toLowerCase().contains(query) ||
+            apt.description.toLowerCase().contains(query) ||
+            apt.price.toString().contains(query);
       }).toList();
     });
   }
@@ -59,118 +70,42 @@ class _DepartmentsScreenState extends State<DepartmentsScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
+              controller: searchController,
               decoration: InputDecoration(
                 hintText: 'Buscar departamentos...',
                 prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () => searchController.clear(),
+                ),
               ),
-              onChanged: filterDepartamentos,
             ),
           ),
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : filteredDepartamentos.isEmpty
-                    ? const Center(child: Text('No hay departamentos disponibles.'))
-                    : ListView.builder(
-                        itemCount: filteredDepartamentos.length,
-                        itemBuilder: (context, index) {
-                          final depto = filteredDepartamentos[index];
-                          final imagenUrl = (depto['imagenes'] != null && depto['imagenes'].isNotEmpty)
-                              ? 'http://localhost:3000${depto['imagenes'][0]}'
-                              : null;
-                          final ciudad = depto['ciudad'] ?? {};
-
-                          return GestureDetector(
-                            onTap: () {
-                              // final departamento = Department.fromJson(depto);
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => DetalleDepartamentoScreen(departamento: departamento),
-                              //   ),
-                              // );
-                            },
-                            child: Card(
-                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              elevation: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (imagenUrl != null)
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(16),
-                                        child: Image.network(
-                                          imagenUrl,
-                                          width: 120,
-                                          height: 120,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    else
-                                      Container(
-                                        width: 120,
-                                        height: 120,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                          borderRadius: BorderRadius.circular(16),
-                                        ),
-                                        child: const Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
-                                      ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            depto['titulo'] ?? 'Sin título',
-                                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                                              const SizedBox(width: 4),
-                                              Expanded(
-                                                child: Text(
-                                                  ciudad['nombre_ciudad'] ?? '-',
-                                                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.king_bed, size: 20),
-                                              const SizedBox(width: 4),
-                                              Text('${depto['habitaciones'] ?? '-'} hab'),
-                                              const SizedBox(width: 16),
-                                              const Icon(Icons.bathtub, size: 20),
-                                              const SizedBox(width: 4),
-                                              Text('${depto['banos'] ?? '-'} baños'),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Text(
-                                            '\$${depto['precio'] ?? '-'}',
-                                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green[700]),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                : errorMessage.isNotEmpty
+                ? Center(child: Text(errorMessage))
+                : filteredApartments.isEmpty
+                ? const Center(
+              child: Text(
+                'No se encontraron departamentos',
+                style: TextStyle(fontSize: 16),
+              ),
+            )
+                : ListView.builder(
+              itemCount: filteredApartments.length,
+              itemBuilder: (context, index) {
+                return ApartmentCard(
+                  apartment: filteredApartments[index],
+                );
+              },
+            ),
           ),
         ],
       ),

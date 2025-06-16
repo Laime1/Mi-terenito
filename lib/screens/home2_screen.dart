@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/screens/rentals_screen.dart';
 import 'casas_screen.dart';
 import 'terrenos_screen.dart';
 import 'departaments_screen.dart';
-import 'rentals_screens.dart';
+import 'rentalsscreens.dart';
 
 class Home2Screen extends StatefulWidget {
   final String tipo; // 'casas', 'terrenos', 'departamentos', 'alquileres'
@@ -48,13 +49,13 @@ class _Home2ScreenState extends State<Home2Screen> {
           cityId: widget.cityId,
         );
       case 'departamentos':
-        return DepartmentsScreen(
-          empresaId: widget.empresaId,
+        return ApartmentsScreen(
+          companyId: widget.empresaId,
           cityId: widget.cityId,
         );
       case 'alquileres':
         return RentalsScreen(
-          empresaId: widget.empresaId,
+          companyId: widget.empresaId,
           cityId: widget.cityId,
         );
       default:

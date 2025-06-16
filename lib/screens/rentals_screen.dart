@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/widgets/rental1_card.dart';
-import 'package:mi_terrenito/services/api_services.dart';
+import 'package:mi_terrenito/services/api_service.dart';
 
 import '../models/Rent.dart';
 
 class RentalsScreen extends StatefulWidget {
-  // final int companyId;
-  // final int cityId;
+   final int companyId;
+   final int cityId;
 
   const RentalsScreen({
     super.key,
-    // required this.companyId,
-    // required this.cityId,
+     required this.companyId,
+     required this.cityId,
   });
 
   @override
@@ -19,8 +19,7 @@ class RentalsScreen extends StatefulWidget {
 }
 
 class _RentalsScreenState extends State<RentalsScreen> {
-  static const int companyId = 1;
-  static const int cityId = 1;
+
   late TextEditingController searchController;
   List<Rental> filteredRentals = [];
   List<Rental> allRentals = [];
@@ -38,8 +37,8 @@ class _RentalsScreenState extends State<RentalsScreen> {
   Future<void> _loadRentals() async {
     try {
       final rentals = await ApiService.getRentalsByCompanyAndCity(
-        companyId: companyId,
-        cityId: cityId,
+        companyId: widget.companyId,
+        cityId: widget.cityId,
       );
 
       setState(() {
@@ -69,9 +68,6 @@ class _RentalsScreenState extends State<RentalsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ALQUILERES'),
-      ),
       body: Column(
         children: [
           Padding(

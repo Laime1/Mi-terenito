@@ -3,21 +3,21 @@ import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/rent.dart';
 
-class RentalsScreen extends StatefulWidget {
+class Rentals1Screen extends StatefulWidget {
   final int empresaId;
   final int cityId;
 
-  const RentalsScreen({
+  const Rentals1Screen({
     Key? key,
     required this.empresaId,
     required this.cityId,
   }) : super(key: key);
 
   @override
-  State<RentalsScreen> createState() => _RentalsScreenState();
+  State<Rentals1Screen> createState() => _RentalsScreenState();
 }
 
-class _RentalsScreenState extends State<RentalsScreen> {
+class _RentalsScreenState extends State<Rentals1Screen> {
   bool isLoading = true;
   List<dynamic> rentals = [];
   List<dynamic> filteredRentals = [];
