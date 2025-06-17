@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../services/api_service.dart';
-import '../models/house.dart';
-import 'detalle_casa_screen.dart';
-import 'home2_screen.dart';
+import '../../services/api_service.dart';
+import '../../models/house.dart';
+import 'details_house_screen.dart';
+import '../home2_screen.dart';
+import 'form_house_screen.dart';
 
 class CasasScreen extends StatefulWidget {
   final int empresaId;
   final int cityId;
+  final int? usuarioId;
 
-  const CasasScreen({Key? key, required this.empresaId, required this.cityId}) : super(key: key);
+  const CasasScreen({Key? key, required this.empresaId, required this.cityId, this.usuarioId}) : super(key: key);
 
   @override
   State<CasasScreen> createState() => _CasasScreenState();
@@ -21,7 +23,6 @@ class _CasasScreenState extends State<CasasScreen> {
   List<dynamic> filteredCasas = [];
   String searchText = '';
 
-  // Flags para indicar existencia de propiedades en cada tipo
   bool hasCasas = false;
   bool hasTerrenos = false;
   bool hasDepartamentos = false;
@@ -38,7 +39,14 @@ class _CasasScreenState extends State<CasasScreen> {
   Future<void> loadAllData() async {
     setState(() => isLoading = true);
     try {
-      final loadedCasas = await apiService.fetchCasasByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      List<dynamic> loadedCasas;
+
+      if (widget.usuarioId != null) {
+        loadedCasas = await apiService.fetchCasasByUsuario(widget.usuarioId!);
+      } else {
+        loadedCasas = await apiService.fetchCasasByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      }
+
       final loadedTerrenos = await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
       final loadedDepartamentos = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
       final loadedAlquileres = await apiService.fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
@@ -100,7 +108,6 @@ class _CasasScreenState extends State<CasasScreen> {
     return Scaffold(
       body: Column(
         children: [
-          // 🔍 Buscador
           Padding(
             padding: const EdgeInsets.all(12),
             child: TextField(
@@ -112,13 +119,18 @@ class _CasasScreenState extends State<CasasScreen> {
               onChanged: filterCasas,
             ),
           ),
-
-          // 🏠 Lista de casas
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredCasas.isEmpty
-                    ? const Center(child: Text('No hay casas disponibles.'))
+                    ? Center(
+                        child: Text(
+                          widget.usuarioId != null
+                              ? 'Sin casas publicadas.'
+                              : 'No hay casas disponibles.',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      )
                     : ListView.builder(
                         itemCount: filteredCasas.length,
                         itemBuilder: (context, index) {
@@ -218,6 +230,17 @@ class _CasasScreenState extends State<CasasScreen> {
                       ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const FormHouseScreen(),
+            ),
+          );
+        },
       ),
     );
   }

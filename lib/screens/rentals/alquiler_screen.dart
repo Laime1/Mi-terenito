@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
+import '../../services/api_service.dart';
 
 class AlquileresScreen extends StatefulWidget {
   final int empresaId;
   final int cityId;
+  final int? usuarioId;
 
   const AlquileresScreen({
     Key? key,
     required this.empresaId,
     required this.cityId,
+    required this.usuarioId
   }) : super(key: key);
 
   @override

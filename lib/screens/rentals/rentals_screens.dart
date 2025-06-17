@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../services/api_service.dart';
-import '../models/Rent.dart';
+import '../../services/api_service.dart';
+import '../../models/Rent.dart';
 
 class RentalsScreen extends StatefulWidget {
   final int empresaId;
   final int cityId;
+  final int? usuarioId;
 
   const RentalsScreen({
     Key? key,
     required this.empresaId,
     required this.cityId,
+    required this.usuarioId,
   }) : super(key: key);
 
   @override
@@ -33,7 +35,12 @@ class _RentalsScreenState extends State<RentalsScreen> {
 
   Future<void> loadRentals() async {
     try {
-      final loadedRentals = await apiService.fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      List<dynamic> loadedRentals;
+      if (widget.usuarioId != null) {
+        loadedRentals = await apiService.fetchAlquileresByUsuario(widget.usuarioId!);
+      } else {
+        loadedRentals = await apiService.fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      }
       setState(() {
         rentals = loadedRentals;
         filteredRentals = loadedRentals;
@@ -88,7 +95,14 @@ class _RentalsScreenState extends State<RentalsScreen> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredRentals.isEmpty
-                    ? const Center(child: Text('No hay alquileres disponibles.'))
+                    ? Center(
+                        child: Text(
+                          widget.usuarioId != null
+                              ? 'Sin alquileres publicados.'
+                              : 'No hay alquileres disponibles.',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      )
                     : ListView.builder(
                         itemCount: filteredRentals.length,
                         itemBuilder: (context, index) {
@@ -99,7 +113,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
 
                           return GestureDetector(
                             onTap: () {
-                              // Puedes navegar al detalle si implementas pantalla de detalle
+                              // Aquí podrías navegar a una pantalla de detalle si la tienes.
                             },
                             child: Card(
                               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),

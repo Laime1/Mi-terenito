@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../services/api_service.dart';
-import '../models/land.dart';
+import '../../services/api_service.dart';
+import '../../models/land.dart';
 import 'detalle_terreno_screen.dart';
 
 class TerrenosScreen extends StatefulWidget {
   final int empresaId;
   final int cityId;
+  final int? usuarioId;
 
-  const TerrenosScreen({Key? key, required this.empresaId, required this.cityId}) : super(key: key);
+  const TerrenosScreen({
+    Key? key,
+    required this.empresaId,
+    required this.cityId,
+    required this.usuarioId,
+  }) : super(key: key);
 
   @override
   State<TerrenosScreen> createState() => _TerrenosScreenState();
@@ -29,7 +35,14 @@ class _TerrenosScreenState extends State<TerrenosScreen> {
 
   Future<void> loadTerrenos() async {
     try {
-      final response = await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      List<dynamic> response;
+
+      if (widget.usuarioId != null) {
+        response = await apiService.fetchTerrenosByUsuario(widget.usuarioId!);
+      } else {
+        response = await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      }
+
       final loaded = response.map<Land>((json) => Land.fromJson(json)).toList();
       setState(() {
         terrenos = loaded;
@@ -74,7 +87,14 @@ class _TerrenosScreenState extends State<TerrenosScreen> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredTerrenos.isEmpty
-                    ? const Center(child: Text('No hay terrenos disponibles.'))
+                    ? Center(
+                        child: Text(
+                          widget.usuarioId != null
+                              ? 'Sin terrenos publicados.'
+                              : 'No hay terrenos disponibles.',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      )
                     : ListView.builder(
                         itemCount: filteredTerrenos.length,
                         itemBuilder: (context, index) {
@@ -136,7 +156,11 @@ class _TerrenosScreenState extends State<TerrenosScreen> {
                                           const SizedBox(height: 8),
                                           Text(
                                             '\$${NumberFormat('#,##0.00').format(terreno.price)}',
-                                            style: const TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.green,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ],
                                       ),

@@ -3,6 +3,7 @@ import '../widgets/custom_dropdown.dart';
 import '../services/api_service.dart';
 import 'home2_screen.dart';
 import '../models/app_colors.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? selectedCity;
@@ -151,9 +152,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person, color: AppColors.appBarText),
-            onPressed: () {},
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            child: const Text(
+              'Iniciar sesión',
+              style: TextStyle(color: AppColors.appBarText),
+            ),
           ),
         ],
       ),

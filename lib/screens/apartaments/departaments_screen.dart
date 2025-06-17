@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
-import '../models/apartament.dart';
-import '../services/api_service.dart';
-//import 'detalle_departamento_screen.dart';
+import '../../models/apartament.dart';
+import '../../services/api_service.dart';
+// import 'detalle_departamento_screen.dart';
 
 class DepartmentsScreen extends StatefulWidget {
   final int empresaId;
   final int cityId;
+  final int? usuarioId;
 
-  const DepartmentsScreen({Key? key, required this.empresaId, required this.cityId}) : super(key: key);
+  const DepartmentsScreen({
+    Key? key,
+    required this.empresaId,
+    required this.cityId,
+    required this.usuarioId,
+  }) : super(key: key);
 
   @override
   State<DepartmentsScreen> createState() => _DepartmentsScreenState();
@@ -29,7 +35,14 @@ class _DepartmentsScreenState extends State<DepartmentsScreen> {
 
   Future<void> loadDepartamentos() async {
     try {
-      final loaded = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      List<dynamic> loaded;
+
+      if (widget.usuarioId != null) {
+        loaded = await apiService.fetchDepartamentosByUsuario(widget.usuarioId!);
+      } else {
+        loaded = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      }
+
       setState(() {
         departamentos = loaded;
         filteredDepartamentos = loaded;
@@ -73,7 +86,14 @@ class _DepartmentsScreenState extends State<DepartmentsScreen> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredDepartamentos.isEmpty
-                    ? const Center(child: Text('No hay departamentos disponibles.'))
+                    ? Center(
+                        child: Text(
+                          widget.usuarioId != null
+                              ? 'Sin departamentos publicados.'
+                              : 'No hay departamentos disponibles.',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      )
                     : ListView.builder(
                         itemCount: filteredDepartamentos.length,
                         itemBuilder: (context, index) {
@@ -159,7 +179,11 @@ class _DepartmentsScreenState extends State<DepartmentsScreen> {
                                           const SizedBox(height: 10),
                                           Text(
                                             '\$${depto['precio'] ?? '-'}',
-                                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green[700]),
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.green[700],
+                                            ),
                                           ),
                                         ],
                                       ),

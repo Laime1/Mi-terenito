@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'http://localhost:3000/api';
+  static const String baseUrl = 'http://localhost:3000/api';
   static const String baseImageUrl = 'http://localhost:3000';
 
   Future<List<String>> fetchCities() async {
@@ -83,6 +83,46 @@ class ApiService {
       return data is List && data.isNotEmpty;
     } else {
       return false;
+    }
+  }
+
+  Future<List<dynamic>> fetchCasasByUsuario(int usuarioId) async {
+    final response = await http.get(Uri.parse('$baseUrl/casas/usuario/$usuarioId'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data;
+    } else {
+      throw Exception('Error al cargar casas por usuario');
+    }
+  }
+
+  Future<List<dynamic>> fetchDepartamentosByUsuario(int usuarioId) async {
+    final response = await http.get(Uri.parse('$baseUrl/departamentos/usuario/$usuarioId'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data;
+    } else {
+      throw Exception('Error al cargar casas por usuario');
+    }
+  }
+
+  Future<List<dynamic>> fetchTerrenosByUsuario(int usuarioId) async {
+    final response = await http.get(Uri.parse('$baseUrl/terrenos/usuario/$usuarioId'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data;
+    } else {
+      throw Exception('Error al cargar casas por usuario');
+    }
+  }
+
+  Future<List<dynamic>> fetchAlquileresByUsuario(int usuarioId) async {
+    final response = await http.get(Uri.parse('$baseUrl/alquileres/usuario/$usuarioId'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data;
+    } else {
+      throw Exception('Error al cargar casas por usuario');
     }
   }
 }
