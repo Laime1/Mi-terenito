@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/land.dart';
-import '../screens/detalle_terreno_screen.dart';
+import '../screens/lands/detail_land_screen.dart';
 
 class TerrenoCard extends StatelessWidget {
   final Land terreno;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 
-import '../models/apartament.dart';
-import '../widgets/card_apartament.dart';
+import '../../models/apartment.dart';
+import '../../widgets/card_apartament.dart';
 
 class ApartmentsScreen extends StatefulWidget {
   final int companyId;

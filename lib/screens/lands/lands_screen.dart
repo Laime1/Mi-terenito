@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../services/api_service.dart';
-import '../models/land.dart';
-import 'lands/detail_land_screen.dart';
+import '../../services/api_service.dart';
+import '../../models/land.dart';
+import 'detail_land_screen.dart';
 
 class LandsScreen extends StatefulWidget {
   final int empresaId;

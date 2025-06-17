@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/house.dart';
+import '../../models/house.dart';
 
 class DetailsHouseScreen extends StatefulWidget {
   final House casa;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/house.dart';
-import '../screens/detalle_casa_screen.dart';
+import '../screens/houses/details_house_screen.dart';
 
 class CasaCard extends StatelessWidget {
   final House house;

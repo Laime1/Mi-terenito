@@ -1,3 +1,7 @@
+import 'package:mi_terrenito/models/city.dart';
+import 'package:mi_terrenito/models/company.dart';
+import 'package:mi_terrenito/models/user.dart';
+
 class Rental {
   final int id;
   final String title;
@@ -10,7 +14,9 @@ class Rental {
   final int minimumMonths;
   final String includedServices;
   final List<String> images;
-  final int cityId;
+  final User user;
+  final City city;
+  final Company company;
 
   Rental({
     required this.id,
@@ -24,8 +30,10 @@ class Rental {
     required this.minimumMonths,
     required this.includedServices,
     required this.images,
-    required this.cityId,
-  });
+    required this.user,
+    required this.city,
+    required this.company,
+    });
 
   factory Rental.fromJson(Map<String, dynamic> json) {
     return Rental(
@@ -40,7 +48,9 @@ class Rental {
       minimumMonths: _parseInt(json['tiempo_minimo_meses']),
       includedServices: json['incluye_servicios']?.toString() ?? '',
       images: _parseImages(json['imagenes']),
-      cityId: _parseInt(json['ciudad']?['id_ciudad']),
+      user: User.fromJson(json['usuario'] ?? {}),
+      city: City.fromJson(json['ciudad'] ?? {}),
+      company: Company.fromJson(json['empresa'] ?? {}),
     );
   }
 
@@ -69,11 +79,14 @@ class Rental {
   static List<String> _parseImages(dynamic value) {
     if (value == null) return [];
     if (value is List) {
-      return value.map((e) {
-        if (e is String) return e;
-        if (e is Map) return e['url_imagen']?.toString() ?? '';
-        return '';
-      }).where((e) => e.isNotEmpty).toList();
+      return value
+          .map((e) {
+            if (e is String) return e;
+            if (e is Map) return e['url_imagen']?.toString() ?? '';
+            return '';
+          })
+          .where((e) => e.isNotEmpty)
+          .toList();
     }
     return [];
   }

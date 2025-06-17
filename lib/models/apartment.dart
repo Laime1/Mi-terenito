@@ -1,3 +1,7 @@
+import 'package:mi_terrenito/models/city.dart';
+import 'package:mi_terrenito/models/company.dart';
+import 'package:mi_terrenito/models/user.dart';
+
 class Apartment {
   final int id;
   final String title;
@@ -9,8 +13,9 @@ class Apartment {
   final int bedrooms;
   final int bathrooms;
   final List<String> images;
-  final int cityId;
-  final int companyId;
+  final User? user;
+  final City? city;
+  final Company? company;
 
   Apartment({
     required this.id,
@@ -23,8 +28,9 @@ class Apartment {
     required this.bedrooms,
     required this.bathrooms,
     required this.images,
-    required this.cityId,
-    required this.companyId,
+    required this.user,
+    required this.city,
+    required this.company,
   });
 
   factory Apartment.fromJson(Map<String, dynamic> json) {
@@ -39,8 +45,10 @@ class Apartment {
       bedrooms: _parseInt(json['habitaciones']),
       bathrooms: _parseInt(json['banos']),
       images: _parseImages(json['imagenes']),
-      cityId: _parseInt(json['ciudad']?['id_ciudad']),
-      companyId: _parseInt(json['empresa']?['id_empresa']),
+      user: User.fromJson(json['usuario'] ?? {}),
+      city: City.fromJson(json['ciudad'] ?? {}),
+      company: Company.fromJson(json['empresa'] ?? {}),
+      
     );
   }
 

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mi_terrenito/screens/rentals_screen.dart';
+import 'package:mi_terrenito/screens/rentals/rentals_screen.dart';
 import 'houses/houses_screen.dart';
-import 'terrenos_screen.dart';
+import 'lands/lands_screen.dart';
 import 'apartaments/apartaments_screen.dart';
-import 'rentalsscreens.dart';
 
 class Home2Screen extends StatefulWidget {
   final String tipo; // 'casas', 'terrenos', 'departamentos', 'alquileres'

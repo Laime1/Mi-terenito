@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import '../models/Rent.dart';
-import '../models/apartament.dart';
+import '../models/rental.dart';
+import '../models/apartment.dart';
 
 class ApiService {
   static const String baseUrl = 'http://192.168.0.10:3000/api';

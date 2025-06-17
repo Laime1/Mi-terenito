@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mi_terrenito/widgets/rental1_card.dart';
+import 'package:mi_terrenito/screens/rentals/rental_detail_screen.dart';
+import 'package:mi_terrenito/widgets/rental_card.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 
-import '../models/Rent.dart';
+import '../../models/rental.dart';
 
 class RentalsScreen extends StatefulWidget {
    final int companyId;
@@ -93,7 +94,18 @@ class _RentalsScreenState extends State<RentalsScreen> {
                 : ListView.builder(
               itemCount: filteredRentals.length,
               itemBuilder: (context, index) {
-                return RentalCard(rental: filteredRentals[index]);
+                return RentalCard(rental: filteredRentals[index], 
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RentalDetailScreen(
+                          rental: filteredRentals[index],
+                        ),
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ),

@@ -3,20 +3,24 @@ class Company {
   final String name;
   final String description;
   final String phone;
+    final String email;
+
 
   Company({
     required this.id,
     required this.name,
     required this.description,
     required this.phone,
+    required this.email,
   });
 
   factory Company.fromJson(Map<String, dynamic> json) {
     return Company(
-      id: json['id_empresa'],
-      name: json['nombre_empresa'],
-      description: json['descripcion'],
-      phone: json['telefono'],
+      id: json['id_empresa'] ?? 0,
+      name: json['nombre_empresa']?.toString() ?? '',
+      description: json['descripcion']?.toString()  ?? '',
+      phone: json['telefono']?.toString() ?? '',
+      email: json['correo']?.toString() ?? '',
     );
   }
 

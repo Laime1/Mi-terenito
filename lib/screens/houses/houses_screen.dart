@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../models/house.dart';
-import '../detalle_casa_screen.dart';
+import 'details_house_screen.dart';
 import '../home2_screen.dart'; // Asegúrate de importar la pantalla Home2Screen
 
 class HousesScreen extends StatefulWidget {
