@@ -14,7 +14,7 @@ class CasaCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailsHouseScreen(casa: house),
+            builder: (context) => DetalleCasaScreen(casa: house),
           ),
         );
       },

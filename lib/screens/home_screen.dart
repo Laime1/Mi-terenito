@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
-import '../widgets/empresa_card.dart';
+import '../widgets/custom_dropdown.dart';
 import '../services/api_service.dart';
 import 'home2_screen.dart';
+import '../models/app_colors.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String? selectedCity;
+  final String? selectedEmpresaName;
+  final int? selectedEmpresaId;
+  final bool hasCasas;
+  final bool hasTerrenos;
+  final bool hasDepartamentos;
+  final bool hasAlquileres;
+
+  const HomeScreen({
+    super.key,
+    this.selectedCity,
+    this.selectedEmpresaName,
+    this.selectedEmpresaId,
+    this.hasCasas = false,
+    this.hasTerrenos = false,
+    this.hasDepartamentos = false,
+    this.hasAlquileres = false,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -12,17 +31,46 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? selectedCity;
+  String? selectedEmpresaName;
   int? selectedEmpresaId;
   List<String> cities = [];
   List<dynamic> empresas = [];
   bool isLoading = true;
+
+  bool hasCasas = false;
+  bool hasTerrenos = false;
+  bool hasDepartamentos = false;
+  bool hasAlquileres = false;
 
   final ApiService apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
-    loadCities();
+
+    selectedCity = widget.selectedCity;
+    selectedEmpresaName = widget.selectedEmpresaName;
+    selectedEmpresaId = widget.selectedEmpresaId;
+
+    hasCasas = widget.hasCasas;
+    hasTerrenos = widget.hasTerrenos;
+    hasDepartamentos = widget.hasDepartamentos;
+    hasAlquileres = widget.hasAlquileres;
+
+    if (selectedCity == null) {
+      loadCities();
+    } else {
+      apiService.fetchCities().then((loadedCities) async {
+        final cityId = await apiService.getCityIdByName(selectedCity!);
+        final loadedEmpresas = await apiService.fetchEmpresasByCiudad(cityId);
+
+        setState(() {
+          cities = loadedCities;
+          empresas = loadedEmpresas;
+          isLoading = false;
+        });
+      });
+    }
   }
 
   Future<void> loadCities() async {
@@ -30,13 +78,17 @@ class _HomeScreenState extends State<HomeScreen> {
       final loadedCities = await apiService.fetchCities();
       setState(() {
         cities = loadedCities;
-        selectedCity = cities.isNotEmpty ? cities.first : null;
+        selectedCity = null;
         isLoading = false;
+        empresas = [];
+        selectedEmpresaName = null;
+        selectedEmpresaId = null;
+
+        hasCasas = false;
+        hasTerrenos = false;
+        hasDepartamentos = false;
+        hasAlquileres = false;
       });
-      if (selectedCity != null) {
-        final cityId = await apiService.getCityIdByName(selectedCity!);
-        loadEmpresas(cityId);
-      }
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -49,159 +101,185 @@ class _HomeScreenState extends State<HomeScreen> {
       final loadedEmpresas = await apiService.fetchEmpresasByCiudad(cityId);
       setState(() {
         empresas = loadedEmpresas;
+        selectedEmpresaName = null;
+        selectedEmpresaId = null;
+
+        hasCasas = false;
+        hasTerrenos = false;
+        hasDepartamentos = false;
+        hasAlquileres = false;
       });
-    } catch (e) {}
+    } catch (e) {
+      setState(() {
+        empresas = [];
+        selectedEmpresaName = null;
+        selectedEmpresaId = null;
+
+        hasCasas = false;
+        hasTerrenos = false;
+        hasDepartamentos = false;
+        hasAlquileres = false;
+      });
+    }
+  }
+
+  Future<void> verificarDisponibilidadPropiedades(int ciudadId, int empresaId) async {
+    bool casas = await apiService.existePropiedad('casas', empresaId, ciudadId);
+    bool terrenos = await apiService.existePropiedad('terrenos', empresaId, ciudadId);
+    bool departamentos = await apiService.existePropiedad('departamentos', empresaId, ciudadId);
+    bool alquileres = await apiService.existePropiedad('alquileres', empresaId, ciudadId);
+
+    setState(() {
+      hasCasas = casas;
+      hasTerrenos = terrenos;
+      hasDepartamentos = departamentos;
+      hasAlquileres = alquileres;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bodyBackground,
       appBar: AppBar(
+        backgroundColor: AppColors.appBarBackground,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            Text('', style: TextStyle(fontSize: 14)),
-            Text('Click House', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text('', style: TextStyle(fontSize: 14, color: AppColors.appBarText)),
+            Text('Click House',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.appBarText)),
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {},
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            child: const Text(
+              'Iniciar sesión',
+              style: TextStyle(color: AppColors.appBarText),
+            ),
           ),
         ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: DropdownButton<String>(
-                      value: selectedCity,
-                      isExpanded: true,
-                      hint: const Text('Selecciona una ciudad'),
-                      underline: Container(
-                        height: 1,
-                        color: Colors.grey,
-                      ),
-                      items: cities.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) async {
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    CustomDropdown(
+                      items: cities,
+                      selectedItem: selectedCity,
+                      hint: 'Ciudades',
+                      onChanged: (value) async {
                         setState(() {
-                          selectedCity = newValue;
+                          selectedCity = value;
                           empresas = [];
                           selectedEmpresaId = null;
+                          selectedEmpresaName = null;
+
+                          hasCasas = false;
+                          hasTerrenos = false;
+                          hasDepartamentos = false;
+                          hasAlquileres = false;
                         });
-                        if (newValue != null) {
-                          final cityId = await apiService.getCityIdByName(newValue);
-                          loadEmpresas(cityId);
+                        if (value != null) {
+                          final cityId = await apiService.getCityIdByName(value);
+                          await loadEmpresas(cityId);
                         }
                       },
                     ),
-                  ),
-                  if (empresas.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Empresas:', style: TextStyle(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: empresas.length,
-                            itemBuilder: (context, index) {
-                              final empresa = empresas[index];
-                              final isSelected = selectedEmpresaId == empresa['id_empresa'];
-                              return EmpresaCard(
-                                empresa: empresa,
-                                isSelected: isSelected,
-                                onSelect: () {
-                                  setState(() {
-                                    selectedEmpresaId = empresa['id_empresa'];
-                                  });
-                                },
-                              );
+                    const SizedBox(height: 16),
+                    empresas.isNotEmpty
+                        ? CustomDropdown(
+                            items: empresas.map<String>((e) => e['nombre'] as String).toList(),
+                            selectedItem: selectedEmpresaName,
+                            hint: 'Empresas',
+                            onChanged: (value) async {
+                              final empresa = empresas.firstWhere((e) => e['nombre'] == value);
+                              setState(() {
+                                selectedEmpresaName = value;
+                                selectedEmpresaId = empresa['id_empresa'];
+                              });
+                              if (selectedCity != null && selectedEmpresaId != null) {
+                                final cityId = await apiService.getCityIdByName(selectedCity!);
+                                await verificarDisponibilidadPropiedades(cityId, selectedEmpresaId!);
+                              }
                             },
+                          )
+                        : Container(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: const Text('Sin empresas',
+                                textAlign: TextAlign.center, style: TextStyle(color: AppColors.cardText)),
                           ),
-                        ],
-                      ),
-                    )
-                  else
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text('No existen empresas en esta ciudad'),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: GridView.count(
+                    const SizedBox(height: 100),
+                    GridView.count(
                       crossAxisCount: 2,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
-                        _buildMenuItem('Casas', Icons.home),
-                        _buildMenuItem('Terrenos', Icons.landscape),
-                        _buildMenuItem('Departamentos', Icons.apartment),
-                        _buildMenuItem('Alquileres', Icons.home_work),
+                        _buildMenuItem('Casas', Icons.house_rounded, hasCasas),
+                        _buildMenuItem('Terrenos', Icons.park_rounded, hasTerrenos),
+                        _buildMenuItem('Departamentos', Icons.apartment_rounded, hasDepartamentos),
+                        _buildMenuItem('Alquileres', Icons.real_estate_agent_rounded, hasAlquileres),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favoritos',
-          ),
-        ],
-      ),
     );
   }
 
-  Widget _buildMenuItem(String title, IconData icon) {
-    return Card(
-      child: InkWell(
-        onTap: () async {
-          if (selectedEmpresaId != null && selectedCity != null) {
-            final cityId = await apiService.getCityIdByName(selectedCity!);
-            String tipo = title.toLowerCase();
+  Widget _buildMenuItem(String title, IconData icon, bool enabled) {
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.4,
+      child: Card(
+        color: AppColors.cardBackground,
+        child: InkWell(
+          onTap: enabled
+              ? () async {
+                  if (selectedEmpresaId != null && selectedCity != null && selectedEmpresaName != null) {
+                    final cityId = await apiService.getCityIdByName(selectedCity!);
+                    String tipo = title.toLowerCase();
 
-            Widget destino = Home2Screen(
-              tipo: tipo,
-              empresaId: selectedEmpresaId!,
-              cityId: cityId,
-            );
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => destino),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Selecciona ciudad y empresa")),
-            );
-          }
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40),
-            const SizedBox(height: 10),
-            Text(title),
-          ],
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Home2Screen(
+                          tipo: tipo,
+                          empresaId: selectedEmpresaId!,
+                          cityId: cityId,
+                          selectedCityName: selectedCity!,
+                          selectedEmpresaName: selectedEmpresaName!,
+                          hasCasas: hasCasas,
+                          hasTerrenos: hasTerrenos,
+                          hasDepartamentos: hasDepartamentos,
+                          hasAlquileres: hasAlquileres,
+                        ),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Selecciona ciudad y empresa")),
+                    );
+                  }
+                }
+              : null,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 40, color: AppColors.cardText),
+              const SizedBox(height: 10),
+              Text(title, style: const TextStyle(color: AppColors.cardText)),
+            ],
+          ),
         ),
       ),
     );

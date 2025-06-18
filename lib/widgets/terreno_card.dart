@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/land.dart';
-import '../screens/lands/detail_land_screen.dart';
+import '../screens/lands/detalle_terreno_screen.dart';
 
 class TerrenoCard extends StatelessWidget {
   final Land terreno;
@@ -18,7 +18,7 @@ class TerrenoCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailLandScrenn(terreno: terreno),
+            builder: (context) => DetalleTerrenoScreen(terreno: terreno),
           ),
         );
       },

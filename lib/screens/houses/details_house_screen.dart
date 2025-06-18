@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../models/house.dart';
 
-class DetailsHouseScreen extends StatefulWidget {
+class DetalleCasaScreen extends StatefulWidget {
   final House casa;
 
-  const DetailsHouseScreen({Key? key, required this.casa}) : super(key: key);
+  const DetalleCasaScreen({Key? key, required this.casa}) : super(key: key);
 
   @override
-  State<DetailsHouseScreen> createState() => _DetailsHouseScreenState();
+  State<DetalleCasaScreen> createState() => _DetalleCasaScreenState();
 }
 
-class _DetailsHouseScreenState extends State<DetailsHouseScreen> {
+class _DetalleCasaScreenState extends State<DetalleCasaScreen> {
   int currentIndex = 0;
 
   @override

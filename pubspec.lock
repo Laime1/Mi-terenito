@@ -57,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  circle_bottom_navigation:
+    dependency: "direct main"
+    description:
+      name: circle_bottom_navigation
+      sha256: "091b7f6194d663c8a93b316c4d0202ce478dff16df6e85471e0c9624ab41135a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   cli_util:
     dependency: transitive
     description:

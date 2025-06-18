@@ -36,6 +36,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
 
   Future<void> _loadApartments() async {
     try {
+
       final apartments = await ApiService.getApartmentsByCompanyAndCity(
         companyId: widget.companyId,
         cityId: widget.cityId,
