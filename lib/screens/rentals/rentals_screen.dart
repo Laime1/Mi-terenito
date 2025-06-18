@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/screens/rentals/rental_detail_screen.dart';
+import 'package:mi_terrenito/screens/rentals/rental_form_screen.dart';
 import 'package:mi_terrenito/widgets/rental_card.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 
@@ -94,7 +95,8 @@ class _RentalsScreenState extends State<RentalsScreen> {
                 : ListView.builder(
               itemCount: filteredRentals.length,
               itemBuilder: (context, index) {
-                return RentalCard(rental: filteredRentals[index], 
+                final Rental rental = filteredRentals[index];
+                return RentalCard(rental: rental,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -110,6 +112,17 @@ class _RentalsScreenState extends State<RentalsScreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add_box),
+          onPressed: (){
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                builder: (context) => RentalFormScreen(idUser: 2, idCity: 4,),
+            ),
+            );
+          },
       ),
     );
   }

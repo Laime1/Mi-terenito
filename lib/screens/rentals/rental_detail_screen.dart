@@ -66,7 +66,7 @@ class RentalDetailScreen extends StatelessWidget {
                 itemCount: rental.images.length,
                 itemBuilder: (context, index) {
                   return Image.network(
-                    rental.images[index],
+                    rental.images.first,
                     fit: BoxFit.cover,
                     errorBuilder:
                         (_, __, ___) => Container(

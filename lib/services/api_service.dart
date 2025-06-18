@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime_type/mime_type.dart';
 
 import '../models/rental.dart';
 import '../models/apartment.dart';
@@ -112,6 +114,121 @@ class ApiService {
       return jsonDecode(response.body);
     } else {
       throw Exception('Error al cargar alquileres');
+    }
+  }
+
+  static Future<int> createRental({
+    required String title,
+    required String description,
+    required double monthlyPrice,
+    required String locationLink,
+    required String furnished,
+    required int minimumMonths,
+    required String includedServices,
+    required int userId,
+    required int cityId,
+    required List<String> imagePaths,
+  }) async {
+    try {
+      // Crear la solicitud multipart
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/alquileres'),
+      );
+
+      // Agregar campos de texto
+      request.fields['titulo'] = title;
+      request.fields['descripcion'] = description;
+      request.fields['precio_mensual'] = monthlyPrice.toString();
+      request.fields['enlace_ubicacion'] = locationLink;
+      request.fields['amoblado'] = furnished;
+      request.fields['tiempo_minimo_meses'] = minimumMonths.toString();
+      request.fields['incluye_servicios'] = includedServices;
+      request.fields['id_usuario'] = userId.toString();
+      request.fields['id_ciudad'] = cityId.toString();
+
+      // Agregar imágenes
+      for (var imagePath in imagePaths) {
+        var mimeType = mime(imagePath)?.split('/');
+        if (mimeType != null) {
+          request.files.add(await http.MultipartFile.fromPath(
+            'imagenes',
+            imagePath,
+            contentType: MediaType(mimeType[0], mimeType[1]),
+          ));
+        }
+      }
+
+      // Enviar la solicitud
+      var response = await request.send();
+
+      // Procesar la respuesta
+      if (response.statusCode == 201) {
+        final responseData = await response.stream.bytesToString();
+        final jsonResponse = json.decode(responseData);
+        return jsonResponse['id_alquiler'] as int;
+      } else {
+        final errorMessage = await response.stream.bytesToString();
+        throw Exception('Error al crear alquiler: ${response.statusCode} - $errorMessage');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
+  static Future<int> createDepartment({
+    required String title,
+    required String description,
+    required double price,
+    required String locationLink,
+    required int rooms,
+    required int bathrooms,
+    required int floor,
+    required int userId,
+    required int cityId,
+    required List<String> imagePaths,
+  }) async {
+    try {
+      var request = http.MultipartRequest(
+          'POST',
+          Uri.parse('$baseUrl/departamentos')
+      );
+
+      // Agregar campos de texto
+      request.fields['titulo'] = title;
+      request.fields['descripcion'] = description;
+      request.fields['precio'] = price.toString();
+      request.fields['enlace_ubicacion'] = locationLink;
+      request.fields['habitaciones'] = rooms.toString();
+      request.fields['banos'] = bathrooms.toString();
+      request.fields['piso'] = floor.toString();
+      request.fields['id_usuario'] = userId.toString();
+      request.fields['id_ciudad'] = cityId.toString();
+
+      // Agregar imágenes
+      for (var imagePath in imagePaths) {
+        var mimeType = mime(imagePath)?.split('/');
+        if (mimeType != null) {
+          request.files.add(await http.MultipartFile.fromPath(
+            'imagenes',
+            imagePath,
+            contentType: MediaType(mimeType[0], mimeType[1]),
+          ));
+        }
+      }
+
+      var response = await request.send();
+
+      if (response.statusCode == 201) {
+        final responseData = await response.stream.bytesToString();
+        final jsonResponse = json.decode(responseData);
+        return jsonResponse['id_departamento'] as int;
+      } else {
+        final errorMessage = await response.stream.bytesToString();
+        throw Exception('Error al crear departamento: ${response.statusCode} - $errorMessage');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
     }
   }
 }

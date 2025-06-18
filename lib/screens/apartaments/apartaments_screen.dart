@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/screens/apartaments/apartmet_form_screen.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 
 import '../../models/apartment.dart';
@@ -108,6 +109,18 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
             ),
           ),
         ],
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add_box),
+        onPressed: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DepartmentFormScreen(idUser: 2, idCity: 4,),
+            ),
+          );
+        },
       ),
     );
   }

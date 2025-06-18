@@ -66,26 +66,35 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
                       children: [
                         Icon(spec.icon, size: 20, color: Colors.blue),
                         const SizedBox(width: 8),
-                        Text(
-                          spec.title,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        Expanded(
+                          child: Text(
+                            spec.title,
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                            // overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                    child: Text(
-                      spec.value,
-                      style: TextStyle(
-                        color: spec.isHighlighted 
-                            ? Theme.of(context).primaryColor 
-                            : Colors.grey[800],
+                    child: Expanded(
+                      child: Center(
+                        child: Text(
+                          spec.value,
+                          style: TextStyle(
+                            color: spec.isHighlighted
+                                ? Theme.of(context).primaryColor
+                                : Colors.grey[800],
+                          ),
+                          // overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ),
                 ],
-              )).toList(),
+              )
+              ).toList(),
             ),
           ),
         ],
