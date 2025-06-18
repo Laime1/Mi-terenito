@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:3000/api';
-  static const String baseImageUrl = 'http://localhost:3000';
+  static const String baseUrl = 'http://192.168.1.82:3000/api';
+  static const String baseImageUrl = 'http://192.168.1.82:3000';
 
   Future<List<String>> fetchCities() async {
     final response = await http.get(Uri.parse('$baseUrl/ciudades'));
@@ -171,4 +173,7 @@ class ApiService {
     print(responseBody);
     return false;
   }
+}
+
+
 }
