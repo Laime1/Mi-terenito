@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/screens/apartaments/apartmet_detail_screen.dart';
 import 'package:mi_terrenito/screens/apartaments/apartmet_form_screen.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 
@@ -8,11 +9,13 @@ import '../../widgets/card_apartament.dart';
 class ApartmentsScreen extends StatefulWidget {
   final int companyId;
   final int cityId;
+  final int? userId;
 
   const ApartmentsScreen({
     super.key,
     required this.companyId,
     required this.cityId,
+    required this.userId,
   });
 
   @override
@@ -36,11 +39,16 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
 
   Future<void> _loadApartments() async {
     try {
+      final List<Apartment> apartments;
 
-      final apartments = await ApiService.getApartmentsByCompanyAndCity(
-        companyId: widget.companyId,
-        cityId: widget.cityId,
-      );
+      widget.userId != null
+          ? apartments = await ApiService.fetchDepartamentosByUsuario(
+            widget.userId!,
+          )
+          : apartments = await ApiService.getApartmentsByCompanyAndCity(
+            companyId: widget.companyId,
+            cityId: widget.cityId,
+          );
 
       setState(() {
         allApartments = apartments;
@@ -58,11 +66,12 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
   void _filterApartments() {
     final query = searchController.text.toLowerCase();
     setState(() {
-      filteredApartments = allApartments.where((apt) {
-        return apt.title.toLowerCase().contains(query) ||
-            apt.description.toLowerCase().contains(query) ||
-            apt.price.toString().contains(query);
-      }).toList();
+      filteredApartments =
+          allApartments.where((apt) {
+            return apt.title.toLowerCase().contains(query) ||
+                apt.description.toLowerCase().contains(query) ||
+                apt.price.toString().contains(query);
+          }).toList();
     });
   }
 
@@ -89,40 +98,61 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
             ),
           ),
           Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : errorMessage.isNotEmpty
-                ? Center(child: Text(errorMessage))
-                : filteredApartments.isEmpty
-                ? const Center(
-              child: Text(
-                'No se encontraron departamentos',
-                style: TextStyle(fontSize: 16),
-              ),
-            )
-                : ListView.builder(
-              itemCount: filteredApartments.length,
-              itemBuilder: (context, index) {
-                return ApartmentCard(
-                  apartment: filteredApartments[index],
-                );
-              },
-            ),
+            child:
+                isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : errorMessage.isNotEmpty
+                    ? Center(child: Text(errorMessage))
+                    : filteredApartments.isEmpty
+                    ? Center(
+                      child: Text(
+                        widget.userId != null
+                            ? 'Sin departamentos publicados.'
+                            : 'No hay departamentos disponibles.',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    )
+                    : ListView.builder(
+                      itemCount: filteredApartments.length,
+                      itemBuilder: (context, index) {
+                        final Apartment apartment = filteredApartments[index];
+                        return ApartmentCard(
+                          apartment: apartment,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ApartmentDetailScreen(
+                                  apartment: apartment,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
           ),
         ],
       ),
 
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add_box),
-        onPressed: (){
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DepartmentFormScreen(idUser: 2, idCity: 4,),
-            ),
-          );
-        },
-      ),
+      floatingActionButton:
+          widget.userId != null
+              ? FloatingActionButton(
+                child: const Icon(Icons.add_box),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => DepartmentFormScreen(
+                            idUser: widget.userId!,
+                            idCity: 4,
+                          ),
+                    ),
+                  );
+                },
+              )
+              : null,
     );
   }
 }

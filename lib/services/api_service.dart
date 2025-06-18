@@ -10,7 +10,7 @@ import '../models/apartment.dart';
 
 class ApiService {
   static const String baseImageUrl = 'http://localhost:3000';
-  static const String baseUrl = 'http://192.168.0.10:3000/api';
+  static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
 
   static Future<List<Apartment>> getApartmentsByCompanyAndCity({
     required int companyId,
@@ -143,16 +143,24 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> fetchDepartamentosByUsuario(int usuarioId) async {
-    final response = await http.get(
-        Uri.parse('$baseUrl/departamentos/usuario/$usuarioId'));
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data;
-    } else {
-      throw Exception('Error al cargar casas por usuario');
-    }
-  }
+ static Future<List<Apartment>> fetchDepartamentosByUsuario(int userId) async {
+   try {
+     final response = await http.get(
+       Uri.parse('$baseUrl/departamentos/usuario/$userId'),
+     );
+
+     if (response.statusCode == 200) {
+       final List<dynamic> data = json.decode(response.body);
+       return data.map((json) => Apartment.fromJson(json)).toList();
+     } else {
+       throw Exception('Error al cargar departamentos: ${response.statusCode}');
+     }
+   } catch (e) {
+     throw Exception('Error de conexión: $e');
+   }
+ }
+
+
   static Future<int> createRental({
     required String title,
     required String description,
@@ -222,13 +230,20 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> fetchAlquileresByUsuario(int usuarioId) async {
-    final response = await http.get(Uri.parse('$baseUrl/alquileres/usuario/$usuarioId'));
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data;
-    } else {
-      throw Exception('Error al cargar casas por usuario');
+  static Future<List<Rental>> fetchAlquileresByUsuario(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/alquileres/usuario/$userId'),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Rental.fromJson(json)).toList();
+      } else {
+        throw Exception('Error al cargar alquileres: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
     }
   }
 

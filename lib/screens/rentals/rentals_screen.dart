@@ -9,11 +9,13 @@ import '../../models/rental.dart';
 class RentalsScreen extends StatefulWidget {
    final int companyId;
    final int cityId;
+   final int? userId;
 
   const RentalsScreen({
     super.key,
      required this.companyId,
      required this.cityId,
+    required this.userId
   });
 
   @override
@@ -38,10 +40,11 @@ class _RentalsScreenState extends State<RentalsScreen> {
 
   Future<void> _loadRentals() async {
     try {
-      final rentals = await ApiService.getRentalsByCompanyAndCity(
-        companyId: widget.companyId,
-        cityId: widget.cityId,
-      );
+      final List<Rental>  rentals;
+
+      widget.userId != null
+          ?rentals = await ApiService.fetchAlquileresByUsuario(widget.userId!)
+          :rentals = await ApiService.getRentalsByCompanyAndCity(companyId: widget.companyId,cityId: widget.cityId);
 
       setState(() {
         allRentals = rentals;
@@ -113,17 +116,20 @@ class _RentalsScreenState extends State<RentalsScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: widget.userId != null
+      ? FloatingActionButton(
         child: const Icon(Icons.add_box),
           onPressed: (){
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                builder: (context) => RentalFormScreen(idUser: 2, idCity: 4,),
+                builder: (context) => RentalFormScreen(idUser: widget.userId!, idCity: 4,),
             ),
             );
           },
-      ),
+      )
+      : null,
+
     );
   }
 }
