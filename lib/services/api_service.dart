@@ -125,4 +125,50 @@ class ApiService {
       throw Exception('Error al cargar casas por usuario');
     }
   }
+
+  Future<bool> crearCasaConImagenes({
+  required String titulo,
+  required String descripcion,
+  required String precio,
+  required String enlaceUbicacion,
+  required String habitaciones,
+  required String banos,
+  required String cochera,
+  required String pisos,
+  required int idUsuario,
+  required int idCiudad,
+  required List<File> imagenes,
+}) async {
+  var uri = Uri.parse('$baseUrl/casas');
+  var request = http.MultipartRequest('POST', uri);
+
+  request.fields['titulo'] = titulo;
+  request.fields['descripcion'] = descripcion;
+  request.fields['precio'] = precio;
+  request.fields['enlace_ubicacion'] = enlaceUbicacion;
+  request.fields['habitaciones'] = habitaciones;
+  request.fields['banos'] = banos;
+  request.fields['cochera'] = cochera;
+  request.fields['pisos'] = pisos;
+  request.fields['id_usuario'] = idUsuario.toString();
+  request.fields['id_ciudad'] = idCiudad.toString();
+
+  for (var imagen in imagenes) {
+    final fileName = imagen.path.split('/').last;
+    request.files.add(
+      await http.MultipartFile.fromPath('imagenes', imagen.path, filename: fileName),
+    );
+  }
+
+  final response = await request.send();
+  final responseBody = await response.stream.bytesToString();
+
+  if (response.statusCode == 201 || response.statusCode == 200) {
+    print("Casa creada correctamente: $responseBody");
+    return true;
+  } else {
+    print("Error al crear casa: ${response.statusCode}");
+    print(responseBody);
+    return false;
+  }
 }

@@ -232,16 +232,26 @@ class _CasasScreenState extends State<CasasScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const FormHouseScreen(),
-            ),
-          );
-        },
-      ),
+  child: const Icon(Icons.add),
+  onPressed: () {
+    if (widget.usuarioId != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FormHouseScreen(
+            idUsuario: widget.usuarioId!,
+            idCiudad: widget.cityId,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo determinar el usuario para crear la casa')),
+      );
+    }
+  },
+),
+
     );
   }
 }
