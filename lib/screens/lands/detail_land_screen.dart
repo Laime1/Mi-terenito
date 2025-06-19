@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../models/land.dart';
+import '../../services/api_service.dart';
 
 class DetailLandScrenn extends StatelessWidget {
   final Land terreno;
@@ -13,8 +14,6 @@ class DetailLandScrenn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagenUrl = terreno.images.isNotEmpty ? 'http://localhost:3000${terreno.images.first}' : null;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(terreno.title),
@@ -24,27 +23,7 @@ class DetailLandScrenn extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (imagenUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  imagenUrl,
-                  width: double.infinity,
-                  height: 220,
-                  fit: BoxFit.cover,
-                ),
-              )
-            else
-              Container(
-                width: double.infinity,
-                height: 220,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(Icons.image_not_supported, size: 80, color: Colors.grey),
-              ),
-
+            _buildImageGallery(),
             const SizedBox(height: 20),
 
             Text(
@@ -104,15 +83,13 @@ class DetailLandScrenn extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-           // Text('Usuario: ${terreno.user.nombreUsuario}'),
-            //Text('Contacto: ${terreno.user.contacto}'),
+            // Text('Usuario: ${terreno.user.nombreUsuario}'),
+            // Text('Contacto: ${terreno.user.contacto}'),
 
             const SizedBox(height: 10),
 
-            Text('Ciudad ID: ${terreno.idCiudad}'),
-            Text('Usuario ID: ${terreno.idUsuario}'),
-
-            // Puedes agregar más campos que tengas en el modelo Land
+            Text('Ciudad ID: ${terreno.city?.id ?? '-'}'),
+            Text('Usuario ID: ${terreno.user?.id ?? '-'}'),
 
             const SizedBox(height: 20),
 
@@ -133,6 +110,37 @@ class DetailLandScrenn extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildImageGallery() {
+    if (terreno.images.isEmpty) {
+      return Container(
+        height: 250,
+        color: Colors.grey[200],
+        child: const Center(
+          child: Icon(Icons.landscape, size: 80, color: Colors.grey),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 250,
+      child: PageView.builder(
+        itemCount: terreno.images.length,
+        itemBuilder: (context, index) {
+          final url = '${ApiService.baseImageUrl}${terreno.images[index]}';
+          return Image.network(
+            url,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              color: Colors.grey[200],
+              child: const Center(
+                child: Icon(Icons.broken_image, size: 60, color: Colors.grey),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

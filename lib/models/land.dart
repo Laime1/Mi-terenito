@@ -1,4 +1,6 @@
 import 'package:mi_terrenito/models/user.dart';
+import 'package:mi_terrenito/models/city.dart';
+import 'package:mi_terrenito/models/company.dart';
 
 class Land {
   final int id;
@@ -10,10 +12,10 @@ class Land {
   final String mapLocation;
   final double size;
   final String basicServices;
-  final List<String> images; // solo URLs
-  final User user;
-  final int idUsuario;
-  final int idCiudad;
+  final List<String> images;
+  final User? user;
+  final City? city;
+  final Company? company;
 
   Land({
     required this.id,
@@ -27,33 +29,59 @@ class Land {
     required this.basicServices,
     required this.images,
     required this.user,
-    required this.idUsuario,
-    required this.idCiudad,
+    required this.city,
+    required this.company,
   });
 
   factory Land.fromJson(Map<String, dynamic> json) {
     return Land(
-      id: json['id_terreno'] ?? 0,
-      title: json['titulo'] ?? '',
-      description: json['descripcion'] ?? '',
-      price: double.tryParse(json['precio'].toString()) ?? 0.0,
-      status: json['estado'] ?? 1,
-      publishedAt: DateTime.tryParse(json['fecha_publicacion'] ?? '') ?? DateTime.now(),
-      mapLocation: json['enlace_ubicacion'] ?? '',
-      size: double.tryParse(json['tamano'].toString()) ?? 0.0,
-      basicServices: json['servicios_basicos'] ?? 'No',
-      images: (json['imagenes'] as List<dynamic>? ?? []).map((img) {
-        if (img is String) {
-          return img;
-        } else if (img is Map<String, dynamic>) {
-          return img['url_imagen'].toString();
-        } else {
-          return '';
-        }
-      }).where((url) => url.isNotEmpty).toList(),
+      id: _parseInt(json['id_terreno']),
+      title: json['titulo']?.toString() ?? '',
+      description: json['descripcion']?.toString() ?? '',
+      price: _parseDouble(json['precio']),
+      status: _parseInt(json['estado']),
+      publishedAt: _parseDateTime(json['fecha_publicacion']),
+      mapLocation: json['enlace_ubicacion']?.toString() ?? '',
+      size: _parseDouble(json['tamano']),
+      basicServices: json['servicios_basicos']?.toString() ?? 'No',
+      images: _parseImages(json['imagenes']),
       user: User.fromJson(json['usuario'] ?? {}),
-      idUsuario: json['id_usuario'] ?? 0,
-      idCiudad: json['id_ciudad'] ?? 0,
+      city: City.fromJson(json['ciudad'] ?? {}),
+      company: Company.fromJson(json['empresa'] ?? {}),
     );
+  }
+
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
+
+  static DateTime _parseDateTime(dynamic value) {
+    if (value == null) return DateTime.now();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+    return DateTime.now();
+  }
+
+  static List<String> _parseImages(dynamic value) {
+    if (value == null) return [];
+    if (value is List) {
+      return value.map((e) {
+        if (e is String) return e;
+        if (e is Map<String, dynamic>) return e['url_imagen']?.toString() ?? '';
+        return '';
+      }).where((e) => e.isNotEmpty).toList();
+    }
+    return [];
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../models/house.dart';
-import '../../widgets/card_houses.dart';  // Importa la card aquí
+import '../../widgets/card_houses.dart';
 import 'details_house_screen.dart';
 import '../home2_screen.dart';
 import 'form_house_screen.dart';

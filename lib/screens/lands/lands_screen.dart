@@ -2,13 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../models/land.dart';
+import '/widgets/card_lands.dart';
 import 'detail_land_screen.dart';
+import '../home2_screen.dart';
 
 class LandsScreen extends StatefulWidget {
   final int empresaId;
   final int cityId;
+  final int? usuarioId;
 
-  const LandsScreen({Key? key, required this.empresaId, required this.cityId}) : super(key: key);
+  const LandsScreen({
+    Key? key,
+    required this.empresaId,
+    required this.cityId,
+    this.usuarioId,
+  }) : super(key: key);
 
   @override
   State<LandsScreen> createState() => _LandsScreenState();
@@ -19,21 +27,40 @@ class _LandsScreenState extends State<LandsScreen> {
   List<Land> terrenos = [];
   List<Land> filteredTerrenos = [];
   String searchText = '';
+
+  bool hasCasas = false;
+  bool hasTerrenos = false;
+  bool hasDepartamentos = false;
+  bool hasAlquileres = false;
+
   final ApiService apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
-    loadTerrenos();
+    loadAllData();
   }
 
-  Future<void> loadTerrenos() async {
+  Future<void> loadAllData() async {
+    setState(() => isLoading = true);
     try {
-      final response = await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
-      final loaded = response.map<Land>((json) => Land.fromJson(json)).toList();
+      final loadedTerrenosJson = widget.usuarioId != null
+          ? await apiService.fetchTerrenosByUsuario(widget.usuarioId!)
+          : await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+
+      final loadedCasas = await apiService.fetchCasasByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      final loadedDepartamentos = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+      final loadedAlquileres = await apiService.fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
+
+      final loadedTerrenos = loadedTerrenosJson.map<Land>((json) => Land.fromJson(json)).toList();
+
       setState(() {
-        terrenos = loaded;
-        filteredTerrenos = loaded;
+        terrenos = loadedTerrenos;
+        filteredTerrenos = loadedTerrenos;
+        hasTerrenos = loadedTerrenos.isNotEmpty;
+        hasCasas = loadedCasas.isNotEmpty;
+        hasDepartamentos = loadedDepartamentos.isNotEmpty;
+        hasAlquileres = loadedAlquileres.isNotEmpty;
         isLoading = false;
       });
     } catch (_) {
@@ -42,14 +69,32 @@ class _LandsScreenState extends State<LandsScreen> {
   }
 
   void filterTerrenos(String query) {
+    final lowerQuery = query.toLowerCase();
     setState(() {
-      searchText = query.toLowerCase();
-      filteredTerrenos = terrenos.where((t) {
-        final title = t.title.toLowerCase();
-        final descripcion = t.description.toLowerCase();
-        return title.contains(searchText) || descripcion.contains(searchText);
+      searchText = query;
+      filteredTerrenos = terrenos.where((terreno) {
+        final title = terreno.title.toLowerCase();
+        final description = terreno.description.toLowerCase();
+        return title.contains(lowerQuery) || description.contains(lowerQuery);
       }).toList();
     });
+  }
+
+  void navigateTo(String tipo) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Home2Screen(
+          tipo: tipo,
+          empresaId: widget.empresaId,
+          cityId: widget.cityId,
+          hasCasas: hasCasas,
+          hasTerrenos: hasTerrenos,
+          hasDepartamentos: hasDepartamentos,
+          hasAlquileres: hasAlquileres,
+        ),
+      ),
+    );
   }
 
   @override
@@ -57,9 +102,8 @@ class _LandsScreenState extends State<LandsScreen> {
     return Scaffold(
       body: Column(
         children: [
-          const SizedBox(height: 12),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.all(12),
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Buscar terrenos...',
@@ -69,21 +113,24 @@ class _LandsScreenState extends State<LandsScreen> {
               onChanged: filterTerrenos,
             ),
           ),
-          const SizedBox(height: 8),
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredTerrenos.isEmpty
-                    ? const Center(child: Text('No hay terrenos disponibles.'))
+                    ? Center(
+                        child: Text(
+                          widget.usuarioId != null
+                              ? 'Sin terrenos publicados.'
+                              : 'No hay terrenos disponibles.',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      )
                     : ListView.builder(
                         itemCount: filteredTerrenos.length,
                         itemBuilder: (context, index) {
                           final terreno = filteredTerrenos[index];
-                          final imagenUrl = terreno.images.isNotEmpty
-                              ? 'http://localhost:3000${terreno.images[0]}'
-                              : null;
-
-                          return GestureDetector(
+                          return LandCard(
+                            land: terreno,
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -92,59 +139,6 @@ class _LandsScreenState extends State<LandsScreen> {
                                 ),
                               );
                             },
-                            child: Card(
-                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              elevation: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: imagenUrl != null
-                                          ? Image.network(
-                                              imagenUrl,
-                                              width: 120,
-                                              height: 120,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : Container(
-                                              width: 120,
-                                              height: 120,
-                                              color: Colors.grey[300],
-                                              child: const Icon(Icons.image_not_supported, size: 50),
-                                            ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            terreno.title,
-                                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            terreno.description.length > 60
-                                                ? '${terreno.description.substring(0, 60)}...'
-                                                : terreno.description,
-                                            style: TextStyle(color: Colors.grey[700]),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            '\$${NumberFormat('#,##0.00').format(terreno.price)}',
-                                            style: const TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
                           );
                         },
                       ),
