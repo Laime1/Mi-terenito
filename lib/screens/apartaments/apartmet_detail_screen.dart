@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/models/apartment.dart';
 import 'package:mi_terrenito/widgets/table_card.dart';
+import 'package:mi_terrenito/services/api_service.dart';  // Import necesario para las URLs
 
 class ApartmentDetailScreen extends StatelessWidget {
   final Apartment apartment;
@@ -56,26 +57,27 @@ class ApartmentDetailScreen extends StatelessWidget {
       height: 250,
       child: apartment.images.isEmpty
           ? Container(
-        color: Colors.grey[200],
-        child: const Center(
-          child: Icon(Icons.apartment, size: 80, color: Colors.grey),
-        ),
-      )
-          : PageView.builder(
-        itemCount: apartment.images.length,
-        itemBuilder: (context, index) {
-          return Image.network(
-            apartment.images[index],
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
               color: Colors.grey[200],
               child: const Center(
-                child: Icon(Icons.broken_image, size: 60),
+                child: Icon(Icons.apartment, size: 80, color: Colors.grey),
               ),
+            )
+          : PageView.builder(
+              itemCount: apartment.images.length,
+              itemBuilder: (context, index) {
+                final imageUrl = '${ApiService.baseImageUrl}${apartment.images[index]}';
+                return Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    color: Colors.grey[200],
+                    child: const Center(
+                      child: Icon(Icons.broken_image, size: 60),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 

@@ -1,38 +1,36 @@
 import 'package:flutter/material.dart';
-import '../models/rental.dart';
+import '../models/house.dart';
 import '../services/api_service.dart';
 
-class RentalCard extends StatelessWidget {
-  final Rental rental;
+class HouseCard extends StatelessWidget {
+  final House house;
   final VoidCallback? onTap;
 
-  const RentalCard({
+  const HouseCard({
     super.key,
-    required this.rental,
+    required this.house,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final String? imagenUrl = rental.images.isNotEmpty
-        ? '${ApiService.baseImageUrl}${rental.images.first}'
+    final String? imageUrl = house.images.isNotEmpty
+        ? '${ApiService.baseImageUrl}${house.images.first}'
         : null;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Sección de la imagen (izquierda)
+            // Imagen
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Container(
                 width: 120,
                 height: 120,
@@ -40,34 +38,29 @@ class RentalCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.grey[200],
                 ),
-                child: imagenUrl == null
+                child: imageUrl == null
                     ? const Center(
-                        child: Icon(Icons.home, size: 60, color: Colors.grey),
+                        child: Icon(Icons.house, size: 60, color: Colors.grey),
                       )
                     : ClipRRect(
-                        borderRadius: const BorderRadius.horizontal(
-                          left: Radius.circular(12),
-                        ),
+                        borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          imagenUrl,
+                          imageUrl,
                           width: 120,
                           height: 120,
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
                             color: Colors.grey[200],
                             child: const Center(
-                              child: Icon(
-                                Icons.broken_image,
-                                size: 60,
-                                color: Colors.grey,
-                              ),
+                              child: Icon(Icons.broken_image,
+                                  size: 60, color: Colors.grey),
                             ),
                           ),
                         ),
                       ),
               ),
             ),
-            // Detalles (derecha)
+            // Detalles
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12),
@@ -75,7 +68,7 @@ class RentalCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      rental.title,
+                      house.title,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -85,7 +78,7 @@ class RentalCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      rental.description,
+                      house.description,
                       style: TextStyle(
                         color: Colors.grey[700],
                         fontSize: 12,
@@ -95,7 +88,7 @@ class RentalCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '\$${rental.monthlyPrice.toStringAsFixed(2)}/mes',
+                      '\$${house.price.toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -107,25 +100,24 @@ class RentalCard extends StatelessWidget {
                       spacing: 6,
                       runSpacing: 6,
                       children: [
-                        _buildFeatureChip(
-                          Icons.checkroom,
-                          rental.furnished == 'Sí' ? 'Amoblado' : 'Sin amoblar',
-                        ),
-                        _buildFeatureChip(
-                          Icons.construction,
-                          rental.includedServices == 'Sí' ? 'Con servicios' : 'Sin servicios',
-                        ),
-                        _buildFeatureChip(
-                          Icons.location_pin,
-                          rental.city.name,
-                        ),
+                        _buildFeatureChip(Icons.king_bed,
+                            '${house.bedrooms} hab.'),
+                        _buildFeatureChip(Icons.bathtub,
+                            '${house.bathrooms} baños'),
+                        _buildFeatureChip(Icons.garage,
+                            '${house.garage} garaje'),
+                        _buildFeatureChip(Icons.layers,
+                            '${house.floors} pisos'),
+                        if (house.city != null)
+                          _buildFeatureChip(
+                              Icons.location_pin, house.city!.name),
                       ],
                     ),
                     const SizedBox(height: 4),
                     Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        'Publicado: ${_formatDate(rental.publishedAt)}',
+                        'Publicado: ${_formatDate(house.publishedAt)}',
                         style: TextStyle(color: Colors.grey[600], fontSize: 10),
                       ),
                     ),
@@ -146,18 +138,14 @@ class RentalCard extends StatelessWidget {
         CircleAvatar(
           radius: 8,
           backgroundColor: Colors.grey[300],
-          child: Icon(icon, size: 12),
+          child: Icon(icon, size: 12, color: Colors.black),
         ),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: const TextStyle(fontSize: 12),
-        ),
+        Text(text, style: const TextStyle(fontSize: 12)),
       ],
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
+  String _formatDate(DateTime date) =>
+      '${date.day}/${date.month}/${date.year}';
 }

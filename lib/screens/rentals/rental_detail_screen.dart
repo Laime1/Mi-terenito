@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/models/rental.dart';
+import 'package:mi_terrenito/services/api_service.dart';
 import 'package:mi_terrenito/widgets/table_card.dart';
 
 class RentalDetailScreen extends StatelessWidget {
@@ -33,7 +34,7 @@ class RentalDetailScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // Características detalladas
-          RentalSpecificationsTable(rental: rental),
+                  RentalSpecificationsTable(rental: rental),
                   const SizedBox(height: 16),
 
                   // Ubicación
@@ -54,30 +55,30 @@ class RentalDetailScreen extends StatelessWidget {
   Widget _buildImageGallery() {
     return SizedBox(
       height: 250,
-      child:
-          rental.images.isEmpty
-              ? Container(
-                color: Colors.grey[200],
-                child: const Center(
-                  child: Icon(Icons.home, size: 80, color: Colors.grey),
-                ),
-              )
-              : PageView.builder(
-                itemCount: rental.images.length,
-                itemBuilder: (context, index) {
-                  return Image.network(
-                    rental.images.first,
-                    fit: BoxFit.cover,
-                    errorBuilder:
-                        (_, __, ___) => Container(
-                          color: Colors.grey[200],
-                          child: const Center(
-                            child: Icon(Icons.broken_image, size: 60),
-                          ),
-                        ),
-                  );
-                },
+      child: rental.images.isEmpty
+          ? Container(
+              color: Colors.grey[200],
+              child: const Center(
+                child: Icon(Icons.home, size: 80, color: Colors.grey),
               ),
+            )
+          : PageView.builder(
+              itemCount: rental.images.length,
+              itemBuilder: (context, index) {
+                final imagenUrl =
+                    '${ApiService.baseImageUrl}${rental.images[index]}';
+                return Image.network(
+                  imagenUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    color: Colors.grey[200],
+                    child: const Center(
+                      child: Icon(Icons.broken_image, size: 60),
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 
@@ -103,55 +104,6 @@ class RentalDetailScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Text(rental.description, style: const TextStyle(fontSize: 16)),
       ],
-    );
-  }
-
-  // Widget _buildFeaturesSection() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       const Text(
-  //         'Características',
-  //         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //       ),
-  //       const SizedBox(height: 12),
-  //       Wrap(
-  //         spacing: 12,
-  //         runSpacing: 12,
-  //         children: [
-  //           _buildFeatureItem(
-  //             Icons.checkroom,
-  //             'Amoblado: ${rental.furnished == 'Sí' ? 'Sí' : 'No'}',
-  //           ),
-  //           _buildFeatureItem(
-  //             Icons.construction,
-  //             'Servicios: ${rental.includedServices == 'Sí' ? 'Incluidos' : 'No incluidos'}',
-  //           ),
-  //           _buildFeatureItem(
-  //             Icons.business,
-  //             'Empresa: ${rental.company.name}',
-  //           ),
-  //         ],
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  Widget _buildFeatureItem(IconData icon, String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 20, color: Colors.blue),
-          const SizedBox(width: 8),
-          Text(text),
-        ],
-      ),
     );
   }
 

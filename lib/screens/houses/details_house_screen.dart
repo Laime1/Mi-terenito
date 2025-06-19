@@ -1,153 +1,190 @@
 import 'package:flutter/material.dart';
 import '../../models/house.dart';
+import '../../services/api_service.dart';
+import '/widgets/house_specifications_table.dart';
 
-class DetalleCasaScreen extends StatefulWidget {
+class DetalleCasaScreen extends StatelessWidget {
   final House casa;
 
-  const DetalleCasaScreen({Key? key, required this.casa}) : super(key: key);
-
-  @override
-  State<DetalleCasaScreen> createState() => _DetalleCasaScreenState();
-}
-
-class _DetalleCasaScreenState extends State<DetalleCasaScreen> {
-  int currentIndex = 0;
+  const DetalleCasaScreen({super.key, required this.casa});
 
   @override
   Widget build(BuildContext context) {
-    final images = widget.casa.images;
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.casa.title),
-      ),
+      appBar: AppBar(title: Text(casa.title)),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Carrusel de imágenes
-            SizedBox(
-              height: 250,
-              child: PageView.builder(
-                itemCount: images.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    currentIndex = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return Image.network(
-                    images[index],
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  );
-                },
-              ),
-            ),
-
-            // Indicador del carrusel
-            if (images.isNotEmpty)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(images.length, (index) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                    width: currentIndex == index ? 12 : 8,
-                    height: currentIndex == index ? 12 : 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: currentIndex == index ? Colors.blue : Colors.grey,
-                    ),
-                  );
-                }),
-              ),
-
-            // Detalles de la casa
+            _buildImageGallery(),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Precio
-                  Text(
-                    '\$${widget.casa.price}',
-                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.green),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Título
-                  Text(
-                    widget.casa.title,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Descripción
-                  Text(
-                    widget.casa.description,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Habitaciones
-                  Row(
-                    children: [
-                      const Icon(Icons.king_bed, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Text('${widget.casa.bedrooms} habitaciones', style: const TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Baños
-                  Row(
-                    children: [
-                      const Icon(Icons.bathtub, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Text('${widget.casa.bathrooms} baños', style: const TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Garaje
-                  Row(
-                    children: [
-                      const Icon(Icons.garage, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Text('${widget.casa.garage} garaje(s)', style: const TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Pisos
-                  Row(
-                    children: [
-                      const Icon(Icons.apartment, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Text('${widget.casa.floors} piso(s)', style: const TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                 
-
-                  // Fecha de publicación
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_today, color: Colors.grey),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Publicado el: ${widget.casa.publishedAt.toLocal().toString().split(' ')[0]}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
+                  _buildPriceSection(),
+                  const SizedBox(height: 16),
+                  _buildDescriptionSection(),
+                  const SizedBox(height: 16),
+                  HouseSpecificationsTable(house: casa), // aquí
+                  const SizedBox(height: 16),
+                  _buildLocationSection(),
+                  const SizedBox(height: 16),
+                  _buildPublisherInfo(),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildImageGallery() {
+    if (casa.images.isEmpty) {
+      return Container(
+        height: 250,
+        color: Colors.grey[200],
+        child: const Center(
+          child: Icon(Icons.home, size: 80, color: Colors.grey),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 250,
+      child: PageView.builder(
+        itemCount: casa.images.length,
+        itemBuilder: (context, index) {
+          final url = '${ApiService.baseImageUrl}${casa.images[index]}';
+          return Image.network(
+            url,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              color: Colors.grey[200],
+              child: const Center(
+                child: Icon(Icons.broken_image, size: 60, color: Colors.grey),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPriceSection() {
+    return Text(
+      '\$${casa.price.toStringAsFixed(2)} / venta',
+      style: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.green,
+      ),
+    );
+  }
+
+  Widget _buildDescriptionSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Descripción',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Text(casa.description, style: const TextStyle(fontSize: 16)),
+      ],
+    );
+  }
+
+  Widget _buildSpecificationsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Especificaciones',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            _buildSpecItem(Icons.king_bed, '${casa.bedrooms} habitaciones'),
+            _buildSpecItem(Icons.bathtub, '${casa.bathrooms} baños'),
+            _buildSpecItem(Icons.garage, '${casa.garage} garage(s)'),
+            _buildSpecItem(Icons.apartment, '${casa.floors} piso(s)'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSpecItem(IconData icon, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.blue),
+        const SizedBox(width: 6),
+        Text(text, style: const TextStyle(fontSize: 16)),
+      ],
+    );
+  }
+
+  Widget _buildLocationSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Ubicación',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 200,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Stack(
+              children: [
+                Container(
+                  color: Colors.grey[200],
+                  child: const Center(
+                    child: Icon(Icons.map, size: 60, color: Colors.grey),
+                  ),
+                ),
+                Positioned(
+                  bottom: 16,
+                  right: 16,
+                  child: FloatingActionButton.small(
+                    onPressed: () {
+                      // Aquí puedes implementar abrir Google Maps o URL con la ubicación real
+                    },
+                    child: const Icon(Icons.navigation),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPublisherInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Publicado por',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const CircleAvatar(child: Icon(Icons.person)),
+          title: Text(casa.user?.name ?? 'Nombre no disponible'),
+          subtitle: Text(casa.company?.name ?? 'Empresa no disponible'),
+        ),
+      ],
     );
   }
 }
