@@ -82,10 +82,6 @@ class DetailLandScrenn extends StatelessWidget {
             ),
 
             const SizedBox(height: 10),
-
-            // Text('Usuario: ${terreno.user.nombreUsuario}'),
-            // Text('Contacto: ${terreno.user.contacto}'),
-
             const SizedBox(height: 10),
 
             Text('Ciudad ID: ${terreno.city?.id ?? '-'}'),

@@ -52,7 +52,6 @@ class _CasasScreenState extends State<CasasScreen> {
       final loadedDepartamentos = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
       final loadedAlquileres = await apiService.fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
 
-      // Convertir JSON a lista de House
       final loadedCasas = loadedCasasJson.map((json) => House.fromJson(json)).toList();
 
       setState(() {

@@ -26,7 +26,7 @@ class DetalleCasaScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildDescriptionSection(),
                   const SizedBox(height: 16),
-                  HouseSpecificationsTable(house: casa), // aquí
+                  HouseSpecificationsTable(house: casa),
                   const SizedBox(height: 16),
                   _buildLocationSection(),
                   const SizedBox(height: 16),
@@ -156,7 +156,7 @@ class DetalleCasaScreen extends StatelessWidget {
                   right: 16,
                   child: FloatingActionButton.small(
                     onPressed: () {
-                      // Aquí puedes implementar abrir Google Maps o URL con la ubicación real
+                      
                     },
                     child: const Icon(Icons.navigation),
                   ),
