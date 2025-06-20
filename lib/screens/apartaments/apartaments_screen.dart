@@ -153,6 +153,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
                 },
               )
               : null,
+
     );
   }
 }

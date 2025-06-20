@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mi_terrenito/models/rental.dart';
 import 'package:mi_terrenito/widgets/table_card.dart';
 
+import '../../services/api_service.dart';
+
 class RentalDetailScreen extends StatelessWidget {
   final Rental rental;
 
@@ -66,7 +68,8 @@ class RentalDetailScreen extends StatelessWidget {
                 itemCount: rental.images.length,
                 itemBuilder: (context, index) {
                   return Image.network(
-                    rental.images.first,
+                   // rental.images.first,
+                    '${ApiService.baseImageUrl}${rental.images[index]}',
                     fit: BoxFit.cover,
                     errorBuilder:
                         (_, __, ___) => Container(

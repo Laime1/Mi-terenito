@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/models/apartment.dart';
+import 'package:mi_terrenito/services/api_service.dart';
 import 'package:mi_terrenito/widgets/table_card.dart';
 
 class ApartmentDetailScreen extends StatelessWidget {
@@ -65,7 +66,8 @@ class ApartmentDetailScreen extends StatelessWidget {
         itemCount: apartment.images.length,
         itemBuilder: (context, index) {
           return Image.network(
-            apartment.images[index],
+            //apartment.images[index],
+            '${ApiService.baseImageUrl}${apartment.images[index]}',
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => Container(
               color: Colors.grey[200],

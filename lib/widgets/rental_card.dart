@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/services/api_service.dart';
 import '../models/rental.dart';
 
 class RentalCard extends StatelessWidget {
@@ -42,7 +43,8 @@ class RentalCard extends StatelessWidget {
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          rental.images.first,
+                          //rental.images.first,
+                          '${ApiService.baseImageUrl}${rental.images.first}',
                           width: 120,
                           height: 120,
                           fit: BoxFit.cover,

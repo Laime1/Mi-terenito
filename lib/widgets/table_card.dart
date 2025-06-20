@@ -43,11 +43,11 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
         ),
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Table(
               columnWidths: const {
                 0: FlexColumnWidth(1.5),
-                1: FlexColumnWidth(2),
+                1: FlexColumnWidth(1.5),
               },
               border: TableBorder(
                 horizontalInside: BorderSide(
@@ -77,18 +77,17 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                //    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    padding: const EdgeInsets.only(left: 10, top: 12, bottom: 12),
                     child: Expanded(
-                      child: Center(
-                        child: Text(
-                          spec.value,
-                          style: TextStyle(
-                            color: spec.isHighlighted
-                                ? Theme.of(context).primaryColor
-                                : Colors.grey[800],
-                          ),
-                          // overflow: TextOverflow.ellipsis,
+                      child: Text(
+                        spec.value,
+                        style: TextStyle(
+                          color: spec.isHighlighted
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey[800],
                         ),
+                        // overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),

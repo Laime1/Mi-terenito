@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/services/api_service.dart';
 import '../models/apartment.dart';
 
 class ApartmentCard extends StatelessWidget {
@@ -37,11 +38,11 @@ class ApartmentCard extends StatelessWidget {
                         child: Icon(Icons.apartment, size: 60, color: Colors.grey),
                       )
                     : ClipRRect(
-                        borderRadius: const BorderRadius.horizontal(
-                          left: Radius.circular(12),
+                        borderRadius: BorderRadius.circular(
+                          12
                         ),
                         child: Image.network(
-                          apartment.images.first,
+                          '${ApiService.baseImageUrl}${apartment.images.first}',
                           width: 120,
                           height: 120,
                           fit: BoxFit.cover,

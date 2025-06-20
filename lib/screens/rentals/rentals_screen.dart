@@ -129,7 +129,6 @@ class _RentalsScreenState extends State<RentalsScreen> {
           },
       )
       : null,
-
     );
   }
 }

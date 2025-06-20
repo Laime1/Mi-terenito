@@ -76,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> loadCities() async {
     try {
       final loadedCities = await apiService.fetchCities();
+      print('ciudades: ${loadedCities}');
       setState(() {
         cities = loadedCities;
         selectedCity = null;
