@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/models/company.dart';
+import '../models/city.dart';
 import '../models/rental.dart';
 
 class RentalSpecificationsTable extends StatefulWidget {
-  final Rental rental;
+  final int? bedrooms;
+  final int? bathrooms;
+  final bool? garage;
+  final int? floors;
+  final double? size;
+  final bool? services;
+  final bool? furnished;
+  final City? city;
+  final Company? company;
+  final String? username;
+  final DateTime? publishedAt;
+  final String? phone;
+  final String? email;
 
-  const RentalSpecificationsTable({super.key, required this.rental});
+
+  const RentalSpecificationsTable({super.key, this.bedrooms, this.bathrooms, this.garage, this.floors, this.size, this.services, this.furnished, this.city, this.company, this.username, this.publishedAt, this.phone, this.email});
 
   @override
   State<RentalSpecificationsTable> createState() => _RentalSpecificationsTableState();
@@ -103,49 +118,55 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
 
   List<_SpecificationItem> _buildSpecificationsList() {
     return [
-      _SpecificationItem(
+      if (widget.furnished != null)
+        _SpecificationItem(
         icon: Icons.checkroom,
         title: 'Amoblado',
-        value: widget.rental.furnished == 'Sí' ? 'Sí' : 'No',
-        isHighlighted: widget.rental.furnished == 'Si',
+        value: widget.furnished! ? 'Sí' : 'No',
+        isHighlighted: widget.furnished!,
       ),
-      _SpecificationItem(
+      if (widget.services != null)
+        _SpecificationItem(
         icon: Icons.construction,
         title: 'Servicios incluidos',
-        value: widget.rental.includedServices == 'Sí' ? 'Sí' : 'No',
-        isHighlighted: widget.rental.includedServices == 'Sí',
+        value: widget.services! ? 'Sí' : 'No',
+        isHighlighted: widget.services!,
       ),
-      _SpecificationItem(
+      if (widget.city!.name.isNotEmpty)
+        _SpecificationItem(
         icon: Icons.location_city,
         title: 'Ciudad',
-        value: widget.rental.city.name,
+        value: widget.city!.name,
       ),
-      _SpecificationItem(
+      if (widget.company!.name!.isNotEmpty)
+        _SpecificationItem(
         icon: Icons.business,
         title: 'Empresa',
-        value: widget.rental.company.name,
+        value: widget.company!.name,
       ),
-      _SpecificationItem(
+      if (widget.username!.isNotEmpty)
+        _SpecificationItem(
         icon: Icons.person,
         title: 'Publicado por',
-        value: widget.rental.user.name,
+        value: widget.username!,
       ),
-      _SpecificationItem(
+      if (widget.publishedAt!.toString().isNotEmpty)
+        _SpecificationItem(
         icon: Icons.calendar_today,
         title: 'Fecha de publicación',
-        value: _formatDate(widget.rental.publishedAt),
+        value: _formatDate(widget.publishedAt!),
       ),
-      if (widget.rental.company.phone.isNotEmpty)
+      if (widget.phone.toString().isEmpty)
         _SpecificationItem(
           icon: Icons.phone,
           title: 'Teléfono',
-          value: widget.rental.company.phone,
+          value: widget.phone.toString(),
         ),
-      if (widget.rental.company.email.isNotEmpty)
+      if (widget.email!.isNotEmpty)
         _SpecificationItem(
           icon: Icons.email,
           title: 'Email',
-          value: widget.rental.company.email,
+          value: widget.email!,
         ),
     ];
   }

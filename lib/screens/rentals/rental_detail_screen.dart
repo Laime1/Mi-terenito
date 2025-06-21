@@ -35,7 +35,16 @@ class RentalDetailScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // Características detalladas
-          RentalSpecificationsTable(rental: rental),
+                 RentalSpecificationsTable(
+                   furnished: rental.furnished == 'Sí'? true : false,
+                   services: rental.includedServices == 'Sí'? true : false ,
+                   city: rental.city,
+                   company: rental.company,
+                   publishedAt: rental.publishedAt,
+                   phone: rental.company.phone.toString(),
+                   email: rental.company.email,
+
+                 ),
                   const SizedBox(height: 16),
 
                   // Ubicación
