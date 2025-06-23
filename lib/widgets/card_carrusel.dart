@@ -106,7 +106,6 @@ class _CardCarruselState extends State<CardCarrusel> {
 
         const SizedBox(height: 12),
 
-        // Miniaturas horizontales
         SizedBox(
           height: 60,
           child: Center(
