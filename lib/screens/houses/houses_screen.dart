@@ -141,13 +141,16 @@ class _CasasScreenState extends State<CasasScreen> {
                           final house = filteredCasas[index];
                           return HouseCard(
                             house: house,
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DetalleCasaScreen(casa: house),
                                 ),
                               );
+                              if (result == true) {
+                                await loadAllData();
+                              }
                             },
                           );
                         },

@@ -1,16 +1,21 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:mime_type/mime_type.dart';
+import '../../models/house.dart';
 import '../../services/api_service.dart';
 
 class FormHouseScreen extends StatefulWidget {
   final int idUsuario;
   final int idCiudad;
+  final House? house;
 
   const FormHouseScreen({
     Key? key,
     required this.idUsuario,
     required this.idCiudad,
+    this.house,
   }) : super(key: key);
 
   @override
@@ -22,14 +27,48 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   final List<XFile> _images = [];
   final ImagePicker _picker = ImagePicker();
 
-  String? titulo;
-  String? descripcion;
-  double? precio;
-  String? ubicacion;
-  int? habitaciones;
-  int? banos;
-  int? cochera;
-  int? pisos;
+  late TextEditingController _tituloController;
+  late TextEditingController _descripcionController;
+  late TextEditingController _precioController;
+  late TextEditingController _ubicacionController;
+  late TextEditingController _habitacionesController;
+  late TextEditingController _banosController;
+  late TextEditingController _cocheraController;
+  late TextEditingController _pisosController;
+
+  List<String> _imagenesExistentesUrls = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _tituloController = TextEditingController(text: widget.house?.title ?? '');
+    _descripcionController = TextEditingController(text: widget.house?.description ?? '');
+    _precioController = TextEditingController(text: widget.house?.price.toString() ?? '');
+    _ubicacionController = TextEditingController(text: widget.house?.mapLocation ?? '');
+    _habitacionesController = TextEditingController(text: widget.house?.bedrooms.toString() ?? '');
+    _banosController = TextEditingController(text: widget.house?.bathrooms.toString() ?? '');
+    _cocheraController = TextEditingController(text: widget.house?.garage.toString() ?? '');
+    _pisosController = TextEditingController(text: widget.house?.floors.toString() ?? '');
+
+    _imagenesExistentesUrls = widget.house?.images
+            .map((img) => '${ApiService.baseImageUrl}$img')
+            .toList() ??
+        [];
+  }
+
+  @override
+  void dispose() {
+    _tituloController.dispose();
+    _descripcionController.dispose();
+    _precioController.dispose();
+    _ubicacionController.dispose();
+    _habitacionesController.dispose();
+    _banosController.dispose();
+    _cocheraController.dispose();
+    _pisosController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickFromGallery() async {
     if (_images.length >= 3) return;
@@ -46,58 +85,145 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
     }
   }
 
-  Future<void> _pickFromCamera() async {
-    if (_images.length >= 3) return;
-
-    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-    if (photo != null) {
-      setState(() {
-        if (_images.length < 3) {
-          _images.add(photo);
-        }
-      });
-    }
-  }
-
   void _removeImage(int index) {
     setState(() {
       _images.removeAt(index);
     });
   }
 
+  Widget _buildImageGallery() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (_imagenesExistentesUrls.isNotEmpty)
+        SizedBox(
+          height: 120,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _imagenesExistentesUrls.length,
+            itemBuilder: (context, index) {
+              final url = _imagenesExistentesUrls[index];
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        url,
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.red),
+                        onPressed: () {
+                          setState(() {
+                            _imagenesExistentesUrls.removeAt(index);
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      if (_imagenesExistentesUrls.isNotEmpty && _images.isNotEmpty)
+        const SizedBox(height: 12),
+      if (_images.isNotEmpty)
+        SizedBox(
+          height: 120,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _images.length,
+            itemBuilder: (context, index) {
+              final imageFile = File(_images[index].path);
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        imageFile,
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.red),
+                        onPressed: () => _removeImage(index),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+    ],
+  );
+}
+
+
   Future<void> guardarCasa() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_images.isEmpty) {
+    if (_images.isEmpty && _imagenesExistentesUrls.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Debes agregar al menos una imagen')),
       );
       return;
     }
 
-    _formKey.currentState!.save();
-
     try {
-      final imagenes = _images.map((xfile) => File(xfile.path)).toList();
+      final titulo = _tituloController.text;
+      final descripcion = _descripcionController.text;
+      final precio = _precioController.text;
+      final ubicacion = _ubicacionController.text;
+      final habitaciones = _habitacionesController.text;
+      final banos = _banosController.text;
+      final garage = _cocheraController.text;
+      final pisos = _pisosController.text;
 
-      await ApiService().crearCasaConImagenes(
-        titulo: titulo!,
-        descripcion: descripcion!,
-        precio: precio!.toString(),
-        enlaceUbicacion: ubicacion!,
-        habitaciones: habitaciones!.toString(),
-        banos: banos!.toString(),
-        cochera: cochera!.toString(),
-        pisos: pisos!.toString(),
-        idUsuario: widget.idUsuario,
-        idCiudad: widget.idCiudad,
-        imagenes: imagenes,
-      );
+      if (widget.house != null) {
+        final exito = await ApiService().actualizarCasaConImagenes(
+          idCasa: widget.house!.id,
+          titulo: titulo,
+          descripcion: descripcion,
+          precio: precio,
+          enlaceUbicacion: ubicacion,
+          habitaciones: habitaciones,
+          banos: banos,
+          cochera: garage,
+          pisos: pisos,
+          idUsuario: widget.idUsuario,
+          idCiudad: widget.idCiudad,
+          nuevasImagenes: _images.map((xfile) => File(xfile.path)).toList(),
+        );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Casa guardada correctamente')),
-      );
-
-      Navigator.pop(context);
+        if (exito) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Casa actualizada correctamente')),
+          );
+          Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error al actualizar la casa')),
+          );
+        }
+      } else {
+        // lógica para crear nueva casa aquí si es necesario
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al guardar: $e')),
@@ -109,139 +235,65 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agregar Casa'),
+        title: Text(widget.house != null ? 'Editar Casa' : 'Formulario de Casa'),
         centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Imágenes',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+              const Text(
+                'Imágenes (Máximo 3)',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              const Divider(),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 100,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _images.length < 3 ? _images.length + 1 : _images.length,
-                  itemBuilder: (context, index) {
-                    if (index == _images.length && _images.length < 3) {
-                      return PopupMenuButton<String>(
-                        onSelected: (value) {
-                          if (value == 'camera') {
-                            _pickFromCamera();
-                          } else if (value == 'gallery') {
-                            _pickFromGallery();
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'camera',
-                            child: Text('Tomar foto'),
-                          ),
-                          const PopupMenuItem(
-                            value: 'gallery',
-                            child: Text('Desde galería'),
-                          ),
-                        ],
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          margin: const EdgeInsets.only(right: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Center(
-                            child: Icon(Icons.add_a_photo, size: 60, color: Colors.black54),
-                          ),
-                        ),
-                      );
-                    }
-
-                    final imageFile = File(_images[index].path);
-                    return Stack(
-                      children: [
-                        Container(
-                          width: 100,
-                          margin: const EdgeInsets.only(right: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            image: DecorationImage(
-                              image: FileImage(imageFile),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: () => _removeImage(index),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.black54,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.close, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+              _buildImageGallery(),
+              OutlinedButton.icon(
+                onPressed: _images.length >= 3 ? null : _pickFromGallery,
+                icon: const Icon(Icons.add_photo_alternate),
+                label: const Text('Agregar desde galería'),
               ),
               const SizedBox(height: 16),
               TextFormField(
-                decoration: InputDecoration(
+                controller: _tituloController,
+                decoration: const InputDecoration(
                   labelText: 'Título',
-                  prefixIcon: const Icon(Icons.home),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(),
                 ),
-                onSaved: (value) => titulo = value,
                 validator: (value) => value == null || value.isEmpty ? 'Ingrese un título' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
+                controller: _descripcionController,
                 maxLines: 3,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Descripción',
-                  prefixIcon: const Icon(Icons.description),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(),
                 ),
-                onSaved: (value) => descripcion = value,
                 validator: (value) => value == null || value.isEmpty ? 'Ingrese una descripción' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                decoration: InputDecoration(
+                controller: _precioController,
+                decoration: const InputDecoration(
                   labelText: 'Precio',
-                  prefixIcon: const Icon(Icons.attach_money),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                onSaved: (value) => precio = double.tryParse(value ?? ''),
-                validator: (value) => value == null || double.tryParse(value) == null ? 'Ingrese un precio válido' : null,
+                validator: (value) => value == null || double.tryParse(value) == null
+                    ? 'Ingrese un precio válido'
+                    : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Ubicación',
-                  prefixIcon: const Icon(Icons.location_on),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                controller: _ubicacionController,
+                decoration: const InputDecoration(
+                  labelText: 'Ubicación (link de mapa)',
+                  border: OutlineInputBorder(),
                 ),
-                onSaved: (value) => ubicacion = value,
                 validator: (value) => value == null || value.isEmpty ? 'Ingrese una ubicación' : null,
               ),
               const SizedBox(height: 16),
@@ -249,27 +301,27 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                      decoration: InputDecoration(
+                      controller: _habitacionesController,
+                      decoration: const InputDecoration(
                         labelText: 'Habitaciones',
-                        prefixIcon: const Icon(Icons.king_bed),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
-                      onSaved: (value) => habitaciones = int.tryParse(value ?? ''),
-                      validator: (value) => value == null || int.tryParse(value) == null ? 'Ingrese un número válido' : null,
+                      validator: (value) =>
+                          value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
-                      decoration: InputDecoration(
+                      controller: _banosController,
+                      decoration: const InputDecoration(
                         labelText: 'Baños',
-                        prefixIcon: const Icon(Icons.bathtub),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
-                      onSaved: (value) => banos = int.tryParse(value ?? ''),
-                      validator: (value) => value == null || int.tryParse(value) == null ? 'Ingrese un número válido' : null,
+                      validator: (value) =>
+                          value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                     ),
                   ),
                 ],
@@ -279,58 +331,38 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                      decoration: InputDecoration(
+                      controller: _cocheraController,
+                      decoration: const InputDecoration(
                         labelText: 'Cochera',
-                        prefixIcon: const Icon(Icons.directions_car),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
-                      onSaved: (value) => cochera = int.tryParse(value ?? ''),
-                      validator: (value) => value == null || int.tryParse(value) == null ? 'Ingrese un número válido' : null,
+                      validator: (value) =>
+                          value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
-                      decoration: InputDecoration(
+                      controller: _pisosController,
+                      decoration: const InputDecoration(
                         labelText: 'Pisos',
-                        prefixIcon: const Icon(Icons.layers),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
-                      onSaved: (value) => pisos = int.tryParse(value ?? ''),
-                      validator: (value) => value == null || int.tryParse(value) == null ? 'Ingrese un número válido' : null,
+                      validator: (value) =>
+                          value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      onPressed: guardarCasa,
-                      child: const Text('Guardar', style: TextStyle(fontSize: 18)),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Cancelar', style: TextStyle(fontSize: 18)),
-                    ),
-                  ),
-                ],
+              ElevatedButton(
+                onPressed: guardarCasa,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(widget.house != null ? 'Actualizar Casa' : 'Guardar Casa', style: const TextStyle(fontSize: 18)),
               ),
             ],
           ),

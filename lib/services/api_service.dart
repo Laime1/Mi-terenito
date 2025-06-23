@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime_type/mime_type.dart';
-
 import '../models/rental.dart';
 import '../models/apartment.dart';
 
@@ -203,10 +201,8 @@ class ApiService {
         }
       }
 
-      // Enviar la solicitud
       var response = await request.send();
 
-      // Procesar la respuesta
       if (response.statusCode == 201) {
         final responseData = await response.stream.bytesToString();
         final jsonResponse = json.decode(responseData);
@@ -310,7 +306,6 @@ class ApiService {
           'POST',
           Uri.parse('$baseUrl/departamentos')
       );
-      // Agregar campos de texto
       request.fields['titulo'] = title;
       request.fields['descripcion'] = description;
       request.fields['precio'] = price.toString();
@@ -346,4 +341,89 @@ class ApiService {
       throw Exception('Error de conexión: $e');
     }
   }
+
+  static Future<bool> eliminarCasa(int idCasa) async {
+  try {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/casas/$idCasa'),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Error al eliminar casa: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    print('Error de conexión al eliminar casa: $e');
+    return false;
+  }
+}
+
+Future<bool> actualizarCasaConImagenes({
+  required int idCasa,
+  required String titulo,
+  required String descripcion,
+  required String precio,
+  required String enlaceUbicacion,
+  required String habitaciones,
+  required String banos,
+  required String cochera,
+  required String pisos,
+  required int idUsuario,
+  required int idCiudad,
+  List<File>? nuevasImagenes,
+}) async {
+  var uri = Uri.parse('$baseUrl/casas/$idCasa');
+  var request = http.MultipartRequest('PUT', uri);
+
+
+  request.fields['titulo'] = titulo;
+  request.fields['descripcion'] = descripcion;
+  request.fields['precio'] = precio;
+  request.fields['enlace_ubicacion'] = enlaceUbicacion;
+  request.fields['habitaciones'] = habitaciones;
+  request.fields['banos'] = banos;
+  request.fields['cochera'] = cochera;
+  request.fields['pisos'] = pisos;
+  request.fields['id_usuario'] = idUsuario.toString();
+  request.fields['id_ciudad'] = idCiudad.toString();
+
+
+  if (nuevasImagenes != null && nuevasImagenes.isNotEmpty) {
+    for (var imagen in nuevasImagenes) {
+      final fileName = imagen.path.split('/').last;
+      final mimeType = mime(imagen.path)?.split('/');
+      if (mimeType != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'imagenes',
+            imagen.path,
+            filename: fileName,
+            contentType: MediaType(mimeType[0], mimeType[1]),
+          ),
+        );
+      }
+    }
+  }
+
+  try {
+    final response = await request.send();
+    final responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('Casa actualizada correctamente: $responseBody');
+      return true;
+    } else {
+      print('Error al actualizar casa: ${response.statusCode}');
+      print(responseBody);
+      return false;
+    }
+  } catch (e) {
+    print('Excepción al actualizar casa con imágenes: $e');
+    return false;
+  }
+}
+
+
 }
