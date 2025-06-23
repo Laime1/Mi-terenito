@@ -3,7 +3,7 @@ import '../../models/house.dart';
 import '../../services/api_service.dart';
 import '../../widgets/house_specifications_table.dart';
 import '../../widgets/card_carrusel.dart';
-import '../houses/form_house_screen.dart'; // Asegúrate de importar el formulario
+import '../houses/form_house_screen.dart';
 
 class DetalleCasaScreen extends StatelessWidget {
   final House casa;

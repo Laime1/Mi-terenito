@@ -222,7 +222,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
           );
         }
       } else {
-        // lógica para crear nueva casa aquí si es necesario
+
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
