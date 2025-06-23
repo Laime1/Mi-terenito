@@ -351,4 +351,41 @@ class ApiService {
       throw Exception('Error de conexión: $e');
     }
   }
+
+  static Future<bool> deleteApartment(int idApartment) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/departamentos/$idApartment'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 404) {
+        throw Exception('Departamento no encontrado');
+      } else {
+        throw Exception('Error al desactivar departamento: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+  static Future<bool> deleteRental(int idRental) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/alquileres/$idRental'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 404) {
+        throw Exception('Alquiler no encontrado');
+      } else {
+        throw Exception('Error al desactivar Alquiler: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
 }
