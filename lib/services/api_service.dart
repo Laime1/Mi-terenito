@@ -9,9 +9,11 @@ import '../models/rental.dart';
 import '../models/apartment.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
-  //static const String baseUrl = 'http://192.168.228.134:3000/api';
-  static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
+  // static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
+  static const String baseUrl = 'http://192.168.0.10:3000/api';
+  // static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
+  static const String baseImageUrl = 'http://192.168.0.10:3000';
+
 
   static Future<List<Apartment>> getApartmentsByCompanyAndCity({
     required int companyId,
