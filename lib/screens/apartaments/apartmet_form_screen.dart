@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mi_terrenito/models/apartment.dart';
 import 'dart:io';
 
 import '../../services/api_service.dart';
@@ -7,11 +8,12 @@ import '../../services/api_service.dart';
 class DepartmentFormScreen extends StatefulWidget {
   final int idUser;
   final int idCity;
+  final Apartment? apartment;
 
   const DepartmentFormScreen({
     super.key,
     required this.idUser,
-    required this.idCity,
+    required this.idCity, this.apartment,
   });
 
   @override
@@ -132,196 +134,206 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Campo Título
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  border: OutlineInputBorder(),
+          child: Padding(
+            //padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.only(left: 16, right: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  'Imágenes (Máximo 3)',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa un título';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 8),
 
-              // Campo Descripción
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa una descripción';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Campo Precio
-              TextFormField(
-                controller: _priceController,
-                decoration: const InputDecoration(
-                  labelText: 'Precio',
-                  border: OutlineInputBorder(),
-                  prefixText: '\$',
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa el precio';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Ingresa un número válido';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Campo Enlace de Ubicación
-              TextFormField(
-                controller: _urlMapController,
-                decoration: const InputDecoration(
-                  labelText: 'Enlace de Ubicación (Google Maps)',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa un enlace de ubicación';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Campo Habitaciones
-              TextFormField(
-                controller: _roomsController,
-                decoration: const InputDecoration(
-                  labelText: 'Número de Habitaciones',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa el número de habitaciones';
-                  }
-                  if (int.tryParse(value) == null) {
-                    return 'Ingresa un número válido';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Campo Baños
-              TextFormField(
-                controller: _bathroomsController,
-                decoration: const InputDecoration(
-                  labelText: 'Número de Baños',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa el número de baños';
-                  }
-                  if (int.tryParse(value) == null) {
-                    return 'Ingresa un número válido';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Campo Piso
-              TextFormField(
-                controller: _floorController,
-                decoration: const InputDecoration(
-                  labelText: 'Piso',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa el número de piso';
-                  }
-                  if (int.tryParse(value) == null) {
-                    return 'Ingresa un número válido';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Sección de Imágenes (igual que en alquiler)
-              const Text(
-                'Imágenes (Máximo 3)',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-
-              if (_selectedImages.isNotEmpty)
-                SizedBox(
-                  height: 120,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _selectedImages.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Stack(
-                          children: [
-                            Image.file(
-                              _selectedImages[index],
-                              width: 120,
-                              height: 120,
-                              fit: BoxFit.cover,
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: IconButton(
-                                icon: const Icon(Icons.close, color: Colors.red),
-                                onPressed: () => _removeImage(index),
+                if (_selectedImages.isNotEmpty)
+                  SizedBox(
+                    height: 120,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _selectedImages.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Stack(
+                            children: [
+                              Image.file(
+                                _selectedImages[index],
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: IconButton(
+                                  icon: const Icon(Icons.close, color: Colors.red),
+                                  onPressed: () => _removeImage(index),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                OutlinedButton.icon(
+                  onPressed: _selectedImages.length >= 3 ? null : _pickImages,
+                  icon: const Icon(Icons.add_photo_alternate),
+                  label: const Text('Agregar Imágenes'),
+                ),
+                const SizedBox(height: 24),
+
+                // Campo Título
+                TextFormField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Título',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa un título';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Campo Descripción
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Descripción',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa una descripción';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Campo Precio
+                TextFormField(
+                  controller: _priceController,
+                  decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Precio',
+                    border: OutlineInputBorder(),
+                    prefixText: '\$',
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el precio';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Ingresa un número válido';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Campo Enlace de Ubicación
+                TextFormField(
+                  controller: _urlMapController,
+                  decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Enlace de Ubicación (Google Maps)',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa un enlace de ubicación';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Campo Habitaciones
+                TextFormField(
+                  controller: _roomsController,
+                  decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Número de Habitaciones',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el número de habitaciones';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Ingresa un número válido';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Campo Baños
+                TextFormField(
+                  controller: _bathroomsController,
+                  decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Número de Baños',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el número de baños';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Ingresa un número válido';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Campo Piso
+                TextFormField(
+                  controller: _floorController,
+                  decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Piso',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el número de piso';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Ingresa un número válido';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text(
+                    'Guardar Departamento',
+                    style: TextStyle(fontSize: 18),
                   ),
                 ),
-
-              OutlinedButton.icon(
-                onPressed: _selectedImages.length >= 3 ? null : _pickImages,
-                icon: const Icon(Icons.add_photo_alternate),
-                label: const Text('Agregar Imágenes'),
-              ),
-              const SizedBox(height: 24),
-
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submitForm,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  'Guardar Departamento',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

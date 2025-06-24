@@ -74,6 +74,35 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
     });
   }
 
+  Future<void> _deleteApartment(int id, BuildContext context) async {
+    try {
+      final success = await ApiService.deleteApartment(id);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Departamento desactivado correctamente')),
+        );
+        _loadApartments(); // Recargar la lista
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
+  void _editApartment(Apartment apartment, BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DepartmentFormScreen(
+          idUser: widget.userId!,
+          idCity: 4,
+          apartment: apartment,
+        ),
+      ),
+    ).then((_) => _loadApartments()); // Recargar después de editar
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +146,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
                         final Apartment apartment = filteredApartments[index];
                         return ApartmentCard(
                           apartment: apartment,
+                          enableSwipeActions: widget.userId != null,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -127,6 +157,12 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
                               ),
                             );
                           },
+                          onDelete: widget.userId != null
+                              ? () => _deleteApartment(apartment.id, context)
+                              : null,
+                          onEdit: widget.userId != null
+                              ? () => _editApartment(apartment, context)
+                              : null,
                         );
                       },
                     ),
@@ -152,6 +188,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
                 },
               )
               : null,
+
     );
   }
 }

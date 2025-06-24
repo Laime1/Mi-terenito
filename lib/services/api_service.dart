@@ -7,8 +7,16 @@ import '../models/rental.dart';
 import '../models/apartment.dart';
 
 class ApiService {
+<<<<<<< HEAD
   static const String baseImageUrl = 'http://localhost:3000';
   static const String baseUrl = 'http://localhost:3000/api';
+=======
+  // static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
+  static const String baseUrl = 'http://192.168.0.10:3000/api';
+  // static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
+  static const String baseImageUrl = 'http://192.168.0.10:3000';
+
+>>>>>>> origin/antonio_0.1
 
   static Future<List<Apartment>> getApartmentsByCompanyAndCity({
     required int companyId,
@@ -342,6 +350,7 @@ class ApiService {
     }
   }
 
+<<<<<<< HEAD
   static Future<bool> eliminarCasa(int idCasa) async {
   try {
     final response = await http.delete(
@@ -426,4 +435,42 @@ Future<bool> actualizarCasaConImagenes({
 }
 
 
+=======
+  static Future<bool> deleteApartment(int idApartment) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/departamentos/$idApartment'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 404) {
+        throw Exception('Departamento no encontrado');
+      } else {
+        throw Exception('Error al desactivar departamento: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+  static Future<bool> deleteRental(int idRental) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/alquileres/$idRental'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 404) {
+        throw Exception('Alquiler no encontrado');
+      } else {
+        throw Exception('Error al desactivar Alquiler: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+>>>>>>> origin/antonio_0.1
 }

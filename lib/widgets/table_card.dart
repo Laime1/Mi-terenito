@@ -1,10 +1,41 @@
 import 'package:flutter/material.dart';
-import '../models/rental.dart';
+
+import '../models/city.dart';
+import '../models/company.dart';
 
 class RentalSpecificationsTable extends StatefulWidget {
-  final Rental rental;
+  final int? bedrooms;
+  final int? bathrooms;
+  final bool? garage;
+  final int? floors;
+  final double? size;
+  final bool? services;
+  final bool? furnished;
+  final City? city;
+  final Company? company;
+  final String? username;
+  final DateTime? publishedAt;
+  final String? phone;
+  final String? email;
+  final String? mapLocation; // Nuevo campo para ubicación
 
-  const RentalSpecificationsTable({super.key, required this.rental});
+  const RentalSpecificationsTable({
+    super.key,
+    this.bedrooms,
+    this.bathrooms,
+    this.garage,
+    this.floors,
+    this.size,
+    this.services,
+    this.furnished,
+    this.city,
+    this.company,
+    this.username,
+    this.publishedAt,
+    this.phone,
+    this.email,
+    this.mapLocation,
+  });
 
   @override
   State<RentalSpecificationsTable> createState() => _RentalSpecificationsTableState();
@@ -16,7 +47,7 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
   @override
   Widget build(BuildContext context) {
     final specs = _buildSpecificationsList();
-    
+
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 16),
@@ -25,7 +56,7 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
       ),
       child: ExpansionTile(
         title: const Text(
-          'Características del Alquiler',
+          'Características',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -43,11 +74,11 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
         ),
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Table(
               columnWidths: const {
                 0: FlexColumnWidth(1.5),
-                1: FlexColumnWidth(2),
+                1: FlexColumnWidth(1.5),
               },
               border: TableBorder(
                 horizontalInside: BorderSide(
@@ -70,31 +101,24 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
                           child: Text(
                             spec.title,
                             style: const TextStyle(fontWeight: FontWeight.w500),
-                            // overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                    child: Expanded(
-                      child: Center(
-                        child: Text(
-                          spec.value,
-                          style: TextStyle(
-                            color: spec.isHighlighted
-                                ? Theme.of(context).primaryColor
-                                : Colors.grey[800],
-                          ),
-                          // overflow: TextOverflow.ellipsis,
-                        ),
+                    padding: const EdgeInsets.only(left: 10, top: 12, bottom: 12),
+                    child: Text(
+                      spec.value,
+                      style: TextStyle(
+                        color: spec.isHighlighted
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey[800],
                       ),
                     ),
                   ),
                 ],
-              )
-              ).toList(),
+              )).toList(),
             ),
           ),
         ],
@@ -104,49 +128,73 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
 
   List<_SpecificationItem> _buildSpecificationsList() {
     return [
-      _SpecificationItem(
-        icon: Icons.checkroom,
-        title: 'Amoblado',
-        value: widget.rental.furnished == 'Sí' ? 'Sí' : 'No',
-        isHighlighted: widget.rental.furnished == 'Si',
-      ),
-      _SpecificationItem(
-        icon: Icons.construction,
-        title: 'Servicios incluidos',
-        value: widget.rental.includedServices == 'Sí' ? 'Sí' : 'No',
-        isHighlighted: widget.rental.includedServices == 'Sí',
-      ),
-      _SpecificationItem(
-        icon: Icons.location_city,
-        title: 'Ciudad',
-        value: widget.rental.city.name,
-      ),
-      _SpecificationItem(
-        icon: Icons.business,
-        title: 'Empresa',
-        value: widget.rental.company.name,
-      ),
-      _SpecificationItem(
-        icon: Icons.person,
-        title: 'Publicado por',
-        value: widget.rental.user.name,
-      ),
-      _SpecificationItem(
-        icon: Icons.calendar_today,
-        title: 'Fecha de publicación',
-        value: _formatDate(widget.rental.publishedAt),
-      ),
-      if (widget.rental.company.phone.isNotEmpty)
+      if (widget.bedrooms != null)
+        _SpecificationItem(
+          icon: Icons.bed,
+          title: 'Habitaciones',
+          value: widget.bedrooms.toString(),
+        ),
+      if (widget.bathrooms != null)
+        _SpecificationItem(
+          icon: Icons.bathtub,
+          title: 'Baños',
+          value: widget.bathrooms.toString(),
+        ),
+      if (widget.furnished != null)
+        _SpecificationItem(
+          icon: Icons.checkroom,
+          title: 'Amoblado',
+          value: widget.furnished! ? 'Sí' : 'No',
+          isHighlighted: widget.furnished!,
+        ),
+      if (widget.services != null)
+        _SpecificationItem(
+          icon: Icons.construction,
+          title: 'Servicios incluidos',
+          value: widget.services! ? 'Sí' : 'No',
+          isHighlighted: widget.services!,
+        ),
+      if (widget.city?.name.isNotEmpty ?? false)
+        _SpecificationItem(
+          icon: Icons.location_city,
+          title: 'Ciudad',
+          value: widget.city!.name,
+        ),
+      if (widget.company?.name?.isNotEmpty ?? false)
+        _SpecificationItem(
+          icon: Icons.business,
+          title: 'Empresa',
+          value: widget.company!.name!,
+        ),
+      if (widget.username?.isNotEmpty ?? false)
+        _SpecificationItem(
+          icon: Icons.person,
+          title: 'Publicado por',
+          value: widget.username!,
+        ),
+      if (widget.publishedAt != null)
+        _SpecificationItem(
+          icon: Icons.calendar_today,
+          title: 'Fecha de publicación',
+          value: _formatDate(widget.publishedAt!),
+        ),
+      if (widget.phone?.isNotEmpty ?? false)
         _SpecificationItem(
           icon: Icons.phone,
           title: 'Teléfono',
-          value: widget.rental.company.phone,
+          value: widget.phone!,
         ),
-      if (widget.rental.company.email.isNotEmpty)
+      if (widget.email?.isNotEmpty ?? false)
         _SpecificationItem(
           icon: Icons.email,
           title: 'Email',
-          value: widget.rental.company.email,
+          value: widget.email!,
+        ),
+      if (widget.mapLocation?.isNotEmpty ?? false)
+        _SpecificationItem(
+          icon: Icons.map,
+          title: 'Ubicación',
+          value: widget.mapLocation!,
         ),
     ];
   }

@@ -70,13 +70,42 @@ class _RentalsScreenState extends State<RentalsScreen> {
     });
   }
 
+  Future<void> _deleteRental(int id, BuildContext context) async {
+    try {
+      final success = await ApiService.deleteRental(id);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Departamento desactivado correctamente')),
+        );
+        _loadRentals(); // Recargar la lista
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
+  void _editRental(Rental rental, BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RentalFormScreen(
+          idUser: widget.userId!,
+          idCity: 4,
+           // Asegúrate de que tu form screen acepte esto
+        ),
+      ),
+    ).then((_) => _loadRentals()); // Recargar después de editar
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding:  EdgeInsets.all(16.0),
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
@@ -94,13 +123,15 @@ class _RentalsScreenState extends State<RentalsScreen> {
                 : errorMessage.isNotEmpty
                 ? Center(child: Text(errorMessage))
                 : filteredRentals.isEmpty
-                ? const Center(child: Text('No hay alquileres disponibles'))
+                ? Center(child: Text('No hay alquileres disponibles'))
                 : ListView.builder(
               itemCount: filteredRentals.length,
               itemBuilder: (context, index) {
                 final Rental rental = filteredRentals[index];
-                return RentalCard(rental: rental,
-                  onTap: () {
+                return RentalCard(
+                  rental: rental,
+                    enableSwipeActions: widget.userId != null,
+                    onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -110,6 +141,12 @@ class _RentalsScreenState extends State<RentalsScreen> {
                       ),
                     );
                   },
+                  onDelete: widget.userId != null
+                     ? () => _deleteRental(rental.id, context)
+                     :null,
+                  onEdit: widget.userId != null
+                    ? () => _editRental(rental, context )
+                    : null
                 );
               },
             ),
@@ -129,7 +166,6 @@ class _RentalsScreenState extends State<RentalsScreen> {
           },
       )
       : null,
-
     );
   }
 }
