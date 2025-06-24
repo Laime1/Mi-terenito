@@ -7,16 +7,11 @@ import '../models/rental.dart';
 import '../models/apartment.dart';
 
 class ApiService {
-<<<<<<< HEAD
-  static const String baseImageUrl = 'http://localhost:3000';
-  static const String baseUrl = 'http://localhost:3000/api';
-=======
   // static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
-  static const String baseUrl = 'http://192.168.0.10:3000/api';
+  static const String baseUrl = 'http://localhost:3000/api';
   // static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
-  static const String baseImageUrl = 'http://192.168.0.10:3000';
+  static const String baseImageUrl = 'http://localhost:3000';
 
->>>>>>> origin/antonio_0.1
 
   static Future<List<Apartment>> getApartmentsByCompanyAndCity({
     required int companyId,
@@ -350,26 +345,43 @@ class ApiService {
     }
   }
 
-<<<<<<< HEAD
-  static Future<bool> eliminarCasa(int idCasa) async {
-  try {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/casas/$idCasa'),
-    );
+  static Future<bool> deleteApartment(int idApartment) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/departamentos/$idApartment'),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      print('Error al eliminar casa: ${response.statusCode}');
-      return false;
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 404) {
+        throw Exception('Departamento no encontrado');
+      } else {
+        throw Exception('Error al desactivar departamento: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
     }
-  } catch (e) {
-    print('Error de conexión al eliminar casa: $e');
-    return false;
   }
-}
+  static Future<bool> deleteRental(int idRental) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/alquileres/$idRental'),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-Future<bool> actualizarCasaConImagenes({
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 404) {
+        throw Exception('Alquiler no encontrado');
+      } else {
+        throw Exception('Error al desactivar Alquiler: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+  Future<bool> actualizarCasaConImagenes({
   required int idCasa,
   required String titulo,
   required String descripcion,
@@ -433,44 +445,21 @@ Future<bool> actualizarCasaConImagenes({
     return false;
   }
 }
+static Future<bool> eliminarCasa(int idCasa) async {
+  try {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/casas/$idCasa'),
+    );
 
-
-=======
-  static Future<bool> deleteApartment(int idApartment) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/departamentos/$idApartment'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        return true;
-      } else if (response.statusCode == 404) {
-        throw Exception('Departamento no encontrado');
-      } else {
-        throw Exception('Error al desactivar departamento: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error de conexión: $e');
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Error al eliminar casa: ${response.statusCode}');
+      return false;
     }
+  } catch (e) {
+    print('Error de conexión al eliminar casa: $e');
+    return false;
   }
-  static Future<bool> deleteRental(int idRental) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/alquileres/$idRental'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        return true;
-      } else if (response.statusCode == 404) {
-        throw Exception('Alquiler no encontrado');
-      } else {
-        throw Exception('Error al desactivar Alquiler: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error de conexión: $e');
-    }
-  }
->>>>>>> origin/antonio_0.1
+}
 }

@@ -29,13 +29,7 @@ class RentalDetailScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildDescriptionSection(),
                   const SizedBox(height: 16),
-<<<<<<< HEAD
-
-                  // Características detalladas
-                  RentalSpecificationsTable(rental: rental),
-=======
                   _buildFeaturesSection(),
->>>>>>> origin/antonio_0.1
                   const SizedBox(height: 16),
                   _buildLocationSection(context),
                   const SizedBox(height: 16),
@@ -54,30 +48,6 @@ class RentalDetailScreen extends StatelessWidget {
       height: 250,
       child: rental.images.isEmpty
           ? Container(
-<<<<<<< HEAD
-              color: Colors.grey[200],
-              child: const Center(
-                child: Icon(Icons.home, size: 80, color: Colors.grey),
-              ),
-            )
-          : PageView.builder(
-              itemCount: rental.images.length,
-              itemBuilder: (context, index) {
-                final imagenUrl =
-                    '${ApiService.baseImageUrl}${rental.images[index]}';
-                return Image.network(
-                  imagenUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    color: Colors.grey[200],
-                    child: const Center(
-                      child: Icon(Icons.broken_image, size: 60),
-                    ),
-                  ),
-                );
-              },
-            ),
-=======
         color: Colors.grey[200],
         child: const Center(
           child: Icon(Icons.home, size: 80, color: Colors.grey),
@@ -98,7 +68,6 @@ class RentalDetailScreen extends StatelessWidget {
           );
         },
       ),
->>>>>>> origin/antonio_0.1
     );
   }
 
@@ -127,9 +96,6 @@ class RentalDetailScreen extends StatelessWidget {
     );
   }
 
-<<<<<<< HEAD
-  Widget _buildLocationSection() {
-=======
   Widget _buildFeaturesSection() {
     return RentalSpecificationsTable(
       furnished: rental.furnished == 'Sí',
@@ -143,7 +109,6 @@ class RentalDetailScreen extends StatelessWidget {
   }
 
   Widget _buildLocationSection(BuildContext context) {
->>>>>>> origin/antonio_0.1
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
