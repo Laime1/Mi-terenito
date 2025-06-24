@@ -6,11 +6,15 @@ import '../services/api_service.dart';
 class LandCard extends StatelessWidget {
   final Land land;
   final VoidCallback? onTap;
+  final VoidCallback? onDelete;
+  final bool enableSwipeActions;
 
   const LandCard({
     Key? key,
     required this.land,
     this.onTap,
+    this.onDelete,
+    this.enableSwipeActions = false,
   }) : super(key: key);
 
   @override
@@ -19,7 +23,7 @@ class LandCard extends StatelessWidget {
         ? '${ApiService.baseImageUrl}${land.images.first}'
         : null;
 
-    return Card(
+    final card = Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -122,6 +126,40 @@ class LandCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+
+    if (!enableSwipeActions) return card;
+
+    return Dismissible(
+      key: Key(land.id.toString()),
+      direction: DismissDirection.endToStart,  // Solo permite deslizar hacia la izquierda
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      confirmDismiss: (direction) async {
+        if (direction == DismissDirection.endToStart && onDelete != null) {
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Confirmar eliminación'),
+              content: const Text('¿Quieres eliminar este terreno?'),
+              actions: [
+                TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancelar')),
+                TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Eliminar')),
+              ],
+            ),
+          );
+          if (confirm == true) {
+            onDelete!();
+          }
+          return confirm;
+        }
+        return false;
+      },
+      child: card,
     );
   }
 

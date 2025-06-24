@@ -12,7 +12,12 @@ class CasasScreen extends StatefulWidget {
   final int cityId;
   final int? usuarioId;
 
-  const CasasScreen({Key? key, required this.empresaId, required this.cityId, this.usuarioId}) : super(key: key);
+  const CasasScreen({
+    Key? key,
+    required this.empresaId,
+    required this.cityId,
+    this.usuarioId,
+  }) : super(key: key);
 
   @override
   State<CasasScreen> createState() => _CasasScreenState();
@@ -23,12 +28,10 @@ class _CasasScreenState extends State<CasasScreen> {
   List<House> casas = [];
   List<House> filteredCasas = [];
   String searchText = '';
-
   bool hasCasas = false;
   bool hasTerrenos = false;
   bool hasDepartamentos = false;
   bool hasAlquileres = false;
-
   final ApiService apiService = ApiService();
 
   @override
@@ -107,6 +110,22 @@ class _CasasScreenState extends State<CasasScreen> {
     }
   }
 
+  Future<void> _deleteCasa(int id, BuildContext context) async {
+    try {
+      final success = await ApiService.eliminarCasa(id);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Casa eliminada correctamente')),
+        );
+        loadAllData();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,32 +171,32 @@ class _CasasScreenState extends State<CasasScreen> {
                                 await loadAllData();
                               }
                             },
+                            enableSwipeActions: widget.usuarioId != null,
+                            onDelete: widget.usuarioId != null
+                                ? () => _deleteCasa(house.id, context)
+                                : null,
                           );
                         },
                       ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          if (widget.usuarioId != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FormHouseScreen(
-                  idUsuario: widget.usuarioId!,
-                  idCiudad: widget.cityId,
-                ),
-              ),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No se pudo determinar el usuario para crear la casa')),
-            );
-          }
-        },
-      ),
+      floatingActionButton: widget.usuarioId != null
+          ? FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FormHouseScreen(
+                      idUsuario: widget.usuarioId!,
+                      idCiudad: widget.cityId,
+                    ),
+                  ),
+                );
+              },
+            )
+          : null,
     );
   }
 }

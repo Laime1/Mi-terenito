@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mi_terrenito/services/api_service.dart';
 import 'home2_screen.dart';
+import '../models/app_colors.dart';
+import '../models/app_fonts.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -15,7 +17,7 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.navigationButtonBackground,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -23,43 +25,18 @@ class LoginScreen extends StatelessWidget {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
         ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFFEAF2F8),
-                Color(0xFFCAD6E2),
-                Color(0xFF9BA7B4),
-                Color(0xFF7C8694),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-        ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFEAF2F8),
-              Color(0xFFCAD6E2),
-              Color(0xFF9BA7B4),
-              Color(0xFF7C8694),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color:AppColors.cardBackground,
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   "CLICK HOUSE",
-                  style: TextStyle(
+                  style: AppFonts.montserratBold.copyWith(
                     fontSize: 24,
                     fontFamily: 'InknutAntiqua',
                     fontWeight: FontWeight.w600,
@@ -78,7 +55,7 @@ class LoginScreen extends StatelessWidget {
                     controller: correoController,
                     decoration: InputDecoration(
                       labelText: 'Correo',
-                      hintText: 'ingresar correo',
+                      hintText: 'Ingresar correo',
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.0),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -125,8 +102,8 @@ class LoginScreen extends StatelessWidget {
                   width: 200,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppColors.navigationButtonBackground,
+                      foregroundColor: AppColors.cardText,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -135,7 +112,13 @@ class LoginScreen extends StatelessWidget {
                     onPressed: () {
                       login(context, correoController.text, contrasenaController.text);
                     },
-                    child: const Text("Iniciar sesión"),
+                    child: Text(
+                      "Iniciar sesión",
+                      style: AppFonts.montserratRegular.copyWith(
+                        fontSize: 16,
+                        color: AppColors.cardText,
+                      ),
+                    ),
                   ),
                 ),
               ],

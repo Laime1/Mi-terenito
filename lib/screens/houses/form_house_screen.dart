@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:mi_terrenito/models/app_fonts.dart';
 import 'package:mime_type/mime_type.dart';
 import '../../models/house.dart';
 import '../../services/api_service.dart';
+import 'package:mi_terrenito/models/app_colors.dart';
 
 class FormHouseScreen extends StatefulWidget {
   final int idUsuario;
@@ -41,7 +43,6 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   @override
   void initState() {
     super.initState();
-
     _tituloController = TextEditingController(text: widget.house?.title ?? '');
     _descripcionController = TextEditingController(text: widget.house?.description ?? '');
     _precioController = TextEditingController(text: widget.house?.price.toString() ?? '');
@@ -72,7 +73,6 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
 
   Future<void> _pickFromGallery() async {
     if (_images.length >= 3) return;
-
     final List<XFile>? selectedImages = await _picker.pickMultiImage();
     if (selectedImages != null && selectedImages.isNotEmpty) {
       setState(() {
@@ -92,89 +92,88 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   }
 
   Widget _buildImageGallery() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      if (_imagenesExistentesUrls.isNotEmpty)
-        SizedBox(
-          height: 120,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: _imagenesExistentesUrls.length,
-            itemBuilder: (context, index) {
-              final url = _imagenesExistentesUrls[index];
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        url,
-                        width: 120,
-                        height: 120,
-                        fit: BoxFit.cover,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_imagenesExistentesUrls.isNotEmpty)
+          SizedBox(
+            height: 120,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _imagenesExistentesUrls.length,
+              itemBuilder: (context, index) {
+                final url = _imagenesExistentesUrls[index];
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          url,
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: IconButton(
-                        icon: const Icon(Icons.close, color: Colors.red),
-                        onPressed: () {
-                          setState(() {
-                            _imagenesExistentesUrls.removeAt(index);
-                          });
-                        },
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: AppColors.navigationButtonBackground),
+                          onPressed: () {
+                            setState(() {
+                              _imagenesExistentesUrls.removeAt(index);
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-      if (_imagenesExistentesUrls.isNotEmpty && _images.isNotEmpty)
-        const SizedBox(height: 12),
-      if (_images.isNotEmpty)
-        SizedBox(
-          height: 120,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: _images.length,
-            itemBuilder: (context, index) {
-              final imageFile = File(_images[index].path);
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        imageFile,
-                        width: 120,
-                        height: 120,
-                        fit: BoxFit.cover,
+        if (_imagenesExistentesUrls.isNotEmpty && _images.isNotEmpty)
+          const SizedBox(height: 12),
+        if (_images.isNotEmpty)
+          SizedBox(
+            height: 120,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _images.length,
+              itemBuilder: (context, index) {
+                final imageFile = File(_images[index].path);
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          imageFile,
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: IconButton(
-                        icon: const Icon(Icons.close, color: Colors.red),
-                        onPressed: () => _removeImage(index),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: AppColors.navigationButtonBackground),
+                          onPressed: () => _removeImage(index),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-    ],
-  );
-}
-
+      ],
+    );
+  }
 
   Future<void> guardarCasa() async {
     if (!_formKey.currentState!.validate()) return;
@@ -222,7 +221,31 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
           );
         }
       } else {
+        // Aquí llamas a crearCasaConImagenes si la casa no existe
+        final exito = await ApiService().crearCasaConImagenes(
+          titulo: titulo,
+          descripcion: descripcion,
+          precio: precio,
+          enlaceUbicacion: ubicacion,
+          habitaciones: habitaciones,
+          banos: banos,
+          cochera: garage,
+          pisos: pisos,
+          idUsuario: widget.idUsuario,
+          idCiudad: widget.idCiudad,
+          imagenes: _images.map((xfile) => File(xfile.path)).toList(),
+        );
 
+        if (exito) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Casa creada correctamente')),
+          );
+          Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error al crear la casa')),
+          );
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -231,140 +254,156 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bodyBackground,
       appBar: AppBar(
+        titleTextStyle: AppFonts.montserratBold.copyWith(fontSize: 18, color: AppColors.appBarText),
         title: Text(widget.house != null ? 'Editar Casa' : 'Formulario de Casa'),
+        backgroundColor: AppColors.navigationButtonBackground,
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Imágenes (Máximo 3)',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              _buildImageGallery(),
-              OutlinedButton.icon(
-                onPressed: _images.length >= 3 ? null : _pickFromGallery,
-                icon: const Icon(Icons.add_photo_alternate),
-                label: const Text('Agregar desde galería'),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _tituloController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  border: OutlineInputBorder(),
+        child: DefaultTextStyle(
+          style: AppFonts.montserratRegular.copyWith(fontSize: 14),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  'Imágenes (Máximo 3)',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                 ),
-                validator: (value) => value == null || value.isEmpty ? 'Ingrese un título' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _descripcionController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción',
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 8),
+                _buildImageGallery(),
+                OutlinedButton.icon(
+                  onPressed: _images.length >= 3 ? null : _pickFromGallery,
+                  icon: const Icon(Icons.add_photo_alternate),
+                  label: const Text('Agregar desde galería'),
                 ),
-                validator: (value) => value == null || value.isEmpty ? 'Ingrese una descripción' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _precioController,
-                decoration: const InputDecoration(
-                  labelText: 'Precio',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: (value) => value == null || double.tryParse(value) == null
-                    ? 'Ingrese un precio válido'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _ubicacionController,
-                decoration: const InputDecoration(
-                  labelText: 'Ubicación (link de mapa)',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) => value == null || value.isEmpty ? 'Ingrese una ubicación' : null,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _habitacionesController,
-                      decoration: const InputDecoration(
-                        labelText: 'Habitaciones',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          value == null || int.tryParse(value) == null ? 'Número inválido' : null,
-                    ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _tituloController,
+                  style: AppFonts.montserratRegular,
+                  decoration: const InputDecoration(
+                    labelText: 'Título',
+                    border: OutlineInputBorder(),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _banosController,
-                      decoration: const InputDecoration(
-                        labelText: 'Baños',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          value == null || int.tryParse(value) == null ? 'Número inválido' : null,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _cocheraController,
-                      decoration: const InputDecoration(
-                        labelText: 'Cochera',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          value == null || int.tryParse(value) == null ? 'Número inválido' : null,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _pisosController,
-                      decoration: const InputDecoration(
-                        labelText: 'Pisos',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          value == null || int.tryParse(value) == null ? 'Número inválido' : null,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: guardarCasa,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  validator: (value) => value == null || value.isEmpty ? 'Ingrese un título' : null,
                 ),
-                child: Text(widget.house != null ? 'Actualizar Casa' : 'Guardar Casa', style: const TextStyle(fontSize: 18)),
-              ),
-            ],
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _descripcionController,
+                  maxLines: 3,
+                  style: AppFonts.montserratRegular,
+                  decoration: const InputDecoration(
+                    labelText: 'Descripción',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty ? 'Ingrese una descripción' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _precioController,
+                  style: AppFonts.montserratRegular,
+                  decoration: const InputDecoration(
+                    labelText: 'Precio',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  validator: (value) => value == null || double.tryParse(value) == null
+                      ? 'Ingrese un precio válido'
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _ubicacionController,
+                  style: AppFonts.montserratRegular,
+                  decoration: const InputDecoration(
+                    labelText: 'Ubicación (link de mapa)',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty ? 'Ingrese una ubicación' : null,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _habitacionesController,
+                        style: AppFonts.montserratRegular,
+                        decoration: const InputDecoration(
+                          labelText: 'Habitaciones',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _banosController,
+                        style: AppFonts.montserratRegular,
+                        decoration: const InputDecoration(
+                          labelText: 'Baños',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _cocheraController,
+                        style: AppFonts.montserratRegular,
+                        decoration: const InputDecoration(
+                          labelText: 'Cochera',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _pisosController,
+                        style: AppFonts.montserratRegular,
+                        decoration: const InputDecoration(
+                          labelText: 'Pisos',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton(
+                  onPressed: guardarCasa,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.navigationButtonBackground,
+                    foregroundColor: AppColors.cardText,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text(
+                    widget.house != null ? 'Actualizar Casa' : 'Guardar Casa',
+                    style: AppFonts.montserratRegular.copyWith(fontSize: 18),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

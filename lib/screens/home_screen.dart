@@ -3,6 +3,7 @@ import '../widgets/custom_dropdown.dart';
 import '../services/api_service.dart';
 import 'home2_screen.dart';
 import '../models/app_colors.dart';
+import '../models/app_fonts.dart';
 import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -76,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> loadCities() async {
     try {
       final loadedCities = await apiService.fetchCities();
-      print('ciudades: ${loadedCities}');
+      //print('ciudades: ${loadedCities}');
       setState(() {
         cities = loadedCities;
         selectedCity = null;
@@ -141,15 +142,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bodyBackground,
+      backgroundColor: AppColors.cardBackground,
       appBar: AppBar(
-        backgroundColor: AppColors.appBarBackground,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('', style: TextStyle(fontSize: 14, color: AppColors.appBarText)),
-            Text('Click House',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.appBarText)),
+        backgroundColor: AppColors.navigationButtonBackground,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'CLICK HOUSE',
+              style: AppFonts.montserratRegular.copyWith(
+                fontSize: 20,
+                color: AppColors.cardText,
+              ),
+            ),
           ],
         ),
         actions: [
@@ -160,9 +165,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
               );
             },
-            child: const Text(
+            child: Text(
               'Iniciar sesión',
-              style: TextStyle(color: AppColors.appBarText),
+              style: AppFonts.montserratBold.copyWith(color: AppColors.cardText),
             ),
           ),
         ],

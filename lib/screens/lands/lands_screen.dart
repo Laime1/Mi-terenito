@@ -5,6 +5,7 @@ import '../../models/land.dart';
 import '/widgets/card_lands.dart';
 import 'detail_land_screen.dart';
 import '../home2_screen.dart';
+import 'form_land_screen.dart';
 
 class LandsScreen extends StatefulWidget {
   final int empresaId;
@@ -97,6 +98,22 @@ class _LandsScreenState extends State<LandsScreen> {
     );
   }
 
+  Future<void> _deleteTerreno(int id, BuildContext context) async {
+    try {
+      final success = await ApiService.eliminarTerreno(id);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Terreno eliminado correctamente')),
+        );
+        await loadAllData();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al eliminar: ${e.toString()}')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,20 +148,45 @@ class _LandsScreenState extends State<LandsScreen> {
                           final terreno = filteredTerrenos[index];
                           return LandCard(
                             land: terreno,
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => DetailLandScrenn(terreno: terreno),
                                 ),
                               );
+                              if (result == true) {
+                                await loadAllData();
+                              }
                             },
+                            enableSwipeActions: widget.usuarioId != null,
+                            onDelete: widget.usuarioId != null
+                                ? () => _deleteTerreno(terreno.id, context)
+                                : null,
                           );
                         },
                       ),
           ),
         ],
       ),
+      floatingActionButton: widget.usuarioId != null
+          ? FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => FormLandScreen(
+                      idUsuario: widget.usuarioId!,
+                      idCiudad: widget.cityId,
+                    ),
+                  ),
+                ).then((value) {
+                  if (value == true) loadAllData();
+                });
+              },
+            )
+          : null,
     );
   }
 }

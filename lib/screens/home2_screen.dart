@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/models/app_fonts.dart';
 import 'package:mi_terrenito/screens/apartaments/apartaments_screen.dart';
 import 'package:mi_terrenito/screens/rentals/rentals_screen.dart';
 import 'houses/houses_screen.dart';
@@ -154,6 +155,8 @@ class _Home2ScreenState extends State<Home2Screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.navigationButtonBackground,
+        titleTextStyle: AppFonts.montserratBold.copyWith(color: AppColors.cardText,fontSize: 18),
         title: Text(
           currentTipo[0].toUpperCase() + currentTipo.substring(1),
         ),
@@ -194,10 +197,10 @@ class _Home2ScreenState extends State<Home2Screen> {
         initialSelection: _tipoToIndex(currentTipo),
         barHeight: 50,
         circleSize: 40,
-        barBackgroundColor: Colors.white,
-        activeIconColor: Colors.white,
+        barBackgroundColor: AppColors.cardBackground,
+        activeIconColor: AppColors.cardBackground,
         inactiveIconColor: Colors.grey,
-        circleColor: Colors.blueAccent,
+        circleColor: AppColors.navigationButtonBackground,
         tabs: widget.isLoggedIn
             ? [
                 TabData(icon: Icons.house_rounded, title: 'Casas'),

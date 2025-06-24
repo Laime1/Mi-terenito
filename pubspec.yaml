@@ -66,9 +66,10 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   fonts:
-    - family: InknutAntiqua
+    - family: Montserrat
       fonts:
-        - asset: assets/fonts/InknutAntiqua-Regular.ttf
+        - asset: assets/fonts/Montserrat-Regular.otf
+        - asset: assets/fonts/Montserrat-Bold.otf
   assets:
     - assets/icono_terreno.png
     - assets/home_terreno.png

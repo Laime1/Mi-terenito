@@ -7,10 +7,10 @@ import '../models/rental.dart';
 import '../models/apartment.dart';
 
 class ApiService {
-  // static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
-  static const String baseUrl = 'http://localhost:3000/api';
-  // static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
-  static const String baseImageUrl = 'http://localhost:3000';
+  static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
+  //static const String baseUrl = 'http://localhost:3000/api';
+  static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
+  //static const String baseImageUrl = 'http://localhost:3000';
 
 
   static Future<List<Apartment>> getApartmentsByCompanyAndCity({
@@ -462,4 +462,17 @@ static Future<bool> eliminarCasa(int idCasa) async {
     return false;
   }
 }
+  static Future<bool> eliminarTerreno(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/terrenos/$id'),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('No se pudo eliminar el terreno');
+    }
+  }
+
+
 }
