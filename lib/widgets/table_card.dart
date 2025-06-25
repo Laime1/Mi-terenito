@@ -9,7 +9,7 @@ class RentalSpecificationsTable extends StatefulWidget {
   final bool? garage;
   final int? floors;
   final double? size;
-  final bool? services;
+  final String? basicServices;
   final bool? furnished;
   final City? city;
   final Company? company;
@@ -17,7 +17,7 @@ class RentalSpecificationsTable extends StatefulWidget {
   final DateTime? publishedAt;
   final String? phone;
   final String? email;
-  final String? mapLocation; // Nuevo campo para ubicación
+  final String? mapLocation;
 
   const RentalSpecificationsTable({
     super.key,
@@ -26,7 +26,7 @@ class RentalSpecificationsTable extends StatefulWidget {
     this.garage,
     this.floors,
     this.size,
-    this.services,
+    this.basicServices,
     this.furnished,
     this.city,
     this.company,
@@ -140,19 +140,30 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
           title: 'Baños',
           value: widget.bathrooms.toString(),
         ),
+      if (widget.garage != null)
+        _SpecificationItem(
+          icon: Icons.local_parking,
+          title: 'Cochera',
+          value: widget.garage! ? 'Sí' : 'No',
+        ),
+      if (widget.floors != null)
+        _SpecificationItem(
+          icon: Icons.layers,
+          title: 'Pisos',
+          value: widget.floors.toString(),
+        ),
+      if (widget.basicServices != null && widget.basicServices!.isNotEmpty)
+        _SpecificationItem(
+          icon: Icons.construction,
+          title: 'Servicios Básicos',
+          value: widget.basicServices!,
+        ),
       if (widget.furnished != null)
         _SpecificationItem(
           icon: Icons.checkroom,
           title: 'Amoblado',
           value: widget.furnished! ? 'Sí' : 'No',
           isHighlighted: widget.furnished!,
-        ),
-      if (widget.services != null)
-        _SpecificationItem(
-          icon: Icons.construction,
-          title: 'Servicios incluidos',
-          value: widget.services! ? 'Sí' : 'No',
-          isHighlighted: widget.services!,
         ),
       if (widget.city?.name.isNotEmpty ?? false)
         _SpecificationItem(

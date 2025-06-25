@@ -113,7 +113,7 @@ class HouseCard extends StatelessWidget {
                         children: [
                           _buildFeatureChip(Icons.king_bed, '${house.bedrooms} hab.'),
                           _buildFeatureChip(Icons.bathtub, '${house.bathrooms} baños'),
-                          _buildFeatureChip(Icons.garage, '${house.garage} garaje'),
+                          _buildFeatureChip(Icons.garage, '${house.garage ? 'Sí' : 'No'} garaje'),
                           _buildFeatureChip(Icons.layers, '${house.floors} pisos'),
                           if (house.city != null)
                             _buildFeatureChip(Icons.location_pin, house.city!.name),

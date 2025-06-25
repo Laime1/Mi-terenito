@@ -99,7 +99,7 @@ class RentalDetailScreen extends StatelessWidget {
   Widget _buildFeaturesSection() {
     return RentalSpecificationsTable(
       furnished: rental.furnished == 'Sí',
-      services: rental.includedServices == 'Sí',
+      basicServices: rental.includedServices,
       city: rental.city,
       company: rental.company,
       publishedAt: rental.publishedAt,

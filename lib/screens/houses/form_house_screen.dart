@@ -1,3 +1,4 @@
+// ... todas tus importaciones se mantienen
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -221,7 +222,6 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
           );
         }
       } else {
-        // Aquí llamas a crearCasaConImagenes si la casa no existe
         final exito = await ApiService().crearCasaConImagenes(
           titulo: titulo,
           descripcion: descripcion,
@@ -254,7 +254,6 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -274,10 +273,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Imágenes (Máximo 3)',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                ),
+                const Text('Imágenes (Máximo 3)', style: TextStyle(fontSize: 16)),
                 const SizedBox(height: 8),
                 _buildImageGallery(),
                 OutlinedButton.icon(
@@ -288,45 +284,28 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _tituloController,
-                  style: AppFonts.montserratRegular,
-                  decoration: const InputDecoration(
-                    labelText: 'Título',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Título', border: OutlineInputBorder()),
                   validator: (value) => value == null || value.isEmpty ? 'Ingrese un título' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _descripcionController,
                   maxLines: 3,
-                  style: AppFonts.montserratRegular,
-                  decoration: const InputDecoration(
-                    labelText: 'Descripción',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Descripción', border: OutlineInputBorder()),
                   validator: (value) => value == null || value.isEmpty ? 'Ingrese una descripción' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _precioController,
-                  style: AppFonts.montserratRegular,
-                  decoration: const InputDecoration(
-                    labelText: 'Precio',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Precio', border: OutlineInputBorder()),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   validator: (value) => value == null || double.tryParse(value) == null
-                      ? 'Ingrese un precio válido'
-                      : null,
+                      ? 'Ingrese un precio válido' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _ubicacionController,
-                  style: AppFonts.montserratRegular,
-                  decoration: const InputDecoration(
-                    labelText: 'Ubicación (link de mapa)',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: const InputDecoration(labelText: 'Ubicación (link de mapa)', border: OutlineInputBorder()),
                   validator: (value) => value == null || value.isEmpty ? 'Ingrese una ubicación' : null,
                 ),
                 const SizedBox(height: 16),
@@ -335,11 +314,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _habitacionesController,
-                        style: AppFonts.montserratRegular,
-                        decoration: const InputDecoration(
-                          labelText: 'Habitaciones',
-                          border: OutlineInputBorder(),
-                        ),
+                        decoration: const InputDecoration(labelText: 'Habitaciones', border: OutlineInputBorder()),
                         keyboardType: TextInputType.number,
                         validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                       ),
@@ -348,11 +323,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _banosController,
-                        style: AppFonts.montserratRegular,
-                        decoration: const InputDecoration(
-                          labelText: 'Baños',
-                          border: OutlineInputBorder(),
-                        ),
+                        decoration: const InputDecoration(labelText: 'Baños', border: OutlineInputBorder()),
                         keyboardType: TextInputType.number,
                         validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                       ),
@@ -363,28 +334,45 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: TextFormField(
-                        controller: _cocheraController,
-                        style: AppFonts.montserratRegular,
-                        decoration: const InputDecoration(
-                          labelText: 'Cochera',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Cochera:', style: AppFonts.montserratRegular,selectionColor: AppColors.navigationButtonText,),
+                          Row(
+                            children: [
+                              Radio<bool>(
+                                value: true,
+                                groupValue: _cocheraController.text == 'true',
+                                onChanged: (value) {
+                                  setState(() => _cocheraController.text = value.toString());
+                                },
+                              ),
+                              const Text('Sí'),
+                              const SizedBox(width: 20),
+                              Radio<bool>(
+                                value: false,
+                                groupValue: _cocheraController.text == 'true',
+                                onChanged: (value) {
+                                  setState(() => _cocheraController.text = value.toString());
+                                },
+                              ),
+                              const Text('No'),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: TextFormField(
                         controller: _pisosController,
-                        style: AppFonts.montserratRegular,
                         decoration: const InputDecoration(
                           labelText: 'Pisos',
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
-                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                        validator: (value) =>
+                            value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                       ),
                     ),
                   ],
@@ -394,7 +382,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                   onPressed: guardarCasa,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.navigationButtonBackground,
-                    foregroundColor: AppColors.cardText,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: Text(

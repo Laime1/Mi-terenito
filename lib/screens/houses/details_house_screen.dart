@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/models/app_colors.dart';
+import 'package:mi_terrenito/models/app_fonts.dart';
 import '../../models/house.dart';
 import '../../services/api_service.dart';
 import '../../widgets/card_carrusel.dart';
 import '../../widgets/table_card.dart';
 import '../../widgets/utils/app_launcher.dart';
 import '../houses/form_house_screen.dart';
-import 'package:mi_terrenito/models/app_fonts.dart';
+//import 'package:mi_terrenito/models/app_fonts.dart';
 
 class DetalleCasaScreen extends StatelessWidget {
   final House casa;
+  final int? usuarioId;
 
-  const DetalleCasaScreen({super.key, required this.casa});
+  const DetalleCasaScreen({super.key, required this.casa, this.usuarioId});
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +50,10 @@ class DetalleCasaScreen extends StatelessWidget {
                   RentalSpecificationsTable(
                     bedrooms: casa.bedrooms,
                     bathrooms: casa.bathrooms,
-                    garage: casa.garage == 1,
+                    garage: casa.garage,
                     floors: casa.floors,
                     size: null,
-                    services: null,
+                    basicServices: null,
                     furnished: null,
                     city: casa.city,
                     company: casa.company,
@@ -66,7 +68,7 @@ class DetalleCasaScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildPublisherInfo(context),
                   const SizedBox(height: 24),
-                  _buildActionButtons(context),
+                  if (usuarioId != null && usuarioId == casa.user?.id) _buildActionButtons(context),
                 ],
               ),
             ),
@@ -147,30 +149,55 @@ class DetalleCasaScreen extends StatelessWidget {
   }
 
   Widget _buildPublisherInfo(BuildContext context) {
-    final mensaje = 'Hola, estoy interesado en "${casa.title}" ubicado en "${casa.mapLocation}". ¿Podría brindarme más información? 🏠';
+    final user = casa.user;
+    final company = casa.company;
+    final phoneRaw = user?.numberPhone.replaceAll(RegExp(r'\D'), '') ?? '';
+    final phone = phoneRaw.length < 10 ? '+591$phoneRaw' : phoneRaw;
+    final mensaje = Uri.encodeComponent('Hola, estoy interesado en "${casa.title}". ¿Podría brindarme más información sobre esta casa? 🏠');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Publicado por',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        const Text('Publicado por', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const CircleAvatar(child: Icon(Icons.person)),
-          title: Text(casa.user?.name ?? 'Nombre no disponible'),
-          subtitle: Text(casa.company?.name ?? 'Empresa no disponible'),
+          title: Text(user?.name ?? 'No disponible'),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(company?.name ?? 'Empresa no disponible'),
+              const SizedBox(height: 4),
+              Text(user?.numberPhone ?? 'Teléfono no disponible'),
+            ],
+          ),
           trailing: IconButton(
             icon: const Icon(Icons.phone),
             onPressed: () {
-              AppLauncher.launchWhatsApp(
-                phone: casa.user?.numberPhone ?? '',
-                message: mensaje,
-                context: context,
-              );
+              if (phone.isNotEmpty) {
+                AppLauncher.launchWhatsApp(
+                  phone: phone,
+                  message: mensaje,
+                  context: context,
+                );
+              }
             },
+          ),
+        ),
+        const SizedBox(height: 8),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.business),
+          title: const Text('Información de la empresa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(company?.description ?? 'Sin descripción'),
+              const SizedBox(height: 4),
+              Text('Teléfono: ${company?.phone ?? 'No disponible'}'),
+              Text('Email: ${company?.email ?? 'No disponible'}'),
+            ],
           ),
         ),
       ],
@@ -203,7 +230,9 @@ class DetalleCasaScreen extends StatelessWidget {
         icon: const Icon(Icons.edit),
         label: const Text('Editar'),
         style: ElevatedButton.styleFrom(
+          textStyle: AppFonts.montserratRegular,
           backgroundColor: AppColors.navigationButtonBackground,
+          foregroundColor: Colors.white, 
         ),
       ),
     );

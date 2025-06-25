@@ -9,7 +9,7 @@ class House {
   final double price;
   final int bedrooms;
   final int bathrooms;
-  final int garage;
+  final bool garage;
   final int floors;
   final int status;
   final DateTime publishedAt;
@@ -45,7 +45,7 @@ class House {
       price: _parseDouble(json['precio']),
       bedrooms: _parseInt(json['habitaciones']),
       bathrooms: _parseInt(json['banos']),
-      garage: _parseInt(json['garage']),
+      garage: (json['cochera']?.toString().toLowerCase() == 'true'),
       floors: _parseInt(json['pisos']),
       status: _parseInt(json['estado']),
       publishedAt: _parseDateTime(json['fecha_publicacion']),

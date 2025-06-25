@@ -44,17 +44,14 @@ class _CasasScreenState extends State<CasasScreen> {
     setState(() => isLoading = true);
     try {
       List<dynamic> loadedCasasJson;
-
       if (widget.usuarioId != null) {
         loadedCasasJson = await apiService.fetchCasasByUsuario(widget.usuarioId!);
       } else {
         loadedCasasJson = await apiService.fetchCasasByEmpresaAndCiudad(widget.empresaId, widget.cityId);
       }
-
       final loadedTerrenos = await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
       final loadedDepartamentos = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
       final loadedAlquileres = await apiService.fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
-
       final loadedCasas = loadedCasasJson.map((json) => House.fromJson(json)).toList();
 
       setState(() {
@@ -164,7 +161,10 @@ class _CasasScreenState extends State<CasasScreen> {
                               final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DetalleCasaScreen(casa: house),
+                                  builder: (context) => DetalleCasaScreen(
+                                    casa: house,
+                                    usuarioId: widget.usuarioId,
+                                  ),
                                 ),
                               );
                               if (result == true) {

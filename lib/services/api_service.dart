@@ -5,12 +5,15 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime_type/mime_type.dart';
 import '../models/rental.dart';
 import '../models/apartment.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
+
 
 class ApiService {
-  static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
-  //static const String baseUrl = 'http://localhost:3000/api';
-  static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
-  //static const String baseImageUrl = 'http://localhost:3000';
+  //static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
+  static const String baseUrl = 'http://localhost:3000/api';
+  //static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
+  static const String baseImageUrl = 'http://localhost:3000';
 
 
   static Future<List<Apartment>> getApartmentsByCompanyAndCity({
@@ -474,5 +477,188 @@ static Future<bool> eliminarCasa(int idCasa) async {
     }
   }
 
+  Future<bool> crearTerrenoConImagenes({
+    required String titulo,
+    required String descripcion,
+    required String precio,
+    required String enlaceUbicacion,
+    required String tamano,
+    required String serviciosBasicos,
+    required int idUsuario,
+    required int idCiudad,
+    List<File>? imagenes, // Para móvil
+    List<XFile>? ximagenes, // Para web
+  }) async {
+    var uri = Uri.parse('$baseUrl/terrenos');
+    var request = http.MultipartRequest('POST', uri);
 
+    request.fields['titulo'] = titulo;
+    request.fields['descripcion'] = descripcion;
+    request.fields['precio'] = precio;
+    request.fields['enlace_ubicacion'] = enlaceUbicacion;
+    request.fields['tamano'] = tamano;
+    request.fields['servicios_basicos'] = serviciosBasicos;
+    request.fields['id_usuario'] = idUsuario.toString();
+    request.fields['id_ciudad'] = idCiudad.toString();
+
+    if (kIsWeb && ximagenes != null) {
+      for (var xfile in ximagenes) {
+        final bytes = await xfile.readAsBytes();
+        final fileName = xfile.name;
+        final mimeType = mime(fileName)?.split('/');
+        final mediaType = (mimeType != null && mimeType.length == 2)
+            ? MediaType(mimeType[0], mimeType[1])
+            : null;
+
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'imagenes',
+            bytes,
+            filename: fileName,
+            contentType: mediaType,
+          ),
+        );
+      }
+    } else if (imagenes != null) {
+      for (var imagen in imagenes) {
+        final fileName = imagen.path.split('/').last;
+        final mimeType = mime(fileName)?.split('/');
+        final mediaType = (mimeType != null && mimeType.length == 2)
+            ? MediaType(mimeType[0], mimeType[1])
+            : null;
+
+        if (mediaType != null) {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagen.path,
+              filename: fileName,
+              contentType: mediaType,
+            ),
+          );
+        } else {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagen.path,
+              filename: fileName,
+            ),
+          );
+        }
+      }
+    } else {
+      throw Exception('No se proporcionaron imágenes');
+    }
+
+    final response = await request.send();
+    final responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      print("Terreno creado correctamente: $responseBody");
+      return true;
+    } else {
+      print("Error al crear terreno: ${response.statusCode}");
+      print(responseBody);
+      return false;
+    }
+  }
+
+  Future<bool> actualizarTerrenoConImagenes({
+    required int idTerreno,
+    required String titulo,
+    required String descripcion,
+    required String precio,
+    required String enlaceUbicacion,
+    required String tamano,
+    required String serviciosBasicos,
+    required int idUsuario,
+    required int idCiudad,
+    List<File>? nuevasImagenes,
+    List<XFile>? nuevasXImagenes,
+    List<String>? imagenesExistentes, // nombres de imágenes que se mantienen
+  }) async {
+    var uri = Uri.parse('$baseUrl/terrenos/$idTerreno');
+    var request = http.MultipartRequest('PUT', uri);
+
+    request.fields['titulo'] = titulo;
+    request.fields['descripcion'] = descripcion;
+    request.fields['precio'] = precio;
+    request.fields['enlace_ubicacion'] = enlaceUbicacion;
+    request.fields['tamano'] = tamano;
+    request.fields['servicios_basicos'] = serviciosBasicos;
+    request.fields['id_usuario'] = idUsuario.toString();
+    request.fields['id_ciudad'] = idCiudad.toString();
+
+    if (imagenesExistentes != null && imagenesExistentes.isNotEmpty) {
+      // Enviamos la lista de imágenes existentes que queremos mantener al backend
+      // (ajusta la clave según tu API, aquí usamos 'imagenes_existentes[]' como ejemplo)
+      for (var imgName in imagenesExistentes) {
+        request.fields['imagenes_existentes[]'] = imgName;
+      }
+    }
+
+    if (kIsWeb && nuevasXImagenes != null && nuevasXImagenes.isNotEmpty) {
+      for (var xfile in nuevasXImagenes) {
+        final bytes = await xfile.readAsBytes();
+        final fileName = xfile.name;
+        final mimeType = mime(fileName)?.split('/');
+        final mediaType = (mimeType != null && mimeType.length == 2)
+            ? MediaType(mimeType[0], mimeType[1])
+            : null;
+
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'imagenes',
+            bytes,
+            filename: fileName,
+            contentType: mediaType,
+          ),
+        );
+      }
+    } else if (nuevasImagenes != null && nuevasImagenes.isNotEmpty) {
+      for (var imagen in nuevasImagenes) {
+        final fileName = imagen.path.split('/').last;
+        final mimeType = mime(imagen.path)?.split('/');
+        final mediaType = (mimeType != null && mimeType.length == 2)
+            ? MediaType(mimeType[0], mimeType[1])
+            : null;
+
+        if (mediaType != null) {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagen.path,
+              filename: fileName,
+              contentType: mediaType,
+            ),
+          );
+        } else {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagen.path,
+              filename: fileName,
+            ),
+          );
+        }
+      }
+    }
+
+    try {
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print("Terreno actualizado correctamente: $responseBody");
+        return true;
+      } else {
+        print("Error al actualizar terreno: ${response.statusCode}");
+        print(responseBody);
+        return false;
+      }
+    } catch (e) {
+      print("Excepción al actualizar terreno con imágenes: $e");
+      return false;
+    }
+  }
 }

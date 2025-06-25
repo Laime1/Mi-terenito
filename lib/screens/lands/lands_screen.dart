@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../models/land.dart';
 import '/widgets/card_lands.dart';
@@ -109,7 +108,7 @@ class _LandsScreenState extends State<LandsScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al eliminar: ${e.toString()}')),
+        SnackBar(content: Text('Error: ${e.toString()}')),
       );
     }
   }
@@ -152,7 +151,10 @@ class _LandsScreenState extends State<LandsScreen> {
                               final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => DetailLandScrenn(terreno: terreno),
+                                  builder: (_) => DetailLandScreen(
+                                    terreno: terreno,
+                                    usuarioId: widget.usuarioId,
+                                  ),
                                 ),
                               );
                               if (result == true) {
@@ -171,20 +173,20 @@ class _LandsScreenState extends State<LandsScreen> {
       ),
       floatingActionButton: widget.usuarioId != null
           ? FloatingActionButton(
-              child: const Icon(Icons.add),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => FormLandScreen(
-                      idUsuario: widget.usuarioId!,
-                      idCiudad: widget.cityId,
+                    builder: (_) => LandFormScreen(
+                      idUser: widget.usuarioId!,
+                      idCity: widget.cityId,
+                      idEmpresa: widget.empresaId,
                     ),
                   ),
-                ).then((value) {
-                  if (value == true) loadAllData();
-                });
+                );
               },
+              child: const Icon(Icons.add),
+              tooltip: 'Agregar Terreno',
             )
           : null,
     );

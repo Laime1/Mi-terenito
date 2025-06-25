@@ -7,6 +7,7 @@ class Land {
   final String title;
   final String description;
   final double price;
+  final DateTime? createdAt;
   final int status;
   final DateTime publishedAt;
   final String mapLocation;
@@ -22,6 +23,7 @@ class Land {
     required this.title,
     required this.description,
     required this.price,
+    this.createdAt,
     required this.status,
     required this.publishedAt,
     required this.mapLocation,
@@ -39,11 +41,12 @@ class Land {
       title: json['titulo']?.toString() ?? '',
       description: json['descripcion']?.toString() ?? '',
       price: _parseDouble(json['precio']),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       status: _parseInt(json['estado']),
       publishedAt: _parseDateTime(json['fecha_publicacion']),
       mapLocation: json['enlace_ubicacion']?.toString() ?? '',
       size: _parseDouble(json['tamano']),
-      basicServices: json['servicios_basicos']?.toString() ?? 'No',
+      basicServices: json['servicios_basicos']?.toString() ?? '',
       images: _parseImages(json['imagenes']),
       user: User.fromJson(json['usuario'] ?? {}),
       city: City.fromJson(json['ciudad'] ?? {}),
