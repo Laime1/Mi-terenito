@@ -6,10 +6,9 @@ import 'package:mi_terrenito/models/app_colors.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 import 'package:mi_terrenito/widgets/card_carrusel.dart';
 import 'package:mi_terrenito/widgets/utils/app_launcher.dart';
-import 'package:mi_terrenito/widgets/table_card.dart'; // Aquí está RentalSpecificationsTable
+import 'package:mi_terrenito/widgets/table_card.dart';
 import '../lands/form_land_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 
 class DetailLandScreen extends StatefulWidget {
   final Land terreno;
@@ -62,7 +61,6 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
                     city: terreno.city,
                     size: terreno.size,
                     basicServices: terreno.basicServices,
-                    // Pasamos null al resto para ocultarlos
                     bedrooms: null,
                     bathrooms: null,
                     garage: null,
@@ -74,8 +72,10 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
                     phone: null,
                     email: null,
                     mapLocation: null,
-                    mostrarSoloTerreno: true, // NUEVO: mostrar solo ciudad, tamaño, servicios básicos
+                    mostrarSoloTerreno: true,
                   ),
+                  const SizedBox(height: 16),
+                  _buildLocationSection(context),
                   const SizedBox(height: 16),
                   _buildPublisherInfo(context),
                   const SizedBox(height: 24),
@@ -130,6 +130,43 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
     );
   }
 
+  Widget _buildLocationSection(BuildContext context) {
+    final location = widget.terreno.mapLocation ?? '';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Ubicación',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        if (location.isNotEmpty)
+          InkWell(
+            onTap: () => AppLauncher.openMaps(location, context),
+            child: Row(
+              children: [
+                Icon(Icons.map, color: Colors.blue[600], size: 30),
+                const SizedBox(width: 8),
+                Text(
+                  "Ver en Maps",
+                  style: TextStyle(
+                    color: Colors.blue[600],
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          const Text(
+            "Ubicación no disponible",
+            style: TextStyle(color: Colors.grey),
+          ),
+      ],
+    );
+  }
+
   Widget _buildPublisherInfo(BuildContext context) {
     final user = widget.terreno.user;
     final company = widget.terreno.company;
@@ -156,39 +193,38 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
             ],
           ),
           trailing: GestureDetector(
-  onTap: () {
-    if (phone.isNotEmpty) {
-      AppLauncher.launchWhatsApp(
-        phone: phone,
-        message: mensaje,
-        context: context,
-      );
-    }
-  },
-  child: Container(
-    width: 48,
-    height: 48,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: Colors.white,
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 4,
-          offset: const Offset(0, 2),
-        ),
-      ],
-    ),
-    child: const Center(
-      child: FaIcon(
-        FontAwesomeIcons.whatsapp,
-        color: Color.fromARGB(255, 48, 100, 27),
-        size: 28,
-      ),
-    ),
-  ),
-),
-
+            onTap: () {
+              if (phone.isNotEmpty) {
+                AppLauncher.launchWhatsApp(
+                  phone: phone,
+                  message: mensaje,
+                  context: context,
+                );
+              }
+            },
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: FaIcon(
+                  FontAwesomeIcons.whatsapp,
+                  color: Color.fromARGB(255, 48, 100, 27),
+                  size: 28,
+                ),
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 8),
         ListTile(
@@ -236,7 +272,9 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
             ),
           );
           if (result == true && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Terreno actualizado')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Terreno actualizado')),
+            );
             Navigator.pop(context, true);
           }
         },
