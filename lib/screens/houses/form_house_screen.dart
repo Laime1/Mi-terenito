@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_launcher_icons/xml_templates.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mi_terrenito/models/app_fonts.dart';
@@ -70,20 +71,19 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
     _pisosController.dispose();
     super.dispose();
   }
-
-  Future<void> _pickFromGallery() async {
-    if (_images.length >= 3) return;
-    final List<XFile>? selectedImages = await _picker.pickMultiImage();
-    if (selectedImages != null && selectedImages.isNotEmpty) {
-      setState(() {
-        for (var image in selectedImages) {
-          if (_images.length < 3 && !_images.any((img) => img.path == image.path)) {
-            _images.add(image);
-          }
+Future<void> _pickFromGallery() async {
+  final List<XFile>? selectedImages = await _picker.pickMultiImage();
+  if (selectedImages != null && selectedImages.isNotEmpty) {
+    setState(() {
+      for (var image in selectedImages) {
+        if (_images.length + _imagenesExistentesUrls.length < 3 &&
+            !_images.any((img) => img.path == image.path)) {
+          _images.add(image);
         }
-      });
-    }
+      }
+    });
   }
+}
 
   void _removeImage(int index) {
     setState(() {
@@ -292,7 +292,8 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                 const SizedBox(height: 8),
                 _buildImageGallery(),
                 OutlinedButton.icon(
-                  onPressed: _images.length >= 3 ? null : _pickFromGallery,
+                  onPressed: (_images.length + _imagenesExistentesUrls.length) >= 3 ? null: _pickFromGallery,
+
                   icon: const Icon(Icons.add_photo_alternate),
                   label: const Text('Agregar desde galería'),
                 ),
@@ -352,7 +353,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Cochera:', style: AppFonts.montserratRegular,selectionColor: AppColors.navigationButtonText,),
+                          Text('Cochera:', style: AppFonts.montserratRegular.copyWith(color: Colors.black)),
                           Row(
                             children: [
                               Radio<bool>(
@@ -362,7 +363,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                                   setState(() => _cocheraController.text = value.toString());
                                 },
                               ),
-                              const Text('Sí'),
+                              Text('Sí' ,style: AppFonts.montserratRegular.copyWith(color: AppColors.cardText),),
                               const SizedBox(width: 20),
                               Radio<bool>(
                                 value: false,
@@ -371,7 +372,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                                   setState(() => _cocheraController.text = value.toString());
                                 },
                               ),
-                              const Text('No'),
+                              Text('No',style: AppFonts.montserratRegular.copyWith(color: AppColors.cardText)),
                             ],
                           ),
                         ],

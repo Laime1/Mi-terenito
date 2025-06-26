@@ -54,6 +54,8 @@ class _CasasScreenState extends State<CasasScreen> {
       final loadedAlquileres = await apiService.fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
       final loadedCasas = loadedCasasJson.map((json) => House.fromJson(json)).toList();
 
+      if (!mounted) return;
+
       setState(() {
         casas = loadedCasas;
         filteredCasas = loadedCasas;
@@ -110,6 +112,7 @@ class _CasasScreenState extends State<CasasScreen> {
   Future<void> _deleteCasa(int id, BuildContext context) async {
     try {
       final success = await ApiService.eliminarCasa(id);
+      if (!mounted) return;
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Casa eliminada correctamente')),
@@ -117,6 +120,7 @@ class _CasasScreenState extends State<CasasScreen> {
         loadAllData();
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
       );
@@ -182,21 +186,24 @@ class _CasasScreenState extends State<CasasScreen> {
         ],
       ),
       floatingActionButton: widget.usuarioId != null
-          ? FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FormHouseScreen(
-                      idUsuario: widget.usuarioId!,
-                      idCiudad: widget.cityId,
-                    ),
-                  ),
-                );
-              },
-            )
-          : null,
+      ? FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () async {
+            final resultado = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FormHouseScreen(
+                  idUsuario: widget.usuarioId!,
+                  idCiudad: widget.cityId,
+                ),
+              ),
+            );
+            if (resultado == true) {
+              await loadAllData();
+            }
+          },
+        )
+      : null,
     );
   }
 }

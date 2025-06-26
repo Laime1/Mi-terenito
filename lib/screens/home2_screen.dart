@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mi_terrenito/models/app_fonts.dart';
 import 'package:mi_terrenito/screens/apartaments/apartaments_screen.dart';
 import 'package:mi_terrenito/screens/rentals/rentals_screen.dart';
@@ -43,7 +44,6 @@ class Home2Screen extends StatefulWidget {
 
 class _Home2ScreenState extends State<Home2Screen> {
   late String currentTipo;
-
   late bool hasCasas;
   late bool hasTerrenos;
   late bool hasDepartamentos;
@@ -53,7 +53,6 @@ class _Home2ScreenState extends State<Home2Screen> {
   void initState() {
     super.initState();
     currentTipo = widget.tipo;
-
     hasCasas = widget.hasCasas;
     hasTerrenos = widget.hasTerrenos;
     hasDepartamentos = widget.hasDepartamentos;
@@ -75,13 +74,13 @@ class _Home2ScreenState extends State<Home2Screen> {
 
     switch (currentTipo) {
       case 'casas':
-        return CasasScreen(empresaId: widget.empresaId, cityId: widget.cityId,usuarioId: widget.usuarioId,);
+        return CasasScreen(empresaId: widget.empresaId, cityId: widget.cityId, usuarioId: widget.usuarioId);
       case 'terrenos':
         return LandsScreen(empresaId: widget.empresaId, cityId: widget.cityId, usuarioId: widget.usuarioId);
       case 'departamentos':
-        return ApartmentsScreen(companyId: widget.empresaId, cityId: widget.cityId,userId:widget.usuarioId);
+        return ApartmentsScreen(companyId: widget.empresaId, cityId: widget.cityId, userId: widget.usuarioId);
       case 'alquileres':
-        return RentalsScreen(companyId: widget.empresaId, cityId: widget.cityId,userId:widget.usuarioId);
+        return RentalsScreen(companyId: widget.empresaId, cityId: widget.cityId, userId: widget.usuarioId);
       default:
         return const Center(child: Text('Tipo no válido'));
     }
@@ -151,105 +150,109 @@ class _Home2ScreenState extends State<Home2Screen> {
     }
   }
 
+  Future<void> cerrarSesion() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.navigationButtonBackground,
-        titleTextStyle: AppFonts.montserratBold.copyWith(color: AppColors.cardText,fontSize: 18),
-        title: Text(
-          currentTipo[0].toUpperCase() + currentTipo.substring(1),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.navigationButtonBackground,
+          titleTextStyle: AppFonts.montserratBold.copyWith(color: AppColors.cardText, fontSize: 18),
+          title: Text(currentTipo[0].toUpperCase() + currentTipo.substring(1)),
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          actions: [
+            if (widget.isLoggedIn)
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.person, color: Colors.black54, size: 18),
+                onSelected: (value) {
+                  if (value == 'verperfil') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Ver perfil seleccionado')),
+                    );
+                  } else if (value == 'cerrarsesion') {
+                    cerrarSesion();
+                  }
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(
+                    value: 'verperfil',
+                    child: Text('Ver perfil'),
+                  ),
+                  PopupMenuItem(
+                    value: 'cerrarsesion',
+                    child: Text('Cerrar sesión'),
+                  ),
+                ],
+              ),
+          ],
         ),
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        actions: [
-          if (widget.isLoggedIn)
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.person, color: Colors.black54, size: 18),
-              onSelected: (value) {
-                if (value == 'verperfil') {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Ver perfil seleccionado')),
-                  );
-                } else if (value == 'cerrarsesion') {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const HomeScreen()),
-                    (route) => false,
-                  );
-                }
-              },
-              itemBuilder: (context) => const [
-                PopupMenuItem(
-                  value: 'verperfil',
-                  child: Text('Ver perfil'),
+        body: getCurrentScreen(),
+        bottomNavigationBar: CircleBottomNavigation(
+          initialSelection: _tipoToIndex(currentTipo),
+          barHeight: 50,
+          circleSize: 40,
+          barBackgroundColor: AppColors.cardBackground,
+          activeIconColor: AppColors.cardBackground,
+          inactiveIconColor: Colors.grey,
+          circleColor: AppColors.navigationButtonBackground,
+          tabs: widget.isLoggedIn
+              ? [
+                  TabData(icon: Icons.house_rounded, title: 'Casas'),
+                  TabData(icon: Icons.park_rounded, title: 'Terrenos'),
+                  TabData(icon: Icons.apartment_rounded, title: 'Departamentos'),
+                  TabData(icon: Icons.real_estate_agent_rounded, title: 'Alquileres'),
+                ]
+              : [
+                  TabData(icon: Icons.home, title: 'Inicio'),
+                  TabData(icon: Icons.house_rounded, title: 'Casas'),
+                  TabData(icon: Icons.park_rounded, title: 'Terrenos'),
+                  TabData(icon: Icons.apartment_rounded, title: 'Departamentos'),
+                  TabData(icon: Icons.real_estate_agent_rounded, title: 'Alquileres'),
+                ],
+          onTabChangedListener: (position) {
+            String nuevoTipo = _indexToTipo(position);
+            if (!_isTabEnabled(position)) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('No hay propiedades disponibles para esta categoría'),
                 ),
-                PopupMenuItem(
-                  value: 'cerrarsesion',
-                  child: Text('Cerrar sesión'),
+              );
+              return;
+            }
+            if (!widget.isLoggedIn && nuevoTipo == 'home') {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(
+                    selectedCity: widget.selectedCityName,
+                    selectedEmpresaName: widget.selectedEmpresaName,
+                    selectedEmpresaId: widget.empresaId,
+                    hasCasas: hasCasas,
+                    hasTerrenos: hasTerrenos,
+                    hasDepartamentos: hasDepartamentos,
+                    hasAlquileres: hasAlquileres,
+                  ),
                 ),
-              ],
-            ),
-        ],
-      ),
-      body: getCurrentScreen(),
-      bottomNavigationBar: CircleBottomNavigation(
-        initialSelection: _tipoToIndex(currentTipo),
-        barHeight: 50,
-        circleSize: 40,
-        barBackgroundColor: AppColors.cardBackground,
-        activeIconColor: AppColors.cardBackground,
-        inactiveIconColor: Colors.grey,
-        circleColor: AppColors.navigationButtonBackground,
-        tabs: widget.isLoggedIn
-            ? [
-                TabData(icon: Icons.house_rounded, title: 'Casas'),
-                TabData(icon: Icons.park_rounded, title: 'Terrenos'),
-                TabData(icon: Icons.apartment_rounded, title: 'Departamentos'),
-                TabData(icon: Icons.real_estate_agent_rounded, title: 'Alquileres'),
-              ]
-            : [
-                TabData(icon: Icons.home, title: 'Inicio'),
-                TabData(icon: Icons.house_rounded, title: 'Casas'),
-                TabData(icon: Icons.park_rounded, title: 'Terrenos'),
-                TabData(icon: Icons.apartment_rounded, title: 'Departamentos'),
-                TabData(icon: Icons.real_estate_agent_rounded, title: 'Alquileres'),
-              ],
-        onTabChangedListener: (position) {
-          String nuevoTipo = _indexToTipo(position);
-
-          if (!_isTabEnabled(position)) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('No hay propiedades disponibles para esta categoría'),
-              ),
-            );
-            return;
-          }
-
-          if (!widget.isLoggedIn && nuevoTipo == 'home') {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomeScreen(
-                  selectedCity: widget.selectedCityName,
-                  selectedEmpresaName: widget.selectedEmpresaName,
-                  selectedEmpresaId: widget.empresaId,
-                  hasCasas: hasCasas,
-                  hasTerrenos: hasTerrenos,
-                  hasDepartamentos: hasDepartamentos,
-                  hasAlquileres: hasAlquileres,
-                ),
-              ),
-              (route) => false,
-            );
-            return;
-          }
-
-          setState(() {
-            currentTipo = nuevoTipo;
-          });
-        },
+                (route) => false,
+              );
+              return;
+            }
+            setState(() {
+              currentTipo = nuevoTipo;
+            });
+          },
+        ),
       ),
     );
   }
