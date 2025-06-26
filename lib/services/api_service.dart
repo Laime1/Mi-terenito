@@ -661,4 +661,29 @@ static Future<bool> eliminarCasa(int idCasa) async {
       return false;
     }
   }
+  
+  Future<bool> eliminarImagenDeCasa(String nombreArchivo) async {
+  final uri = Uri.parse('$baseUrl/imagenes/imagencasa/$nombreArchivo');
+  final response = await http.delete(uri);
+  return response.statusCode == 200;
+  }
+
+  Future<bool> eliminarImagenDeAlquiler(String nombreArchivo) async {
+    final uri = Uri.parse('$baseUrl/imagenes/imagenalquiler/$nombreArchivo');
+    final response = await http.delete(uri);
+    return response.statusCode == 200;
+  }
+
+  Future<bool> eliminarImagenDeDepartamento(String nombreArchivo) async {
+    final uri = Uri.parse('$baseUrl/imagenes/imagendepartamento/$nombreArchivo');
+    final response = await http.delete(uri);
+    return response.statusCode == 200;
+  }
+
+  Future<bool> eliminarImagenDeTerreno(String nombreArchivo) async {
+    final uri = Uri.parse('$baseUrl/imagenes/imagenterreno/$nombreArchivo');
+    final response = await http.delete(uri);
+    return response.statusCode == 200;  
+  }
+
 }

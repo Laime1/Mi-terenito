@@ -1,4 +1,3 @@
-// ... todas tus importaciones se mantienen
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -177,82 +176,98 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   }
 
   Future<void> guardarCasa() async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_images.isEmpty && _imagenesExistentesUrls.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debes agregar al menos una imagen')),
-      );
-      return;
-    }
+  if (!_formKey.currentState!.validate()) return;
 
-    try {
-      final titulo = _tituloController.text;
-      final descripcion = _descripcionController.text;
-      final precio = _precioController.text;
-      final ubicacion = _ubicacionController.text;
-      final habitaciones = _habitacionesController.text;
-      final banos = _banosController.text;
-      final garage = _cocheraController.text;
-      final pisos = _pisosController.text;
-
-      if (widget.house != null) {
-        final exito = await ApiService().actualizarCasaConImagenes(
-          idCasa: widget.house!.id,
-          titulo: titulo,
-          descripcion: descripcion,
-          precio: precio,
-          enlaceUbicacion: ubicacion,
-          habitaciones: habitaciones,
-          banos: banos,
-          cochera: garage,
-          pisos: pisos,
-          idUsuario: widget.idUsuario,
-          idCiudad: widget.idCiudad,
-          nuevasImagenes: _images.map((xfile) => File(xfile.path)).toList(),
-        );
-
-        if (exito) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Casa actualizada correctamente')),
-          );
-          Navigator.pop(context, true);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error al actualizar la casa')),
-          );
-        }
-      } else {
-        final exito = await ApiService().crearCasaConImagenes(
-          titulo: titulo,
-          descripcion: descripcion,
-          precio: precio,
-          enlaceUbicacion: ubicacion,
-          habitaciones: habitaciones,
-          banos: banos,
-          cochera: garage,
-          pisos: pisos,
-          idUsuario: widget.idUsuario,
-          idCiudad: widget.idCiudad,
-          imagenes: _images.map((xfile) => File(xfile.path)).toList(),
-        );
-
-        if (exito) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Casa creada correctamente')),
-          );
-          Navigator.pop(context, true);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error al crear la casa')),
-          );
-        }
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar: $e')),
-      );
-    }
+  if (_images.isEmpty && _imagenesExistentesUrls.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Debes agregar al menos una imagen')),
+    );
+    return;
   }
+
+  try {
+    final titulo = _tituloController.text;
+    final descripcion = _descripcionController.text;
+    final precio = _precioController.text;
+    final ubicacion = _ubicacionController.text;
+    final habitaciones = _habitacionesController.text;
+    final banos = _banosController.text;
+    final garage = _cocheraController.text;
+    final pisos = _pisosController.text;
+
+    if (widget.house != null) {
+      final List<String> imagenesOriginales = widget.house!.images
+          .map((img) => '${ApiService.baseImageUrl}$img')
+          .toList();
+
+      final List<String> imagenesEliminadas = imagenesOriginales
+          .where((url) => !_imagenesExistentesUrls.contains(url))
+          .toList();
+
+      for (String url in imagenesEliminadas) {
+        final fileName = Uri.parse(url).pathSegments.last;
+        await ApiService().eliminarImagenDeCasa(fileName);
+      }
+
+      final exito = await ApiService().actualizarCasaConImagenes(
+        idCasa: widget.house!.id,
+        titulo: titulo,
+        descripcion: descripcion,
+        precio: precio,
+        enlaceUbicacion: ubicacion,
+        habitaciones: habitaciones,
+        banos: banos,
+        cochera: garage,
+        pisos: pisos,
+        idUsuario: widget.idUsuario,
+        idCiudad: widget.idCiudad,
+        nuevasImagenes: _images.map((xfile) => File(xfile.path)).toList(),
+      );
+
+      if (exito) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Casa actualizada correctamente')),
+        );
+        Navigator.pop(context, true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al actualizar la casa')),
+        );
+      }
+    } else {
+
+      final exito = await ApiService().crearCasaConImagenes(
+        titulo: titulo,
+        descripcion: descripcion,
+        precio: precio,
+        enlaceUbicacion: ubicacion,
+        habitaciones: habitaciones,
+        banos: banos,
+        cochera: garage,
+        pisos: pisos,
+        idUsuario: widget.idUsuario,
+        idCiudad: widget.idCiudad,
+        imagenes: _images.map((xfile) => File(xfile.path)).toList(),
+      );
+
+      if (exito) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Casa creada correctamente')),
+        );
+        Navigator.pop(context, true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al crear la casa')),
+        );
+      }
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al guardar: $e')),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -382,7 +397,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                   onPressed: guardarCasa,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.navigationButtonBackground,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.cardText,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: Text(
