@@ -6,8 +6,10 @@ import 'package:mi_terrenito/models/app_colors.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 import 'package:mi_terrenito/widgets/card_carrusel.dart';
 import 'package:mi_terrenito/widgets/utils/app_launcher.dart';
-import 'package:mi_terrenito/widgets/table_card.dart';
+import 'package:mi_terrenito/widgets/table_card.dart'; // Aquí está RentalSpecificationsTable
 import '../lands/form_land_screen.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 class DetailLandScreen extends StatefulWidget {
   final Land terreno;
@@ -30,7 +32,17 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(terreno.title),
+        backgroundColor: AppColors.navigationButtonBackground,
+        title: Text(
+          terreno.title,
+          style: const TextStyle(
+            color: AppColors.cardText,
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: AppColors.appBarText),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -42,25 +54,33 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildPrice(),
+                  _buildPriceSection(),
                   const SizedBox(height: 16),
-                  _buildDescription(),
+                  _buildDescriptionSection(),
                   const SizedBox(height: 16),
                   RentalSpecificationsTable(
                     city: terreno.city,
-                    company: terreno.company,
-                    username: terreno.user?.name,
-                    publishedAt: terreno.createdAt,
-                    phone: terreno.user?.numberPhone,
-                    email: terreno.user?.email,
-                    basicServices: terreno.basicServices,
-                    mapLocation: terreno.mapLocation,
                     size: terreno.size,
+                    basicServices: terreno.basicServices,
+                    // Pasamos null al resto para ocultarlos
+                    bedrooms: null,
+                    bathrooms: null,
+                    garage: null,
+                    floors: null,
+                    furnished: null,
+                    company: null,
+                    username: null,
+                    publishedAt: null,
+                    phone: null,
+                    email: null,
+                    mapLocation: null,
+                    mostrarSoloTerreno: true, // NUEVO: mostrar solo ciudad, tamaño, servicios básicos
                   ),
                   const SizedBox(height: 16),
                   _buildPublisherInfo(context),
                   const SizedBox(height: 24),
-                  _buildEditButton(context),
+                  if (widget.usuarioId != null && widget.usuarioId == terreno.user?.id)
+                    _buildEditButton(context),
                 ],
               ),
             ),
@@ -85,24 +105,27 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
     return CardCarrusel(imageUrls: urls);
   }
 
-  Widget _buildPrice() {
+  Widget _buildPriceSection() {
     return Text(
       '\$${widget.terreno.price.toStringAsFixed(2)}',
       style: const TextStyle(
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.green,
       ),
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescriptionSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Descripción', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text(
+          'Descripción',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 8),
-        Text(widget.terreno.description),
+        Text(widget.terreno.description, style: const TextStyle(fontSize: 16)),
       ],
     );
   }
@@ -112,7 +135,8 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
     final company = widget.terreno.company;
     final phoneRaw = user?.numberPhone.replaceAll(RegExp(r'\D'), '') ?? '';
     final phone = phoneRaw.length < 10 ? '+591$phoneRaw' : phoneRaw;
-    final mensaje = Uri.encodeComponent('Hola, estoy interesado en "${widget.terreno.title}". ¿Podría brindarme más información sobre este terreno? 🌱');
+    final mensaje = Uri.encodeComponent(
+        'Hola, estoy interesado en "${widget.terreno.title}". ¿Podrías brindarme más información sobre este terreno? 🌱');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,24 +155,49 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
               Text(user?.numberPhone ?? 'Teléfono no disponible'),
             ],
           ),
-          trailing: IconButton(
-            icon: const Icon(Icons.phone),
-            onPressed: () {
-              if (phone.isNotEmpty) {
-                AppLauncher.launchWhatsApp(
-                  phone: phone,
-                  message: mensaje,
-                  context: context,
-                );
-              }
-            },
-          ),
+          trailing: GestureDetector(
+  onTap: () {
+    if (phone.isNotEmpty) {
+      AppLauncher.launchWhatsApp(
+        phone: phone,
+        message: mensaje,
+        context: context,
+      );
+    }
+  },
+  child: Container(
+    width: 48,
+    height: 48,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 4,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: const Center(
+      child: FaIcon(
+        FontAwesomeIcons.whatsapp,
+        color: Color.fromARGB(255, 48, 100, 27),
+        size: 28,
+      ),
+    ),
+  ),
+),
+
         ),
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.business),
-          title: const Text('Información de la empresa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          title: const Text(
+            'Información de la empresa',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -165,10 +214,6 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
 
   Widget _buildEditButton(BuildContext context) {
     final user = widget.terreno.user;
-    if (widget.usuarioId == null || user == null || widget.usuarioId != user.id) {
-      return const SizedBox.shrink();
-    }
-
     return Center(
       child: ElevatedButton.icon(
         icon: const Icon(Icons.edit),
@@ -176,25 +221,22 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
         style: ElevatedButton.styleFrom(
           textStyle: AppFonts.montserratRegular,
           backgroundColor: AppColors.navigationButtonBackground,
-          foregroundColor: Colors.white, 
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          foregroundColor: Colors.white,
         ),
         onPressed: () async {
-          final resultado = await Navigator.push(
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => LandFormScreen(
-                idUser: user.id,
+                idUser: user!.id,
                 idCity: widget.terreno.city?.id ?? 0,
                 idEmpresa: widget.terreno.company?.id ?? 0,
                 land: widget.terreno,
               ),
             ),
           );
-          if (resultado == true && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Terreno actualizado')),
-            );
+          if (result == true && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Terreno actualizado')));
             Navigator.pop(context, true);
           }
         },

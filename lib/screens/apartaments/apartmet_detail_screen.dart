@@ -5,6 +5,7 @@ import 'package:mi_terrenito/widgets/card_carrusel.dart';
 import 'package:mi_terrenito/widgets/table_card.dart';
 import 'package:mi_terrenito/widgets/utils/app_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ApartmentDetailScreen extends StatefulWidget {
   final Apartment apartment;
@@ -181,9 +182,8 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
               Text(apartment.user!.numberPhone),
             ],
           ),
-          trailing: IconButton(
-            icon: const Icon(Icons.phone),
-            onPressed: () {
+          trailing: GestureDetector(
+            onTap: () {
               final rawPhone = apartment.user!.numberPhone.replaceAll(RegExp(r'\D'), '');
               final phone = rawPhone.length < 10 ? '+591$rawPhone' : rawPhone;
 
@@ -194,6 +194,28 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
                 _launchWhatsAppConMensaje(phone, mensaje);
               }
             },
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: FaIcon(
+                  FontAwesomeIcons.whatsapp,
+                  color: Color.fromARGB(255, 48, 100, 27),
+                  size: 28,
+                ),
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 8),

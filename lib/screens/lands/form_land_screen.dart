@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -66,41 +65,35 @@ class _LandFormScreenState extends State<LandFormScreen> {
   }
 
   Future<void> _pickImage() async {
-    if (kIsWeb) {
-      final picked = await _picker.pickMultiImage(imageQuality: 85);
-      if (picked != null) {
-        if (_webImages.length + picked.length + _existingImageUrls.length > 3) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Solo se permiten máximo 3 imágenes')),
-          );
-          return;
-        }
-        setState(() {
+    final picked = await _picker.pickMultiImage(imageQuality: 85);
+    if (picked != null) {
+      if ((_existingImageUrls.length +
+              (kIsWeb ? _webImages.length : _mobileImages.length) +
+              picked.length) >
+          3) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Solo se permiten máximo 3 imágenes')),
+        );
+        return;
+      }
+      setState(() {
+        if (kIsWeb) {
           _webImages.addAll(picked);
-        });
-      }
-    } else {
-      final picked = await _picker.pickMultiImage(imageQuality: 85);
-      if (picked != null) {
-        if (_mobileImages.length + picked.length + _existingImageUrls.length > 3) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Solo se permiten máximo 3 imágenes')),
-          );
-          return;
-        }
-        setState(() {
+        } else {
           _mobileImages.addAll(picked.map((xfile) => File(xfile.path)));
-        });
-      }
+        }
+      });
     }
   }
 
   void _removeNewImage(int index) {
-    if (kIsWeb) {
-      setState(() => _webImages.removeAt(index));
-    } else {
-      setState(() => _mobileImages.removeAt(index));
-    }
+    setState(() {
+      if (kIsWeb) {
+        _webImages.removeAt(index);
+      } else {
+        _mobileImages.removeAt(index);
+      }
+    });
   }
 
   void _removeExistingImage(int index) {
@@ -141,9 +134,6 @@ class _LandFormScreenState extends State<LandFormScreen> {
           ximagenes: kIsWeb ? _webImages : null,
         );
       } else {
-        // Actualizar terreno enviando:
-        // - imágenes nuevas
-        // - nombres de imágenes existentes que se mantienen
         success = await ApiService().actualizarTerrenoConImagenes(
           idTerreno: widget.land!.id,
           titulo: _titleController.text.trim(),
@@ -194,7 +184,8 @@ class _LandFormScreenState extends State<LandFormScreen> {
           prefixIcon: Icon(icon),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
+        validator: (value) =>
+            (value == null || value.isEmpty) ? 'Campo requerido' : null,
       ),
     );
   }
@@ -213,13 +204,6 @@ class _LandFormScreenState extends State<LandFormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildTextField(_titleController, 'Título', Icons.title),
-              _buildTextField(_descriptionController, 'Descripción', Icons.description, lines: 3),
-              _buildTextField(_priceController, 'Precio', Icons.attach_money, isNumber: true),
-              _buildTextField(_urlMapController, 'Ubicación (Google Maps)', Icons.map),
-              _buildTextField(_sizeController, 'Tamaño (m²)', Icons.square_foot, isNumber: true),
-              _buildTextField(_servicesController, 'Servicios básicos', Icons.plumbing),
-              const SizedBox(height: 16),
               const Text('Imágenes (máximo 3)', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
 
@@ -312,8 +296,9 @@ class _LandFormScreenState extends State<LandFormScreen> {
                 height: 48,
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    if ((_existingImageUrls.length + _webImages.length >= 3) ||
-                        (_existingImageUrls.length + _mobileImages.length >= 3)) {
+                    if ((_existingImageUrls.length +
+                            (kIsWeb ? _webImages.length : _mobileImages.length)) >=
+                        3) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Solo se permiten máximo 3 imágenes')),
                       );
@@ -329,6 +314,14 @@ class _LandFormScreenState extends State<LandFormScreen> {
                   ),
                 ),
               ),
+
+              const SizedBox(height: 24),
+              _buildTextField(_titleController, 'Título', Icons.title),
+              _buildTextField(_descriptionController, 'Descripción', Icons.description, lines: 3),
+              _buildTextField(_priceController, 'Precio', Icons.attach_money, isNumber: true),
+              _buildTextField(_urlMapController, 'Ubicación (Google Maps)', Icons.map),
+              _buildTextField(_sizeController, 'Tamaño (m²)', Icons.square_foot, isNumber: true),
+              _buildTextField(_servicesController, 'Servicios básicos', Icons.plumbing),
 
               const SizedBox(height: 24),
               SizedBox(
