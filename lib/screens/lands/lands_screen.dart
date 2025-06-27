@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../../models/land.dart';
+import 'package:mi_terrenito/widgets/loader_overlay.dart';
 import '/widgets/card_lands.dart';
 import 'detail_land_screen.dart';
 import '../home2_screen.dart';
@@ -131,7 +132,7 @@ class _LandsScreenState extends State<LandsScreen> {
           ),
           Expanded(
             child: isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const HouseLoader()
                 : filteredTerrenos.isEmpty
                     ? Center(
                         child: Text(

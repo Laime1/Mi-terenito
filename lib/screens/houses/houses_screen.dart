@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mi_terrenito/widgets/loader_overlay.dart';
 import '../../services/api_service.dart';
 import '../../models/house.dart';
 import '../../widgets/card_houses.dart';
@@ -128,82 +129,88 @@ class _CasasScreenState extends State<CasasScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Buscar casas...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onChanged: filterCasas,
-            ),
-          ),
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : filteredCasas.isEmpty
-                    ? Center(
-                        child: Text(
-                          widget.usuarioId != null
-                              ? 'Sin casas publicadas.'
-                              : 'No hay casas disponibles.',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: filteredCasas.length,
-                        itemBuilder: (context, index) {
-                          final house = filteredCasas[index];
-                          return HouseCard(
-                            house: house,
-                            onTap: () async {
-                              final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetalleCasaScreen(
-                                    casa: house,
-                                    usuarioId: widget.usuarioId,
-                                  ),
-                                ),
-                              );
-                              if (result == true) {
-                                await loadAllData();
-                              }
-                            },
-                            enableSwipeActions: widget.usuarioId != null,
-                            onDelete: widget.usuarioId != null
-                                ? () => _deleteCasa(house.id, context)
-                                : null,
-                          );
-                        },
-                      ),
-          ),
-        ],
-      ),
-      floatingActionButton: widget.usuarioId != null
-      ? FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () async {
-            final resultado = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FormHouseScreen(
-                  idUsuario: widget.usuarioId!,
-                  idCiudad: widget.cityId,
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Stack(
+      children: [
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Buscar casas...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
+                onChanged: filterCasas,
               ),
-            );
-            if (resultado == true) {
-              await loadAllData();
-            }
-          },
-        )
-      : null,
-    );
-  }
+            ),
+            Expanded(
+              child: isLoading
+                  ? const SizedBox()
+                  : filteredCasas.isEmpty
+                      ? Center(
+                          child: Text(
+                            widget.usuarioId != null
+                                ? 'Sin casas publicadas.'
+                                : 'No hay casas disponibles.',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: filteredCasas.length,
+                          itemBuilder: (context, index) {
+                            final house = filteredCasas[index];
+                            return HouseCard(
+                              house: house,
+                              onTap: () async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetalleCasaScreen(
+                                      casa: house,
+                                      usuarioId: widget.usuarioId,
+                                    ),
+                                  ),
+                                );
+                                if (result == true) {
+                                  await loadAllData();
+                                }
+                              },
+                              enableSwipeActions: widget.usuarioId != null,
+                              onDelete: widget.usuarioId != null
+                                  ? () => _deleteCasa(house.id, context)
+                                  : null,
+                            );
+                          },
+                        ),
+            ),
+          ],
+        ),
+        if (isLoading) const HouseLoader(), // Aquí va el loader
+      ],
+    ),
+    floatingActionButton: widget.usuarioId != null
+        ? FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () async {
+              final resultado = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FormHouseScreen(
+                    idUsuario: widget.usuarioId!,
+                    idCiudad: widget.cityId,
+                  ),
+                ),
+              );
+              if (resultado == true) {
+                await loadAllData();
+              }
+            },
+          )
+        : null,
+  );
+}
+
 }
