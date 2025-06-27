@@ -92,7 +92,8 @@ class _RentalsScreenState extends State<RentalsScreen> {
       MaterialPageRoute(
         builder: (context) => RentalFormScreen(
           idUser: widget.userId!,
-          idCity: 4,
+          idCity: widget.cityId,
+          rental: rental,
            // Asegúrate de que tu form screen acepte esto
         ),
       ),

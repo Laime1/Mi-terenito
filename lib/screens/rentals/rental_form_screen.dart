@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../../models/rental.dart';
 import '../../services/api_service.dart';
 
 class RentalFormScreen extends StatefulWidget {
   final int idUser;
   final int idCity;
+  final Rental? rental;
 
   const RentalFormScreen({
     super.key,
     required this.idUser,
     required this.idCity,
+    this.rental,
   });
 
   @override
@@ -29,8 +32,25 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
   bool _isFurnished = false;
   bool _includesServices = false;
   List<File> _selectedImages = [];
+  List<String> _existingImageUrls = [];
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.rental != null) {
+      final rental = widget.rental!;
+      _titleController.text = rental.title;
+      _descriptionController.text = rental.description;
+      _priceMonthController.text = rental.monthlyPrice.toString();
+      _urlMapController.text = rental.mapLocation;
+      _timeMinController.text = rental.minimumMonths.toString();
+      _isFurnished = rental.furnished == 'Sí';
+      _includesServices = rental.includedServices == 'Sí';
+      _existingImageUrls = rental.images;
+    }
+  }
 
   @override
   void dispose() {
@@ -70,15 +90,73 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
     }
   }
 
-  Future<void> _removeImage(int index) async {
+  Future<void> _removeImage(int index, bool isExisting) async {
     setState(() {
-      _selectedImages.removeAt(index);
+      if (isExisting) {
+        _existingImageUrls.removeAt(index);
+      } else {
+        _selectedImages.removeAt(index);
+      }
     });
+  }
+
+  Widget _buildImagePreviews() {
+    final totalImages = _existingImageUrls.length + _selectedImages.length;
+    if (totalImages == 0) {
+      return const SizedBox.shrink();
+    }
+
+    return SizedBox(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: totalImages,
+        itemBuilder: (context, index) {
+          Widget imageWidget;
+          bool isExisting = index < _existingImageUrls.length;
+
+          if (isExisting) {
+            final imageUrl = _existingImageUrls[index];
+            imageWidget = Image.network(
+              '${ApiService.baseImageUrl}$imageUrl',
+              width: 120,
+              height: 120,
+              fit: BoxFit.cover,
+            );
+          } else {
+            final imageFile = _selectedImages[index - _existingImageUrls.length];
+            imageWidget = Image.file(
+              imageFile,
+              width: 120,
+              height: 120,
+              fit: BoxFit.cover,
+            );
+          }
+
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Stack(
+              children: [
+                imageWidget,
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.red),
+                    onPressed: () => _removeImage(isExisting ? index : index - _existingImageUrls.length, isExisting),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedImages.isEmpty) {
+    if (_selectedImages.isEmpty && _existingImageUrls.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Por favor selecciona al menos una imagen'))
       );
@@ -88,26 +166,48 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final rentalId = await ApiService.createRental(
-        title: _titleController.text,
-        description: _descriptionController.text,
-        monthlyPrice: double.parse(_priceMonthController.text),
-        locationLink: _urlMapController.text,
-        furnished: _isFurnished ? 'Sí' : 'No',
-        minimumMonths: int.parse(_timeMinController.text),
-        includedServices: _includesServices ? 'Sí' : 'No',
-        userId: widget.idUser,
-        cityId: widget.idCity,
-        imagePaths: _selectedImages.map((file) => file.path).toList(),
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Alquiler creado exitosamente (ID: $rentalId)'))
-      );
+      if (widget.rental != null) {
+        // Actualizar alquiler existente
+        await ApiService.updateRental(
+          rentalId: widget.rental!.id,
+          title: _titleController.text,
+          description: _descriptionController.text,
+          monthlyPrice: double.parse(_priceMonthController.text),
+          locationLink: _urlMapController.text,
+          furnished: _isFurnished ? 'Sí' : 'No',
+          minimumMonths: int.parse(_timeMinController.text),
+          includedServices: _includesServices ? 'Sí' : 'No',
+          cityId: widget.idCity, // O la ciudad actualizada si es el caso
+          newImageFiles: _selectedImages,
+          existingImageUrls: _existingImageUrls,
+        );
+        print('Existentes: ${_existingImageUrls.length}');
+        print('Seleccionadas: ${_selectedImages.length}');
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Alquiler actualizado exitosamente'))
+        );
+      } else {
+        // Crear nuevo alquiler
+        final rentalId = await ApiService.createRental(
+          title: _titleController.text,
+          description: _descriptionController.text,
+          monthlyPrice: double.parse(_priceMonthController.text),
+          locationLink: _urlMapController.text,
+          furnished: _isFurnished ? 'Sí' : 'No',
+          minimumMonths: int.parse(_timeMinController.text),
+          includedServices: _includesServices ? 'Sí' : 'No',
+          userId: widget.idUser,
+          cityId: widget.idCity,
+          imagePaths: _selectedImages.map((file) => file.path).toList(),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Alquiler creado exitosamente (ID: $rentalId)'))
+        );
+      }
       Navigator.of(context).pop(true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear alquiler: $e'))
+          SnackBar(content: Text('Error al guardar el alquiler: $e'))
       );
     } finally {
       setState(() => _isLoading = false);
@@ -119,7 +219,7 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Formulario de Alquiler'),
+        title: Text(widget.rental == null ? 'Formulario de Alquiler' : 'Editar Alquiler'),
         actions: [
           if (_isLoading)
             const Padding(
@@ -144,38 +244,8 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // Vista previa de imágenes seleccionadas
-                if (_selectedImages.isNotEmpty)
-                  SizedBox(
-                    height: 120,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _selectedImages.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Stack(
-                            children: [
-                              Image.file(
-                                _selectedImages[index],
-                                width: 120,
-                                height: 120,
-                                fit: BoxFit.cover,
-                              ),
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: IconButton(
-                                  icon: const Icon(Icons.close, color: Colors.red),
-                                  onPressed: () => _removeImage(index),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                // Vista previa de imágenes
+                _buildImagePreviews(),
 
                 // Botón para agregar imágenes
                 OutlinedButton.icon(

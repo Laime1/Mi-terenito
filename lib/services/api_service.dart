@@ -422,8 +422,8 @@ class ApiService {
       request.fields['id_ciudad'] = cityId.toString();
 
       // Enviar la lista de URLs de imágenes existentes que se deben conservar
-      if (existingImageUrls != null) {
-        request.fields['existing_images'] = json.encode(existingImageUrls);
+      if (existingImageUrls != null && existingImageUrls.isNotEmpty) {
+        request.fields['imagenes_existentes'] = jsonEncode(existingImageUrls);
       }
 
       // Adjuntar los nuevos archivos de imagen
@@ -489,6 +489,65 @@ class ApiService {
         throw Exception('Alquiler no encontrado');
       } else {
         throw Exception('Error al desactivar Alquiler: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
+  static Future<bool> updateRental({
+    required int rentalId,
+    required String title,
+    required String description,
+    required double monthlyPrice,
+    required String locationLink,
+    required String furnished,
+    required int minimumMonths,
+    required String includedServices,
+    required int cityId,
+    required List<File>? newImageFiles,
+    required List<String>? existingImageUrls,
+  }) async {
+    try {
+      var request = http.MultipartRequest(
+        'PUT',
+        Uri.parse('$baseUrl/alquileres/$rentalId'),
+      );
+
+      request.fields['titulo'] = title;
+      request.fields['descripcion'] = description;
+      request.fields['precio_mensual'] = monthlyPrice.toString();
+      request.fields['enlace_ubicacion'] = locationLink;
+      request.fields['amoblado'] = furnished;
+      request.fields['tiempo_minimo_meses'] = minimumMonths.toString();
+      request.fields['incluye_servicios'] = includedServices;
+      request.fields['id_ciudad'] = cityId.toString();
+
+      if (existingImageUrls != null && existingImageUrls.isNotEmpty) {
+        request.fields['imagenes_existentes'] = json.encode(existingImageUrls);
+      }
+
+      // Si hay nuevas imágenes, las adjuntamos al request
+      if (newImageFiles != null && newImageFiles.isNotEmpty) {
+        for (var imageFile in newImageFiles) {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes', // Nombre del campo en el backend
+              imageFile.path,
+            ),
+          );
+        }
+      }
+
+      var response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception(
+          'Error al actualizar alquiler: ${response.statusCode} - $responseBody',
+        );
       }
     } catch (e) {
       throw Exception('Error de conexión: $e');
