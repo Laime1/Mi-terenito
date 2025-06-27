@@ -347,58 +347,80 @@ Future<void> _pickFromGallery() async {
                   ],
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Cochera:', style: AppFonts.montserratRegular.copyWith(color: Colors.black)),
-                          Row(
-                            children: [
-                              Radio<bool>(
-                                value: true,
-                                groupValue: _cocheraController.text == 'true',
-                                onChanged: (value) {
-                                  setState(() => _cocheraController.text = value.toString());
-                                },
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.grey.shade100,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('¿Tiene cochera?',
+                                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black), // Recuadro negro
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              Text('Sí' ,style: AppFonts.montserratRegular.copyWith(color: AppColors.cardText),),
-                              const SizedBox(width: 20),
-                              Radio<bool>(
-                                value: false,
-                                groupValue: _cocheraController.text == 'true',
-                                onChanged: (value) {
-                                  setState(() => _cocheraController.text = value.toString());
-                                },
+                              child: Row(
+                                children: [
+                                  Radio<bool>(
+                                    value: true,
+                                    groupValue: _cocheraController.text == 'true',
+                                    onChanged: (value) {
+                                      setState(() =>
+                                          _cocheraController.text = value.toString());
+                                    },
+                                  ),
+                                  const Text('Sí'),
+                                  const SizedBox(width: 20),
+                                  Radio<bool>(
+                                    value: false,
+                                    groupValue: _cocheraController.text == 'true',
+                                    onChanged: (value) {
+                                      setState(() =>
+                                          _cocheraController.text = value.toString());
+                                    },
+                                  ),
+                                  const Text('No'),
+                                ],
                               ),
-                              Text('No',style: AppFonts.montserratRegular.copyWith(color: AppColors.cardText)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _pisosController,
-                        decoration: const InputDecoration(
-                          labelText: 'Pisos',
-                          border: OutlineInputBorder(),
+                            ),
+                          ],
                         ),
-                        keyboardType: TextInputType.number,
-                        validator: (value) =>
-                            value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _pisosController,
+                          decoration: const InputDecoration(
+                            labelText: 'Pisos',
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.number,
+                          validator: (value) =>
+                              value == null || int.tryParse(value) == null
+                                  ? 'Número inválido'
+                                  : null,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: guardarCasa,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.navigationButtonBackground,
-                    foregroundColor: AppColors.cardText,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: Text(
