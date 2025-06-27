@@ -18,6 +18,7 @@ class RentalSpecificationsTable extends StatefulWidget {
   final String? phone;
   final String? email;
   final String? mapLocation;
+  final bool mostrarSoloTerreno; // NUEVO
 
   const RentalSpecificationsTable({
     super.key,
@@ -35,6 +36,7 @@ class RentalSpecificationsTable extends StatefulWidget {
     this.phone,
     this.email,
     this.mapLocation,
+    this.mostrarSoloTerreno = false, // DEFAULT
   });
 
   @override
@@ -127,6 +129,29 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
   }
 
   List<_SpecificationItem> _buildSpecificationsList() {
+    if (widget.mostrarSoloTerreno) {
+      return [
+        if (widget.city?.name.isNotEmpty ?? false)
+          _SpecificationItem(
+            icon: Icons.location_city,
+            title: 'Ciudad',
+            value: widget.city!.name,
+          ),
+        if (widget.size != null)
+          _SpecificationItem(
+            icon: Icons.square_foot,
+            title: 'Tamaño',
+            value: '${widget.size!.toStringAsFixed(2)} m²',
+          ),
+        if (widget.basicServices != null && widget.basicServices!.isNotEmpty)
+          _SpecificationItem(
+            icon: Icons.plumbing,
+            title: 'Servicios Básicos',
+            value: widget.basicServices!,
+          ),
+      ];
+    }
+
     return [
       if (widget.bedrooms != null)
         _SpecificationItem(

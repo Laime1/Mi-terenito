@@ -8,6 +8,7 @@ import '../../widgets/table_card.dart';
 import '../../widgets/utils/app_launcher.dart';
 import '../houses/form_house_screen.dart';
 //import 'package:mi_terrenito/models/app_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DetalleCasaScreen extends StatelessWidget {
   final House casa;
@@ -172,18 +173,40 @@ class DetalleCasaScreen extends StatelessWidget {
               Text(user?.numberPhone ?? 'Teléfono no disponible'),
             ],
           ),
-          trailing: IconButton(
-            icon: const Icon(Icons.phone),
-            onPressed: () {
-              if (phone.isNotEmpty) {
-                AppLauncher.launchWhatsApp(
-                  phone: phone,
-                  message: mensaje,
-                  context: context,
-                );
-              }
-            },
-          ),
+          trailing: GestureDetector(
+  onTap: () {
+    if (phone.isNotEmpty) {
+      AppLauncher.launchWhatsApp(
+        phone: phone,
+        message: mensaje,
+        context: context,
+      );
+    }
+  },
+  child: Container(
+    width: 48,
+    height: 48,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 4,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: const Center(
+      child: FaIcon(
+        FontAwesomeIcons.whatsapp,
+        color: Color.fromARGB(255, 48, 100, 27),
+        size: 28,
+      ),
+    ),
+  ),
+),
+
         ),
         const SizedBox(height: 8),
         ListTile(

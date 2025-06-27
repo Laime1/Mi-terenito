@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/models/rental.dart';
 import 'package:mi_terrenito/services/api_service.dart';
+import 'package:mi_terrenito/widgets/card_carrusel.dart';
 import 'package:mi_terrenito/widgets/table_card.dart';
-import 'package:mi_terrenito/services/api_service.dart';
+import 'package:mi_terrenito/widgets/utils/app_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../widgets/utils/app_launcher.dart';
-
-class RentalDetailScreen extends StatelessWidget {
+class RentalDetailScreen extends StatefulWidget {
   final Rental rental;
 
   const RentalDetailScreen({super.key, required this.rental});
 
   @override
+  State<RentalDetailScreen> createState() => _RentalDetailScreenState();
+}
+
+class _RentalDetailScreenState extends State<RentalDetailScreen> {
+  late final List<String> imageUrls;
+
+  @override
+  void initState() {
+    super.initState();
+    imageUrls = widget.rental.images.map((img) => '${ApiService.baseImageUrl}$img').toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final rental = widget.rental;
+
     return Scaffold(
       appBar: AppBar(title: Text(rental.title)),
       body: SingleChildScrollView(
@@ -25,15 +40,15 @@ class RentalDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildPriceSection(),
+                  _buildPriceSection(rental),
                   const SizedBox(height: 16),
-                  _buildDescriptionSection(),
+                  _buildDescriptionSection(rental),
                   const SizedBox(height: 16),
-                  _buildFeaturesSection(),
+                  _buildFeaturesSection(rental),
                   const SizedBox(height: 16),
-                  _buildLocationSection(context),
+                  _buildLocationSection(rental, context),
                   const SizedBox(height: 16),
-                  _buildPublisherInfo(context),
+                  _buildPublisherInfo(rental, context),
                 ],
               ),
             ),
@@ -44,34 +59,23 @@ class RentalDetailScreen extends StatelessWidget {
   }
 
   Widget _buildImageGallery() {
-    return SizedBox(
-      height: 250,
-      child: rental.images.isEmpty
-          ? Container(
+    if (imageUrls.isEmpty) {
+      return Container(
+        height: 250,
         color: Colors.grey[200],
         child: const Center(
           child: Icon(Icons.home, size: 80, color: Colors.grey),
         ),
-      )
-          : PageView.builder(
-        itemCount: rental.images.length,
-        itemBuilder: (context, index) {
-          return Image.network(
-            '${ApiService.baseImageUrl}${rental.images[index]}',
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
-              color: Colors.grey[200],
-              child: const Center(
-                child: Icon(Icons.broken_image, size: 60),
-              ),
-            ),
-          );
-        },
-      ),
+      );
+    }
+
+    return CardCarrusel(
+      key: ValueKey(imageUrls.join()), // fuerza recreación si cambian
+      imageUrls: imageUrls,
     );
   }
 
-  Widget _buildPriceSection() {
+  Widget _buildPriceSection(Rental rental) {
     return Text(
       '\$${rental.monthlyPrice.toStringAsFixed(2)}/mes',
       style: const TextStyle(
@@ -82,7 +86,7 @@ class RentalDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDescriptionSection() {
+  Widget _buildDescriptionSection(Rental rental) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -96,7 +100,7 @@ class RentalDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturesSection() {
+  Widget _buildFeaturesSection(Rental rental) {
     return RentalSpecificationsTable(
       furnished: rental.furnished == 'Sí',
       basicServices: rental.includedServices,
@@ -108,7 +112,7 @@ class RentalDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationSection(BuildContext context) {
+  Widget _buildLocationSection(Rental rental, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -143,7 +147,7 @@ class RentalDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPublisherInfo(BuildContext context) {
+  Widget _buildPublisherInfo(Rental rental, BuildContext context) {
     final propertyInfo = 'Hola, estoy interesado en "${rental.title}" ubicado en "${rental.mapLocation}". ¿Podría brindarme más información? 🏠';
 
     return Column(
@@ -159,15 +163,36 @@ class RentalDetailScreen extends StatelessWidget {
           leading: const CircleAvatar(child: Icon(Icons.person)),
           title: Text(rental.user.name),
           subtitle: Text(rental.company.name),
-          trailing: IconButton(
-            icon: const Icon(Icons.phone),
-            onPressed: () {
+          trailing: GestureDetector(
+            onTap: () {
               AppLauncher.launchWhatsApp(
                 phone: rental.user.numberPhone.toString(),
                 message: propertyInfo,
                 context: context,
               );
             },
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: FaIcon(
+                  FontAwesomeIcons.whatsapp,
+                  color: Color.fromARGB(255, 48, 100, 27),
+                  size: 28,
+                ),
+              ),
+            ),
           ),
         ),
       ],
