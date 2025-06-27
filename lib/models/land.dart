@@ -35,7 +35,7 @@ class Land {
     required this.company,
   });
 
-  factory Land.fromJson(Map<String, dynamic> json) {
+  factory Land.fromJson(Map<String, dynamic> json) { 
     return Land(
       id: _parseInt(json['id_terreno']),
       title: json['titulo']?.toString() ?? '',

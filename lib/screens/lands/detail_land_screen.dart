@@ -58,7 +58,7 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
                   _buildDescriptionSection(),
                   const SizedBox(height: 16),
                   RentalSpecificationsTable(
-                    city: terreno.city,
+                    city: null,
                     size: terreno.size,
                     basicServices: terreno.basicServices,
                     bedrooms: null,

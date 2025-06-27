@@ -174,7 +174,13 @@ class _Home2ScreenState extends State<Home2Screen> {
           actions: [
             if (widget.isLoggedIn)
               PopupMenuButton<String>(
-                icon: const Icon(Icons.person, color: Colors.black54, size: 18),
+                icon: const Icon(Icons.person, color: Colors.black54, size: 20),
+                color: AppColors.cardBackground,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: AppColors.navigationButtonBackground.withOpacity(0.2)),
+                ),
+                elevation: 8,
                 onSelected: (value) {
                   if (value == 'verperfil') {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -184,17 +190,35 @@ class _Home2ScreenState extends State<Home2Screen> {
                     cerrarSesion();
                   }
                 },
-                itemBuilder: (context) => const [
+                itemBuilder: (context) => [
                   PopupMenuItem(
                     value: 'verperfil',
-                    child: Text('Ver perfil'),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.person, size: 20, color: Colors.black54),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Ver perfil',
+                          style: AppFonts.montserratBold.copyWith(fontSize: 14, color: Colors.black87),
+                        ),
+                      ],
+                    ),
                   ),
                   PopupMenuItem(
                     value: 'cerrarsesion',
-                    child: Text('Cerrar sesión'),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.logout, size: 20, color: Colors.redAccent),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Cerrar sesión',
+                          style: AppFonts.montserratBold.copyWith(fontSize: 14, color: Colors.redAccent),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
-              ),
+              )
           ],
         ),
         body: getCurrentScreen(),
