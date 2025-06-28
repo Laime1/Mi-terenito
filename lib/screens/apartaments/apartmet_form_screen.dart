@@ -170,7 +170,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.apartment == null ? 'Formulario de Departamento' : 'Editar Departamento'),
+        title: Text(widget.apartment == null ? 'Formulario de Departamento' : 'Editar Departamento', style: TextStyle(color: Colors.white),),
         actions: [
           if (_isLoading)
             const Padding(
@@ -388,9 +388,15 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 const SizedBox(height: 16),
 
                 ElevatedButton(
+
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: Text(
                     widget.apartment == null ? 'Guardar Departamento' : 'Actualizar Departamento',

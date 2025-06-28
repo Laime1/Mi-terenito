@@ -219,7 +219,7 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.rental == null ? 'Formulario de Alquiler' : 'Editar Alquiler'),
+        title: Text(widget.rental == null ? 'Formulario de Alquiler' : 'Editar Alquiler', style: const TextStyle(color: Colors.white)),
         actions: [
           if (_isLoading)
             const Padding(
@@ -417,7 +417,12 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: const Text(
                     'Guardar Alquiler',

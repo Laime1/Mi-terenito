@@ -15,54 +15,28 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
         ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFFEAF2F8),
-                Color(0xFFCAD6E2),
-                Color(0xFF9BA7B4),
-                Color(0xFF7C8694),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-        ),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFEAF2F8),
-              Color(0xFFCAD6E2),
-              Color(0xFF9BA7B4),
-              Color(0xFF7C8694),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   "CLICK HOUSE",
                   style: TextStyle(
                     fontSize: 24,
                     fontFamily: 'InknutAntiqua',
                     fontWeight: FontWeight.w600,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -76,11 +50,14 @@ class LoginScreen extends StatelessWidget {
                   height: 45,
                   child: TextField(
                     controller: correoController,
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                     decoration: InputDecoration(
                       labelText: 'Correo',
                       hintText: 'ingresar correo',
+                      labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                      hintStyle: TextStyle(color: Theme.of(context).hintColor),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.0),
+                      fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -98,15 +75,19 @@ class LoginScreen extends StatelessWidget {
                       return TextField(
                         controller: contrasenaController,
                         obscureText: value,
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
                           hintText: 'ingresar contraseña',
+                          labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                          hintStyle: TextStyle(color: Theme.of(context).hintColor),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.0),
+                          fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           suffixIcon: IconButton(
                             icon: Icon(
                               value ? Icons.visibility_off : Icons.visibility,
+                              color: Theme.of(context).iconTheme.color,
                             ),
                             onPressed: () {
                               obscurePassword.value = !value;
@@ -125,8 +106,8 @@ class LoginScreen extends StatelessWidget {
                   width: 200,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

@@ -95,7 +95,7 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                     child: Row(
                       children: [
-                        Icon(spec.icon, size: 20, color: Colors.blue),
+                        Icon(spec.icon, size: 20),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -113,7 +113,7 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
                       style: TextStyle(
                         color: spec.isHighlighted
                             ? Theme.of(context).primaryColor
-                            : Colors.grey[800],
+                            : Theme.of(context).textTheme.bodyMedium!.color,
                       ),
                     ),
                   ),

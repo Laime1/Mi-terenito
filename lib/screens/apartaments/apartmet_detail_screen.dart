@@ -215,7 +215,7 @@ class ApartmentDetailScreen extends StatelessWidget {
             ],
           ),
           trailing: IconButton(
-            icon: const Icon(Icons.phone),
+            icon:  Icon(Icons.phone),
             onPressed: () {
               final rawPhone = apartment.user!.numberPhone.replaceAll(RegExp(r'\D'), '');
               final phone = rawPhone.length < 10 ? '+591$rawPhone' : rawPhone;
@@ -233,7 +233,7 @@ class ApartmentDetailScreen extends StatelessWidget {
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.business),
+          leading:  Icon(Icons.business, color: Colors.green),
           title: const Text('Información de la empresa'),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

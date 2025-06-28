@@ -156,6 +156,7 @@ class _Home2ScreenState extends State<Home2Screen> {
       appBar: AppBar(
         title: Text(
           currentTipo[0].toUpperCase() + currentTipo.substring(1),
+          style: const TextStyle(color: Colors.white),
         ),
         automaticallyImplyLeading: false,
         centerTitle: true,
@@ -194,13 +195,14 @@ class _Home2ScreenState extends State<Home2Screen> {
         initialSelection: _tipoToIndex(currentTipo),
         barHeight: 50,
         circleSize: 40,
-        barBackgroundColor: Colors.white,
-        activeIconColor: Colors.white,
-        inactiveIconColor: Colors.grey,
-        circleColor: Colors.blueAccent,
+        barBackgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        activeIconColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        inactiveIconColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+        circleColor: Theme.of(context).colorScheme.primary,
+        textColor: Colors.white,
         tabs: widget.isLoggedIn
             ? [
-                TabData(icon: Icons.house_rounded, title: 'Casas'),
+                TabData(icon: Icons.house_rounded, title: 'Casas', ),
                 TabData(icon: Icons.park_rounded, title: 'Terrenos'),
                 TabData(icon: Icons.apartment_rounded, title: 'Departamentos'),
                 TabData(icon: Icons.real_estate_agent_rounded, title: 'Alquileres'),

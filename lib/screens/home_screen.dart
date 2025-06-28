@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/app_theme.dart';
+import '../services/theme_provider.dart';
 import '../widgets/custom_dropdown.dart';
 import '../services/api_service.dart';
 import 'home2_screen.dart';
@@ -140,10 +143,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.themeMode == ThemeMode.light;
+
     return Scaffold(
-      backgroundColor: AppColors.bodyBackground,
       appBar: AppBar(
-        backgroundColor: AppColors.appBarBackground,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
@@ -164,6 +168,12 @@ class _HomeScreenState extends State<HomeScreen> {
               'Iniciar sesión',
               style: TextStyle(color: AppColors.appBarText),
             ),
+          ),
+          IconButton(
+              onPressed: () {
+                themeProvider.toggleTheme();
+          },
+              icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.appBarText),
           ),
         ],
       ),
