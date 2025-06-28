@@ -151,9 +151,9 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            Text('', style: TextStyle(fontSize: 14, color: AppColors.appBarText)),
+            Text('', style: TextStyle(fontSize: 14, color: Colors.white)),
             Text('Click House',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.appBarText)),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
           ],
         ),
         actions: [
@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: const Text(
               'Iniciar sesión',
-              style: TextStyle(color: AppColors.appBarText),
+              style: TextStyle(color: Colors.white),
             ),
           ),
           IconButton(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mi_terrenito/models/app_fonts.dart';
 import 'package:mi_terrenito/screens/apartaments/apartaments_screen.dart';
 import 'package:mi_terrenito/screens/rentals/rentals_screen.dart';
 import 'houses/houses_screen.dart';
-import 'lands/terrenos_screen.dart';
+import 'lands/lands_screen.dart';
 import 'package:circle_bottom_navigation/circle_bottom_navigation.dart';
 import 'package:circle_bottom_navigation/widgets/tab_data.dart';
 import '../models/app_colors.dart';
@@ -52,7 +54,6 @@ class _Home2ScreenState extends State<Home2Screen> {
   void initState() {
     super.initState();
     currentTipo = widget.tipo;
-
     hasCasas = widget.hasCasas;
     hasTerrenos = widget.hasTerrenos;
     hasDepartamentos = widget.hasDepartamentos;
@@ -74,13 +75,13 @@ class _Home2ScreenState extends State<Home2Screen> {
 
     switch (currentTipo) {
       case 'casas':
-        return CasasScreen(empresaId: widget.empresaId, cityId: widget.cityId,usuarioId: widget.usuarioId,);
+        return CasasScreen(empresaId: widget.empresaId, cityId: widget.cityId, usuarioId: widget.usuarioId);
       case 'terrenos':
-        return TerrenosScreen(empresaId: widget.empresaId, cityId: widget.cityId,usuarioId:widget.usuarioId);
+        return LandsScreen(empresaId: widget.empresaId, cityId: widget.cityId, usuarioId: widget.usuarioId);
       case 'departamentos':
-        return ApartmentsScreen(companyId: widget.empresaId, cityId: widget.cityId,userId:widget.usuarioId);
+        return ApartmentsScreen(companyId: widget.empresaId, cityId: widget.cityId, userId: widget.usuarioId);
       case 'alquileres':
-        return RentalsScreen(companyId: widget.empresaId, cityId: widget.cityId,userId:widget.usuarioId);
+        return RentalsScreen(companyId: widget.empresaId, cityId: widget.cityId, userId: widget.usuarioId);
       default:
         return const Center(child: Text('Tipo no válido'));
     }
@@ -148,6 +149,16 @@ class _Home2ScreenState extends State<Home2Screen> {
           return 'casas';
       }
     }
+  }
+
+  Future<void> cerrarSesion() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      (route) => false,
+    );
   }
 
   @override

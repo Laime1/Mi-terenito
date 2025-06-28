@@ -1,76 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/models/apartment.dart';
 import 'package:mi_terrenito/services/api_service.dart';
+import 'package:mi_terrenito/widgets/card_carrusel.dart';
 import 'package:mi_terrenito/widgets/table_card.dart';
 import 'package:mi_terrenito/widgets/utils/app_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ApartmentDetailScreen extends StatelessWidget {
+class ApartmentDetailScreen extends StatefulWidget {
   final Apartment apartment;
 
   const ApartmentDetailScreen({super.key, required this.apartment});
 
-  void _openMapsApp() async {
-    // Formatea la dirección para URLs (reemplaza espacios con '+')
-    final Uri url = Uri.parse(apartment.mapLocation);
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      // Manejo de error si no se puede abrir la URL
-        const SnackBar(content: Text('No se pudo abrir Google Maps'));
-    }
+  @override
+  State<ApartmentDetailScreen> createState() => _ApartmentDetailScreenState();
+}
+
+class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
+  late final List<String> imageUrls;
+
+  @override
+  void initState() {
+    super.initState();
+    imageUrls = widget.apartment.images.map((img) => '${ApiService.baseImageUrl}$img').toList();
   }
 
   void _launchWhatsAppConMensaje(String phone, String mensaje) async {
     final whatsappUri = Uri.parse('whatsapp://send?phone=$phone&text=$mensaje');
-
     try {
       await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
     } catch (e) {
       final webWhatsappUri = Uri.parse('https://wa.me/$phone?text=$mensaje');
       if (await canLaunchUrl(webWhatsappUri)) {
         await launchUrl(webWhatsappUri, mode: LaunchMode.externalApplication);
-      } else {
-            const SnackBar(content: Text('No se pudo abrir WhatsApp'));
-
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
+    final apartment = widget.apartment;
+
     return Scaffold(
       appBar: AppBar(title: Text(apartment.title)),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Galería de imágenes
             _buildImageGallery(),
-
-            // Sección de información principal
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Precio y características principales
-                  _buildPriceSection(),
+                  _buildPriceSection(apartment),
                   const SizedBox(height: 16),
-
-                  // Descripción completa
-                  _buildDescriptionSection(),
+                  _buildDescriptionSection(apartment),
                   const SizedBox(height: 16),
-
-                  // Características detalladas
-                  _buildFeaturesSection(),
+                  _buildFeaturesSection(apartment),
                   const SizedBox(height: 16),
-
-                  // Ubicación
-                  _buildLocationSection( context),
+                  _buildLocationSection(apartment),
                   const SizedBox(height: 16),
-
-                  // Información del publicador
-                  _buildPublisherInfo(),
+                  _buildPublisherInfo(apartment),
                 ],
               ),
             ),
@@ -81,51 +72,34 @@ class ApartmentDetailScreen extends StatelessWidget {
   }
 
   Widget _buildImageGallery() {
-    return SizedBox(
-      height: 250,
-      child: apartment.images.isEmpty
-          ? Container(
+    if (imageUrls.isEmpty) {
+      return Container(
+        height: 250,
         color: Colors.grey[200],
         child: const Center(
           child: Icon(Icons.apartment, size: 80, color: Colors.grey),
         ),
-      )
-          : PageView.builder(
-        itemCount: apartment.images.length,
-        itemBuilder: (context, index) {
-          return Image.network(
-            //apartment.images[index],
-            '${ApiService.baseImageUrl}${apartment.images[index]}',
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
-              color: Colors.grey[200],
-              child: const Center(
-                child: Icon(Icons.broken_image, size: 60),
-              ),
-            ),
-          );
-        },
+      );
+    }
+
+    return CardCarrusel(
+      key: ValueKey(imageUrls.join()), // esto fuerza a reconstruir con nuevos datos
+      imageUrls: imageUrls,
+    );
+  }
+
+  Widget _buildPriceSection(Apartment apartment) {
+    return Text(
+      '\$${apartment.price}',
+      style: const TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        color: Colors.green,
       ),
     );
   }
 
-  Widget _buildPriceSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '\$${apartment.price}',
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.green,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDescriptionSection() {
+  Widget _buildDescriptionSection(Apartment apartment) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -134,15 +108,12 @@ class ApartmentDetailScreen extends StatelessWidget {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        Text(
-          apartment.description,
-          style: const TextStyle(fontSize: 16),
-        ),
+        Text(apartment.description, style: const TextStyle(fontSize: 16)),
       ],
     );
   }
 
-  Widget _buildFeaturesSection() {
+  Widget _buildFeaturesSection(Apartment apartment) {
     return RentalSpecificationsTable(
       bedrooms: apartment.bedrooms,
       bathrooms: apartment.bathrooms,
@@ -155,7 +126,7 @@ class ApartmentDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationSection(BuildContext context) {
+  Widget _buildLocationSection(Apartment apartment) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -169,11 +140,7 @@ class ApartmentDetailScreen extends StatelessWidget {
             onTap: () => AppLauncher.openMaps(apartment.mapLocation, context),
             child: Row(
               children: [
-                Icon(
-                  Icons.map,
-                  color: Colors.blue[600],
-                  size: 30,
-                ),
+                Icon(Icons.map, color: Colors.blue[600], size: 30),
                 const SizedBox(width: 8),
                 Text(
                   "Ver en Maps",
@@ -184,8 +151,8 @@ class ApartmentDetailScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        if (apartment.mapLocation.isEmpty)
+          )
+        else
           const Text(
             "Ubicación no disponible",
             style: TextStyle(color: Colors.grey),
@@ -193,7 +160,8 @@ class ApartmentDetailScreen extends StatelessWidget {
       ],
     );
   }
-  Widget _buildPublisherInfo() {
+
+  Widget _buildPublisherInfo(Apartment apartment) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -214,21 +182,43 @@ class ApartmentDetailScreen extends StatelessWidget {
               Text(apartment.user!.numberPhone),
             ],
           ),
-          trailing: IconButton(
-            icon:  Icon(Icons.phone),
-            onPressed: () {
+          trailing: GestureDetector(
+            onTap: () {
               final rawPhone = apartment.user!.numberPhone.replaceAll(RegExp(r'\D'), '');
               final phone = rawPhone.length < 10 ? '+591$rawPhone' : rawPhone;
 
               if (phone.isNotEmpty) {
                 final mensaje = Uri.encodeComponent(
-                    'Hola, estoy interesado en "${apartment.title}" ubicado en "${apartment.mapLocation}". ¿Podría brindarme más información? 🏠'
+                  'Hola, estoy interesado en "${apartment.title}" ubicado en "${apartment.mapLocation}". ¿Podría brindarme más información? 🏠',
                 );
                 _launchWhatsAppConMensaje(phone, mensaje);
               } else {
                   const SnackBar(content: Text('Número de contacto no disponible'));
               }
-            },          ),
+            },
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: FaIcon(
+                  FontAwesomeIcons.whatsapp,
+                  color: Color.fromARGB(255, 48, 100, 27),
+                  size: 28,
+                ),
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 8),
         ListTile(

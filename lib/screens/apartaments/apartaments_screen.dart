@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/screens/apartaments/apartmet_detail_screen.dart';
 import 'package:mi_terrenito/screens/apartaments/apartmet_form_screen.dart';
+import 'package:mi_terrenito/widgets/loader_overlay.dart';
 import 'package:mi_terrenito/services/api_service.dart';
-
 import '../../models/apartment.dart';
 import '../../widgets/card_apartament.dart';
 
@@ -129,7 +129,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
           Expanded(
             child:
                 isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const HouseLoader()
                     : errorMessage.isNotEmpty
                     ? Center(child: Text(errorMessage))
                     : filteredApartments.isEmpty

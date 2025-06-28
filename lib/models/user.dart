@@ -1,4 +1,4 @@
-class User{
+class User {
   final int id;
   final String name;
   final String email;
@@ -13,16 +13,13 @@ class User{
     required this.role,
   });
 
-  factory User.fromJson(Map<String, dynamic> json){
+  factory User.fromJson(Map<String, dynamic> json) {
     return User(
-    id: json['id_usuario'] ?? 0,
-    name: json['nombre_usuario'] ?? '',
-    email: json['correo'] ?? '',
-    numberPhone: json['contacto'] ?? '',
-    role: json['id_rol'] ?? 0,
-  );
-  
+      id: json['id_usuario'] ?? 0,
+      name: json['nombre_usuario'] ?? '',
+      email: json['correo'] ?? '',
+      numberPhone: json['contacto'] ?? '',
+      role: json['id_rol'] ?? 0,
+    );
   }
-  
-
 }

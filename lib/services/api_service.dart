@@ -1,18 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime_type/mime_type.dart';
-
 import '../models/rental.dart';
 import '../models/apartment.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
+
 
 class ApiService {
-  static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
-  // static const String baseUrl = 'http://192.168.0.10:3000/api';
-  static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
-  // static const String baseImageUrl = 'http://192.168.0.10:3000';
+  // static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
+  static const String baseUrl = 'http://192.168.0.10:3000/api';
+  // static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
+  static const String baseImageUrl = 'http://192.168.0.10:3000';
 
   static Future<List<Apartment>> getApartmentsByCompanyAndCity({
     required int companyId,
@@ -95,13 +96,8 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> fetchCasasByEmpresaAndCiudad(
-    int empresaId,
-    int cityId,
-  ) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/casas/empresa/$empresaId/ciudad/$cityId'),
-    );
+  Future<List<dynamic>> fetchCasasByEmpresaAndCiudad(int empresaId, int cityId) async {
+    final response = await http.get(Uri.parse('$baseUrl/casas/empresa/$empresaId/ciudad/$cityId'));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -109,13 +105,8 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> fetchTerrenosByEmpresaAndCiudad(
-    int empresaId,
-    int cityId,
-  ) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/terrenos/empresa/$empresaId/ciudad/$cityId'),
-    );
+  Future<List<dynamic>> fetchTerrenosByEmpresaAndCiudad(int empresaId, int cityId) async {
+    final response = await http.get(Uri.parse('$baseUrl/terrenos/empresa/$empresaId/ciudad/$cityId'));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -163,9 +154,7 @@ class ApiService {
   }
 
   Future<List<dynamic>> fetchCasasByUsuario(int usuarioId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/casas/usuario/$usuarioId'),
-    );
+    final response = await http.get(Uri.parse('$baseUrl/casas/usuario/$usuarioId'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data;
@@ -237,10 +226,8 @@ class ApiService {
         }
       }
 
-      // Enviar la solicitud
       var response = await request.send();
 
-      // Procesar la respuesta
       if (response.statusCode == 201) {
         final responseData = await response.stream.bytesToString();
         final jsonResponse = json.decode(responseData);
@@ -257,9 +244,7 @@ class ApiService {
   }
 
   Future<List<dynamic>> fetchTerrenosByUsuario(int usuarioId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/terrenos/usuario/$usuarioId'),
-    );
+    final response = await http.get(Uri.parse('$baseUrl/terrenos/usuario/$usuarioId'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data;
@@ -286,53 +271,49 @@ class ApiService {
   }
 
   Future<bool> crearCasaConImagenes({
-    required String titulo,
-    required String descripcion,
-    required String precio,
-    required String enlaceUbicacion,
-    required String habitaciones,
-    required String banos,
-    required String cochera,
-    required String pisos,
-    required int idUsuario,
-    required int idCiudad,
-    required List<File> imagenes,
-  }) async {
-    var uri = Uri.parse('$baseUrl/casas');
-    var request = http.MultipartRequest('POST', uri);
-    request.fields['titulo'] = titulo;
-    request.fields['descripcion'] = descripcion;
-    request.fields['precio'] = precio;
-    request.fields['enlace_ubicacion'] = enlaceUbicacion;
-    request.fields['habitaciones'] = habitaciones;
-    request.fields['banos'] = banos;
-    request.fields['cochera'] = cochera;
-    request.fields['pisos'] = pisos;
-    request.fields['id_usuario'] = idUsuario.toString();
-    request.fields['id_ciudad'] = idCiudad.toString();
+  required String titulo,
+  required String descripcion,
+  required String precio,
+  required String enlaceUbicacion,
+  required String habitaciones,
+  required String banos,
+  required String cochera,
+  required String pisos,
+  required int idUsuario,
+  required int idCiudad,
+  required List<File> imagenes,
+}) async {
+  var uri = Uri.parse('$baseUrl/casas');
+  var request = http.MultipartRequest('POST', uri);
+  request.fields['titulo'] = titulo;
+  request.fields['descripcion'] = descripcion;
+  request.fields['precio'] = precio;
+  request.fields['enlace_ubicacion'] = enlaceUbicacion;
+  request.fields['habitaciones'] = habitaciones;
+  request.fields['banos'] = banos;
+  request.fields['cochera'] = cochera;
+  request.fields['pisos'] = pisos;
+  request.fields['id_usuario'] = idUsuario.toString();
+  request.fields['id_ciudad'] = idCiudad.toString();
 
-    for (var imagen in imagenes) {
-      final fileName = imagen.path.split('/').last;
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'imagenes',
-          imagen.path,
-          filename: fileName,
-        ),
-      );
-    }
+  for (var imagen in imagenes) {
+    final fileName = imagen.path.split('/').last;
+    request.files.add(
+      await http.MultipartFile.fromPath('imagenes', imagen.path, filename: fileName),
+    );
+  }
 
-    final response = await request.send();
-    final responseBody = await response.stream.bytesToString();
+  final response = await request.send();
+  final responseBody = await response.stream.bytesToString();
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      print("Casa creada correctamente: $responseBody");
-      return true;
-    } else {
-      print("Error al crear casa: ${response.statusCode}");
-      print(responseBody);
-      return false;
-    }
+  if (response.statusCode == 201 || response.statusCode == 200) {
+    print("Casa creada correctamente: $responseBody");
+    return true;
+  } else {
+    print("Error al crear casa: ${response.statusCode}");
+    print(responseBody);
+    return false;
+  }
   }
 
   static Future<int> createDepartment({
@@ -352,7 +333,6 @@ class ApiService {
         'POST',
         Uri.parse('$baseUrl/departamentos'),
       );
-      // Agregar campos de texto
       request.fields['titulo'] = title;
       request.fields['descripcion'] = description;
       request.fields['precio'] = price.toString();
@@ -494,6 +474,308 @@ class ApiService {
       throw Exception('Error de conexión: $e');
     }
   }
+  Future<bool> actualizarCasaConImagenes({
+  required int idCasa,
+  required String titulo,
+  required String descripcion,
+  required String precio,
+  required String enlaceUbicacion,
+  required String habitaciones,
+  required String banos,
+  required String cochera,
+  required String pisos,
+  required int idUsuario,
+  required int idCiudad,
+  List<File>? nuevasImagenes,
+}) async {
+  var uri = Uri.parse('$baseUrl/casas/$idCasa');
+  var request = http.MultipartRequest('PUT', uri);
+
+
+  request.fields['titulo'] = titulo;
+  request.fields['descripcion'] = descripcion;
+  request.fields['precio'] = precio;
+  request.fields['enlace_ubicacion'] = enlaceUbicacion;
+  request.fields['habitaciones'] = habitaciones;
+  request.fields['banos'] = banos;
+  request.fields['cochera'] = cochera;
+  request.fields['pisos'] = pisos;
+  request.fields['id_usuario'] = idUsuario.toString();
+  request.fields['id_ciudad'] = idCiudad.toString();
+
+
+  if (nuevasImagenes != null && nuevasImagenes.isNotEmpty) {
+    for (var imagen in nuevasImagenes) {
+      final fileName = imagen.path.split('/').last;
+      final mimeType = mime(imagen.path)?.split('/');
+      if (mimeType != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'imagenes',
+            imagen.path,
+            filename: fileName,
+            contentType: MediaType(mimeType[0], mimeType[1]),
+          ),
+        );
+      }
+    }
+  }
+
+  try {
+    final response = await request.send();
+    final responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('Casa actualizada correctamente: $responseBody');
+      return true;
+    } else {
+      print('Error al actualizar casa: ${response.statusCode}');
+      print(responseBody);
+      return false;
+    }
+  } catch (e) {
+    print('Excepción al actualizar casa con imágenes: $e');
+    return false;
+  }
+}
+static Future<bool> eliminarCasa(int idCasa) async {
+  try {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/casas/$idCasa'),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Error al eliminar casa: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    print('Error de conexión al eliminar casa: $e');
+    return false;
+  }
+}
+  static Future<bool> eliminarTerreno(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/terrenos/$id'),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('No se pudo eliminar el terreno');
+    }
+  }
+
+  Future<bool> crearTerrenoConImagenes({
+    required String titulo,
+    required String descripcion,
+    required String precio,
+    required String enlaceUbicacion,
+    required String tamano,
+    required String serviciosBasicos,
+    required int idUsuario,
+    required int idCiudad,
+    List<File>? imagenes, // Para móvil
+    List<XFile>? ximagenes, // Para web
+  }) async {
+    var uri = Uri.parse('$baseUrl/terrenos');
+    var request = http.MultipartRequest('POST', uri);
+
+    request.fields['titulo'] = titulo;
+    request.fields['descripcion'] = descripcion;
+    request.fields['precio'] = precio;
+    request.fields['enlace_ubicacion'] = enlaceUbicacion;
+    request.fields['tamano'] = tamano;
+    request.fields['servicios_basicos'] = serviciosBasicos;
+    request.fields['id_usuario'] = idUsuario.toString();
+    request.fields['id_ciudad'] = idCiudad.toString();
+
+    if (kIsWeb && ximagenes != null) {
+      for (var xfile in ximagenes) {
+        final bytes = await xfile.readAsBytes();
+        final fileName = xfile.name;
+        final mimeType = mime(fileName)?.split('/');
+        final mediaType = (mimeType != null && mimeType.length == 2)
+            ? MediaType(mimeType[0], mimeType[1])
+            : null;
+
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'imagenes',
+            bytes,
+            filename: fileName,
+            contentType: mediaType,
+          ),
+        );
+      }
+    } else if (imagenes != null) {
+      for (var imagen in imagenes) {
+        final fileName = imagen.path.split('/').last;
+        final mimeType = mime(fileName)?.split('/');
+        final mediaType = (mimeType != null && mimeType.length == 2)
+            ? MediaType(mimeType[0], mimeType[1])
+            : null;
+
+        if (mediaType != null) {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagen.path,
+              filename: fileName,
+              contentType: mediaType,
+            ),
+          );
+        } else {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagen.path,
+              filename: fileName,
+            ),
+          );
+        }
+      }
+    } else {
+      throw Exception('No se proporcionaron imágenes');
+    }
+
+    final response = await request.send();
+    final responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      print("Terreno creado correctamente: $responseBody");
+      return true;
+    } else {
+      print("Error al crear terreno: ${response.statusCode}");
+      print(responseBody);
+      return false;
+    }
+  }
+
+  Future<bool> actualizarTerrenoConImagenes({
+    required int idTerreno,
+    required String titulo,
+    required String descripcion,
+    required String precio,
+    required String enlaceUbicacion,
+    required String tamano,
+    required String serviciosBasicos,
+    required int idUsuario,
+    required int idCiudad,
+    List<File>? nuevasImagenes,
+    List<XFile>? nuevasXImagenes,
+    List<String>? imagenesExistentes, // nombres de imágenes que se mantienen
+  }) async {
+    var uri = Uri.parse('$baseUrl/terrenos/$idTerreno');
+    var request = http.MultipartRequest('PUT', uri);
+
+    request.fields['titulo'] = titulo;
+    request.fields['descripcion'] = descripcion;
+    request.fields['precio'] = precio;
+    request.fields['enlace_ubicacion'] = enlaceUbicacion;
+    request.fields['tamano'] = tamano;
+    request.fields['servicios_basicos'] = serviciosBasicos;
+    request.fields['id_usuario'] = idUsuario.toString();
+    request.fields['id_ciudad'] = idCiudad.toString();
+
+    if (imagenesExistentes != null && imagenesExistentes.isNotEmpty) {
+      // Enviamos la lista de imágenes existentes que queremos mantener al backend
+      // (ajusta la clave según tu API, aquí usamos 'imagenes_existentes[]' como ejemplo)
+      for (var imgName in imagenesExistentes) {
+        request.fields['imagenes_existentes[]'] = imgName;
+      }
+    }
+
+    if (kIsWeb && nuevasXImagenes != null && nuevasXImagenes.isNotEmpty) {
+      for (var xfile in nuevasXImagenes) {
+        final bytes = await xfile.readAsBytes();
+        final fileName = xfile.name;
+        final mimeType = mime(fileName)?.split('/');
+        final mediaType = (mimeType != null && mimeType.length == 2)
+            ? MediaType(mimeType[0], mimeType[1])
+            : null;
+
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'imagenes',
+            bytes,
+            filename: fileName,
+            contentType: mediaType,
+          ),
+        );
+      }
+    } else if (nuevasImagenes != null && nuevasImagenes.isNotEmpty) {
+      for (var imagen in nuevasImagenes) {
+        final fileName = imagen.path.split('/').last;
+        final mimeType = mime(imagen.path)?.split('/');
+        final mediaType = (mimeType != null && mimeType.length == 2)
+            ? MediaType(mimeType[0], mimeType[1])
+            : null;
+
+        if (mediaType != null) {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagen.path,
+              filename: fileName,
+              contentType: mediaType,
+            ),
+          );
+        } else {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagen.path,
+              filename: fileName,
+            ),
+          );
+        }
+      }
+    }
+
+    try {
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print("Terreno actualizado correctamente: $responseBody");
+        return true;
+      } else {
+        print("Error al actualizar terreno: ${response.statusCode}");
+        print(responseBody);
+        return false;
+      }
+    } catch (e) {
+      print("Excepción al actualizar terreno con imágenes: $e");
+      return false;
+    }
+  }
+
+  Future<bool> eliminarImagenDeCasa(String nombreArchivo) async {
+  final uri = Uri.parse('$baseUrl/imagenes/imagencasa/$nombreArchivo');
+  final response = await http.delete(uri);
+  return response.statusCode == 200;
+  }
+
+  Future<bool> eliminarImagenDeAlquiler(String nombreArchivo) async {
+    final uri = Uri.parse('$baseUrl/imagenes/imagenalquiler/$nombreArchivo');
+    final response = await http.delete(uri);
+    return response.statusCode == 200;
+  }
+
+  Future<bool> eliminarImagenDeDepartamento(String nombreArchivo) async {
+    final uri = Uri.parse('$baseUrl/imagenes/imagendepartamento/$nombreArchivo');
+    final response = await http.delete(uri);
+    return response.statusCode == 200;
+  }
+
+  Future<bool> eliminarImagenDeTerreno(String nombreArchivo) async {
+    final uri = Uri.parse('$baseUrl/imagenes/imagenterreno/$nombreArchivo');
+    final response = await http.delete(uri);
+    return response.statusCode == 200;
+  }
+
 
   static Future<bool> updateRental({
     required int rentalId,

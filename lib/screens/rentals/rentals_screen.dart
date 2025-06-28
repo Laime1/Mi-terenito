@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/screens/rentals/rental_detail_screen.dart';
 import 'package:mi_terrenito/screens/rentals/rental_form_screen.dart';
+import 'package:mi_terrenito/widgets/loader_overlay.dart';
 import 'package:mi_terrenito/widgets/rental_card.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 
@@ -120,7 +121,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
           ),
           Expanded(
             child: isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const HouseLoader()
                 : errorMessage.isNotEmpty
                 ? Center(child: Text(errorMessage))
                 : filteredRentals.isEmpty

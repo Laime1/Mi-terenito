@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 import 'package:mi_terrenito/widgets/card_mixin.dart';
 import '../models/apartment.dart';
+import '../services/api_service.dart';
 
 class ApartmentCard extends StatelessWidget with CardMixin{
   final Apartment apartment;
