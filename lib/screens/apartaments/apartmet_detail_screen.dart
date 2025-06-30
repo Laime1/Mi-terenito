@@ -192,6 +192,8 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
                   'Hola, estoy interesado en "${apartment.title}" ubicado en "${apartment.mapLocation}". ¿Podría brindarme más información? 🏠',
                 );
                 _launchWhatsAppConMensaje(phone, mensaje);
+              } else {
+                  const SnackBar(content: Text('Número de contacto no disponible'));
               }
             },
             child: Container(
@@ -221,7 +223,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.business),
+          leading:  Icon(Icons.business, color: Colors.green),
           title: const Text('Información de la empresa'),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,4 +238,5 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
       ],
     );
   }
+
 }

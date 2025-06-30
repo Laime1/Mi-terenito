@@ -12,6 +12,7 @@ class Apartment {
   final String mapLocation;
   final int bedrooms;
   final int bathrooms;
+  final int floor;
   final List<String> images;
   final User? user;
   final City? city;
@@ -27,6 +28,7 @@ class Apartment {
     required this.mapLocation,
     required this.bedrooms,
     required this.bathrooms,
+    required this.floor,
     required this.images,
     required this.user,
     required this.city,
@@ -38,12 +40,13 @@ class Apartment {
       id: _parseInt(json['id_departamento']),
       title: json['titulo']?.toString() ?? '',
       description: json['descripcion']?.toString() ?? '',
-      price: _parseDouble(json['precio']),
-      status: _parseInt(json['estado']),
+      price: _parseDouble(json['precio']) ?? 0,
+      status: _parseInt(json['estado']) ?? 1,
       publishedAt: _parseDateTime(json['fecha_publicacion']),
       mapLocation: json['enlace_ubicacion']?.toString() ?? '',
-      bedrooms: _parseInt(json['habitaciones']),
-      bathrooms: _parseInt(json['banos']),
+      bedrooms: _parseInt(json['habitaciones']) ?? 0,
+      bathrooms: _parseInt(json['banos']) ?? 0,
+      floor: _parseInt(json['piso']) ?? 1,
       images: _parseImages(json['imagenes']),
       user: User.fromJson(json['usuario'] ?? {}),
       city: City.fromJson(json['ciudad'] ?? {}),

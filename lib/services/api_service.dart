@@ -11,10 +11,9 @@ import 'package:flutter/foundation.dart';
 
 class ApiService {
   static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
-  //static const String baseUrl = 'http://localhost:3000/api';
+  //static const String baseUrl = 'http://192.168.0.10:3000/api';
   static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
-  //static const String baseImageUrl = 'http://localhost:3000';
-
+  //static const String baseImageUrl = 'http://192.168.0.10:3000';
 
   static Future<List<Apartment>> getApartmentsByCompanyAndCity({
     required int companyId,
@@ -29,7 +28,9 @@ class ApiService {
         final List<dynamic> data = json.decode(response.body);
         return data.map((json) => Apartment.fromJson(json)).toList();
       } else {
-        throw Exception('Error al cargar departamentos: ${response.statusCode}');
+        throw Exception(
+          'Error al cargar departamentos: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Error de conexión: $e');
@@ -70,7 +71,10 @@ class ApiService {
     final response = await http.get(Uri.parse('$baseUrl/ciudades'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final city = data.firstWhere((c) => c['nombre'] == cityName, orElse: () => null);
+      final city = data.firstWhere(
+        (c) => c['nombre'] == cityName,
+        orElse: () => null,
+      );
       if (city != null) {
         return city['id_ciudad'];
       } else {
@@ -82,7 +86,9 @@ class ApiService {
   }
 
   Future<List<dynamic>> fetchEmpresasByCiudad(int cityId) async {
-    final response = await http.get(Uri.parse('$baseUrl/empresas/ciudad/$cityId'));
+    final response = await http.get(
+      Uri.parse('$baseUrl/empresas/ciudad/$cityId'),
+    );
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -108,8 +114,13 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> fetchDepartamentosByEmpresaAndCiudad(int empresaId, int cityId) async {
-    final response = await http.get(Uri.parse('$baseUrl/departamentos/empresa/$empresaId/ciudad/$cityId'));
+  Future<List<dynamic>> fetchDepartamentosByEmpresaAndCiudad(
+    int empresaId,
+    int cityId,
+  ) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/departamentos/empresa/$empresaId/ciudad/$cityId'),
+    );
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -117,8 +128,13 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> fetchAlquileresByEmpresaAndCiudad(int empresaId, int cityId) async {
-    final response = await http.get(Uri.parse('$baseUrl/alquileres/empresa/$empresaId/ciudad/$cityId'));
+  Future<List<dynamic>> fetchAlquileresByEmpresaAndCiudad(
+    int empresaId,
+    int cityId,
+  ) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/alquileres/empresa/$empresaId/ciudad/$cityId'),
+    );
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -147,23 +163,24 @@ class ApiService {
     }
   }
 
- static Future<List<Apartment>> fetchDepartamentosByUsuario(int userId) async {
-   try {
-     final response = await http.get(
-       Uri.parse('$baseUrl/departamentos/usuario/$userId'),
-     );
+  static Future<List<Apartment>> fetchDepartamentosByUsuario(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/departamentos/usuario/$userId'),
+      );
 
-     if (response.statusCode == 200) {
-       final List<dynamic> data = json.decode(response.body);
-       return data.map((json) => Apartment.fromJson(json)).toList();
-     } else {
-       throw Exception('Error al cargar departamentos: ${response.statusCode}');
-     }
-   } catch (e) {
-     throw Exception('Error de conexión: $e');
-   }
- }
-
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Apartment.fromJson(json)).toList();
+      } else {
+        throw Exception(
+          'Error al cargar departamentos: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
 
   static Future<int> createRental({
     required String title,
@@ -199,11 +216,13 @@ class ApiService {
       for (var imagePath in imagePaths) {
         var mimeType = mime(imagePath)?.split('/');
         if (mimeType != null) {
-          request.files.add(await http.MultipartFile.fromPath(
-            'imagenes',
-            imagePath,
-            contentType: MediaType(mimeType[0], mimeType[1]),
-          ));
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagePath,
+              contentType: MediaType(mimeType[0], mimeType[1]),
+            ),
+          );
         }
       }
 
@@ -215,7 +234,9 @@ class ApiService {
         return jsonResponse['id_alquiler'] as int;
       } else {
         final errorMessage = await response.stream.bytesToString();
-        throw Exception('Error al crear alquiler: ${response.statusCode} - $errorMessage');
+        throw Exception(
+          'Error al crear alquiler: ${response.statusCode} - $errorMessage',
+        );
       }
     } catch (e) {
       throw Exception('Error de conexión: $e');
@@ -294,7 +315,7 @@ class ApiService {
     return false;
   }
   }
-  
+
   static Future<int> createDepartment({
     required String title,
     required String description,
@@ -309,8 +330,8 @@ class ApiService {
   }) async {
     try {
       var request = http.MultipartRequest(
-          'POST',
-          Uri.parse('$baseUrl/departamentos')
+        'POST',
+        Uri.parse('$baseUrl/departamentos'),
       );
       request.fields['titulo'] = title;
       request.fields['descripcion'] = description;
@@ -326,11 +347,13 @@ class ApiService {
       for (var imagePath in imagePaths) {
         var mimeType = mime(imagePath)?.split('/');
         if (mimeType != null) {
-          request.files.add(await http.MultipartFile.fromPath(
-            'imagenes',
-            imagePath,
-            contentType: MediaType(mimeType[0], mimeType[1]),
-          ));
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imagePath,
+              contentType: MediaType(mimeType[0], mimeType[1]),
+            ),
+          );
         }
       }
       var response = await request.send();
@@ -341,7 +364,71 @@ class ApiService {
         return jsonResponse['id_departamento'] as int;
       } else {
         final errorMessage = await response.stream.bytesToString();
-        throw Exception('Error al crear departamento: ${response.statusCode} - $errorMessage');
+        throw Exception(
+          'Error al crear departamento: ${response.statusCode} - $errorMessage',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
+  static Future<bool> updateApartment({
+    required int apartmentId,
+    required String title,
+    required String description,
+    required double price,
+    required String mapLocation,
+    required int rooms,
+    required int bathrooms,
+    required int floor,
+    required int cityId,
+    required List<File>? newImageFiles,
+    required List<String>? existingImageUrls,
+  }) async {
+    try {
+      var request = http.MultipartRequest(
+        'PUT',
+        Uri.parse('$baseUrl/departamentos/$apartmentId'),
+      );
+
+      request.fields['titulo'] = title;
+      request.fields['descripcion'] = description;
+      request.fields['precio'] = price.toString();
+      request.fields['enlace_ubicacion'] = mapLocation;
+      request.fields['habitaciones'] = rooms.toString();
+      request.fields['banos'] = bathrooms.toString();
+      request.fields['piso'] = floor.toString();
+      request.fields['id_ciudad'] = cityId.toString();
+
+      // Enviar la lista de URLs de imágenes existentes que se deben conservar
+      if (existingImageUrls != null && existingImageUrls.isNotEmpty) {
+        request.fields['imagenes_existentes'] = jsonEncode(existingImageUrls);
+      }
+
+      // Adjuntar los nuevos archivos de imagen
+      if (newImageFiles != null && newImageFiles.isNotEmpty) {
+        for (var imageFile in newImageFiles) {
+          final fileName = imageFile.path.split('/').last;
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes',
+              imageFile.path,
+              filename: fileName,
+            ),
+          );
+        }
+      }
+
+      var response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception(
+          'Error al actualizar departamento: ${response.statusCode} - $responseBody',
+        );
       }
     } catch (e) {
       throw Exception('Error de conexión: $e');
@@ -360,12 +447,15 @@ class ApiService {
       } else if (response.statusCode == 404) {
         throw Exception('Departamento no encontrado');
       } else {
-        throw Exception('Error al desactivar departamento: ${response.statusCode}');
+        throw Exception(
+          'Error al desactivar departamento: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Error de conexión: $e');
     }
   }
+
   static Future<bool> deleteRental(int idRental) async {
     try {
       final response = await http.delete(
@@ -661,7 +751,7 @@ static Future<bool> eliminarCasa(int idCasa) async {
       return false;
     }
   }
-  
+
   Future<bool> eliminarImagenDeCasa(String nombreArchivo) async {
   final uri = Uri.parse('$baseUrl/imagenes/imagencasa/$nombreArchivo');
   final response = await http.delete(uri);
@@ -683,7 +773,66 @@ static Future<bool> eliminarCasa(int idCasa) async {
   Future<bool> eliminarImagenDeTerreno(String nombreArchivo) async {
     final uri = Uri.parse('$baseUrl/imagenes/imagenterreno/$nombreArchivo');
     final response = await http.delete(uri);
-    return response.statusCode == 200;  
+    return response.statusCode == 200;
   }
 
+
+  static Future<bool> updateRental({
+    required int rentalId,
+    required String title,
+    required String description,
+    required double monthlyPrice,
+    required String locationLink,
+    required String furnished,
+    required int minimumMonths,
+    required String includedServices,
+    required int cityId,
+    required List<File>? newImageFiles,
+    required List<String>? existingImageUrls,
+  }) async {
+    try {
+      var request = http.MultipartRequest(
+        'PUT',
+        Uri.parse('$baseUrl/alquileres/$rentalId'),
+      );
+
+      request.fields['titulo'] = title;
+      request.fields['descripcion'] = description;
+      request.fields['precio_mensual'] = monthlyPrice.toString();
+      request.fields['enlace_ubicacion'] = locationLink;
+      request.fields['amoblado'] = furnished;
+      request.fields['tiempo_minimo_meses'] = minimumMonths.toString();
+      request.fields['incluye_servicios'] = includedServices;
+      request.fields['id_ciudad'] = cityId.toString();
+
+      if (existingImageUrls != null && existingImageUrls.isNotEmpty) {
+        request.fields['imagenes_existentes'] = json.encode(existingImageUrls);
+      }
+
+      // Si hay nuevas imágenes, las adjuntamos al request
+      if (newImageFiles != null && newImageFiles.isNotEmpty) {
+        for (var imageFile in newImageFiles) {
+          request.files.add(
+            await http.MultipartFile.fromPath(
+              'imagenes', // Nombre del campo en el backend
+              imageFile.path,
+            ),
+          );
+        }
+      }
+
+      var response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception(
+          'Error al actualizar alquiler: ${response.statusCode} - $responseBody',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
 }

@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 import 'home2_screen.dart';
-import '../models/app_colors.dart';
-import '../models/app_fonts.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -17,17 +16,15 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.navigationButtonBackground,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
         ),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: Container(
-        color:AppColors.cardBackground,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
@@ -36,10 +33,11 @@ class LoginScreen extends StatelessWidget {
               children: [
                 Text(
                   "CLICK HOUSE",
-                  style: AppFonts.montserratBold.copyWith(
+                  style: TextStyle(
                     fontSize: 24,
                     fontFamily: 'InknutAntiqua',
                     fontWeight: FontWeight.w600,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -53,11 +51,14 @@ class LoginScreen extends StatelessWidget {
                   height: 45,
                   child: TextField(
                     controller: correoController,
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                     decoration: InputDecoration(
                       labelText: 'Correo',
-                      hintText: 'Ingresar correo',
+                      hintText: 'ingresar correo',
+                      labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                      hintStyle: TextStyle(color: Theme.of(context).hintColor),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.0),
+                      fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -75,15 +76,19 @@ class LoginScreen extends StatelessWidget {
                       return TextField(
                         controller: contrasenaController,
                         obscureText: value,
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
                           hintText: 'ingresar contraseña',
+                          labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                          hintStyle: TextStyle(color: Theme.of(context).hintColor),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.0),
+                          fillColor: Theme.of(context).inputDecorationTheme.fillColor,
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           suffixIcon: IconButton(
                             icon: Icon(
                               value ? Icons.visibility_off : Icons.visibility,
+                              color: Theme.of(context).iconTheme.color,
                             ),
                             onPressed: () {
                               obscurePassword.value = !value;
@@ -102,8 +107,8 @@ class LoginScreen extends StatelessWidget {
                   width: 200,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.navigationButtonBackground,
-                      foregroundColor: AppColors.cardText,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -112,13 +117,7 @@ class LoginScreen extends StatelessWidget {
                     onPressed: () {
                       login(context, correoController.text, contrasenaController.text);
                     },
-                    child: Text(
-                      "Iniciar sesión",
-                      style: AppFonts.montserratRegular.copyWith(
-                        fontSize: 16,
-                        color: AppColors.cardText,
-                      ),
-                    ),
+                    child: const Text("Iniciar sesión"),
                   ),
                 ),
               ],
@@ -145,17 +144,24 @@ class LoginScreen extends StatelessWidget {
       if (usuario != null) {
         int empresaId = usuario['id_empresa'];
         int ciudadId = 1;
-        int usuarioId = usuario['id_usuario']; // <--- Aquí se agregó
-        String tipo = 'casas';
+        int usuarioId = usuario['id_usuario'];
+        String nombreUsuario = usuario['nombre_usuario'] ?? 'Usuario';
+
+
+        // Guardar en SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('usuarioNameKey', nombreUsuario);
+        await prefs.setInt('usuarioIdKey', usuarioId);
 
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => Home2Screen(
-              tipo: tipo,
+              tipo: 'casas',
               empresaId: empresaId,
               cityId: ciudadId,
-              usuarioId: usuarioId, // <--- Aquí se pasó
+              usuarioId: usuarioId,
+              usuarioName: nombreUsuario,
               selectedCityName: '',
               selectedEmpresaName: '',
               hasCasas: true,

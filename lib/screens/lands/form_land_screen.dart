@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:http_parser/http_parser.dart';
-
+import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 import '../../models/land.dart';
 import '../../services/api_service.dart';
 
@@ -181,7 +181,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon),
+          prefixIcon: Icon(icon, color: Colors.green),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         validator: (value) =>
@@ -319,7 +319,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
               _buildTextField(_titleController, 'Título', Icons.title),
               _buildTextField(_descriptionController, 'Descripción', Icons.description, lines: 3),
               _buildTextField(_priceController, 'Precio', Icons.attach_money, isNumber: true),
-              _buildTextField(_urlMapController, 'Ubicación (Google Maps)', Icons.map),
+              UrlMapField(controller: _urlMapController),
               _buildTextField(_sizeController, 'Tamaño (m²)', Icons.square_foot, isNumber: true),
               _buildTextField(_servicesController, 'Servicios básicos', Icons.plumbing),
 

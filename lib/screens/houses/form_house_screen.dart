@@ -8,6 +8,9 @@ import 'package:mime_type/mime_type.dart';
 import '../../models/house.dart';
 import '../../services/api_service.dart';
 import 'package:mi_terrenito/models/app_colors.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 
 class FormHouseScreen extends StatefulWidget {
   final int idUsuario;
@@ -71,19 +74,20 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
     _pisosController.dispose();
     super.dispose();
   }
-Future<void> _pickFromGallery() async {
-  final List<XFile>? selectedImages = await _picker.pickMultiImage();
-  if (selectedImages != null && selectedImages.isNotEmpty) {
-    setState(() {
-      for (var image in selectedImages) {
-        if (_images.length + _imagenesExistentesUrls.length < 3 &&
-            !_images.any((img) => img.path == image.path)) {
-          _images.add(image);
+
+  Future<void> _pickFromGallery() async {
+    final List<XFile>? selectedImages = await _picker.pickMultiImage();
+    if (selectedImages != null && selectedImages.isNotEmpty) {
+      setState(() {
+        for (var image in selectedImages) {
+          if (_images.length + _imagenesExistentesUrls.length < 3 &&
+              !_images.any((img) => img.path == image.path)) {
+            _images.add(image);
+          }
         }
-      }
-    });
+      });
+    }
   }
-}
 
   void _removeImage(int index) {
     setState(() {
@@ -176,98 +180,96 @@ Future<void> _pickFromGallery() async {
   }
 
   Future<void> guardarCasa() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  if (_images.isEmpty && _imagenesExistentesUrls.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Debes agregar al menos una imagen')),
-    );
-    return;
-  }
-
-  try {
-    final titulo = _tituloController.text;
-    final descripcion = _descripcionController.text;
-    final precio = _precioController.text;
-    final ubicacion = _ubicacionController.text;
-    final habitaciones = _habitacionesController.text;
-    final banos = _banosController.text;
-    final garage = _cocheraController.text;
-    final pisos = _pisosController.text;
-
-    if (widget.house != null) {
-      final List<String> imagenesOriginales = widget.house!.images
-          .map((img) => '${ApiService.baseImageUrl}$img')
-          .toList();
-
-      final List<String> imagenesEliminadas = imagenesOriginales
-          .where((url) => !_imagenesExistentesUrls.contains(url))
-          .toList();
-
-      for (String url in imagenesEliminadas) {
-        final fileName = Uri.parse(url).pathSegments.last;
-        await ApiService().eliminarImagenDeCasa(fileName);
-      }
-
-      final exito = await ApiService().actualizarCasaConImagenes(
-        idCasa: widget.house!.id,
-        titulo: titulo,
-        descripcion: descripcion,
-        precio: precio,
-        enlaceUbicacion: ubicacion,
-        habitaciones: habitaciones,
-        banos: banos,
-        cochera: garage,
-        pisos: pisos,
-        idUsuario: widget.idUsuario,
-        idCiudad: widget.idCiudad,
-        nuevasImagenes: _images.map((xfile) => File(xfile.path)).toList(),
+    if (_images.isEmpty && _imagenesExistentesUrls.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes agregar al menos una imagen')),
       );
-
-      if (exito) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Casa actualizada correctamente')),
-        );
-        Navigator.pop(context, true);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al actualizar la casa')),
-        );
-      }
-    } else {
-
-      final exito = await ApiService().crearCasaConImagenes(
-        titulo: titulo,
-        descripcion: descripcion,
-        precio: precio,
-        enlaceUbicacion: ubicacion,
-        habitaciones: habitaciones,
-        banos: banos,
-        cochera: garage,
-        pisos: pisos,
-        idUsuario: widget.idUsuario,
-        idCiudad: widget.idCiudad,
-        imagenes: _images.map((xfile) => File(xfile.path)).toList(),
-      );
-
-      if (exito) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Casa creada correctamente')),
-        );
-        Navigator.pop(context, true);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al crear la casa')),
-        );
-      }
+      return;
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error al guardar: $e')),
-    );
-  }
-}
 
+    try {
+      final titulo = _tituloController.text;
+      final descripcion = _descripcionController.text;
+      final precio = _precioController.text;
+      final ubicacion = _ubicacionController.text;
+      final habitaciones = _habitacionesController.text;
+      final banos = _banosController.text;
+      final garage = _cocheraController.text;
+      final pisos = _pisosController.text;
+
+      if (widget.house != null) {
+        final List<String> imagenesOriginales = widget.house!.images
+            .map((img) => '${ApiService.baseImageUrl}$img')
+            .toList();
+
+        final List<String> imagenesEliminadas = imagenesOriginales
+            .where((url) => !_imagenesExistentesUrls.contains(url))
+            .toList();
+
+        for (String url in imagenesEliminadas) {
+          final fileName = Uri.parse(url).pathSegments.last;
+          await ApiService().eliminarImagenDeCasa(fileName);
+        }
+
+        final exito = await ApiService().actualizarCasaConImagenes(
+          idCasa: widget.house!.id,
+          titulo: titulo,
+          descripcion: descripcion,
+          precio: precio,
+          enlaceUbicacion: ubicacion,
+          habitaciones: habitaciones,
+          banos: banos,
+          cochera: garage,
+          pisos: pisos,
+          idUsuario: widget.idUsuario,
+          idCiudad: widget.idCiudad,
+          nuevasImagenes: _images.map((xfile) => File(xfile.path)).toList(),
+        );
+
+        if (exito) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Casa actualizada correctamente')),
+          );
+          Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error al actualizar la casa')),
+          );
+        }
+      } else {
+        final exito = await ApiService().crearCasaConImagenes(
+          titulo: titulo,
+          descripcion: descripcion,
+          precio: precio,
+          enlaceUbicacion: ubicacion,
+          habitaciones: habitaciones,
+          banos: banos,
+          cochera: garage,
+          pisos: pisos,
+          idUsuario: widget.idUsuario,
+          idCiudad: widget.idCiudad,
+          imagenes: _images.map((xfile) => File(xfile.path)).toList(),
+        );
+
+        if (exito) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Casa creada correctamente')),
+          );
+          Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error al crear la casa')),
+          );
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al guardar: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -292,59 +294,76 @@ Future<void> _pickFromGallery() async {
                 const SizedBox(height: 8),
                 _buildImageGallery(),
                 OutlinedButton.icon(
-                  onPressed: (_images.length + _imagenesExistentesUrls.length) >= 3 ? null: _pickFromGallery,
-
+                  onPressed: (_images.length + _imagenesExistentesUrls.length) >= 3 ? null : _pickFromGallery,
                   icon: const Icon(Icons.add_photo_alternate),
                   label: const Text('Agregar desde galería'),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _tituloController,
-                  decoration: const InputDecoration(labelText: 'Título', border: OutlineInputBorder()),
+                  decoration: InputDecoration(
+                    labelText: 'Título',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.title, color: AppColors.navigationButtonBackground),
+                  ),
                   validator: (value) => value == null || value.isEmpty ? 'Ingrese un título' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _descripcionController,
                   maxLines: 3,
-                  decoration: const InputDecoration(labelText: 'Descripción', border: OutlineInputBorder()),
+                  decoration: InputDecoration(
+                    labelText: 'Descripción',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.description, color: AppColors.navigationButtonBackground),
+                  ),
                   validator: (value) => value == null || value.isEmpty ? 'Ingrese una descripción' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _precioController,
-                  decoration: const InputDecoration(labelText: 'Precio', border: OutlineInputBorder()),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (value) => value == null || double.tryParse(value) == null
-                      ? 'Ingrese un precio válido' : null,
+                  decoration: InputDecoration(
+                    labelText: 'Precio',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.attach_money, color: AppColors.navigationButtonBackground),
+                  ),
+                  validator: (value) => value == null || double.tryParse(value) == null ? 'Ingrese un precio válido' : null,
+                ),
+                const SizedBox(height: 16),
+                UrlMapField(controller: _ubicacionController),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _habitacionesController,
+                  decoration: InputDecoration(
+                    labelText: 'Habitaciones',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.bed, color: AppColors.navigationButtonBackground),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  controller: _ubicacionController,
-                  decoration: const InputDecoration(labelText: 'Ubicación (link de mapa)', border: OutlineInputBorder()),
-                  validator: (value) => value == null || value.isEmpty ? 'Ingrese una ubicación' : null,
+                  controller: _banosController,
+                  decoration: InputDecoration(
+                    labelText: 'Baños',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.bathtub, color: AppColors.navigationButtonBackground),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _habitacionesController,
-                        decoration: const InputDecoration(labelText: 'Habitaciones', border: OutlineInputBorder()),
-                        keyboardType: TextInputType.number,
-                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _banosController,
-                        decoration: const InputDecoration(labelText: 'Baños', border: OutlineInputBorder()),
-                        keyboardType: TextInputType.number,
-                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
-                      ),
-                    ),
-                  ],
+                TextFormField(
+                  controller: _pisosController,
+                  decoration: InputDecoration(
+                    labelText: 'Pisos',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.stairs, color: AppColors.navigationButtonBackground),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                 ),
                 const SizedBox(height: 16),
                 Container(
@@ -355,61 +374,37 @@ Future<void> _pickFromGallery() async {
                     borderRadius: BorderRadius.circular(12),
                     color: Colors.grey.shade100,
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('¿Tiene cochera?',
-                                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black), // Recuadro negro
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  Radio<bool>(
-                                    value: true,
-                                    groupValue: _cocheraController.text == 'true',
-                                    onChanged: (value) {
-                                      setState(() =>
-                                          _cocheraController.text = value.toString());
-                                    },
-                                  ),
-                                  const Text('Sí'),
-                                  const SizedBox(width: 20),
-                                  Radio<bool>(
-                                    value: false,
-                                    groupValue: _cocheraController.text == 'true',
-                                    onChanged: (value) {
-                                      setState(() =>
-                                          _cocheraController.text = value.toString());
-                                    },
-                                  ),
-                                  const Text('No'),
-                                ],
-                              ),
-                            ),
-                          ],
+                      const Text('¿Tiene cochera?', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _pisosController,
-                          decoration: const InputDecoration(
-                            labelText: 'Pisos',
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.number,
-                          validator: (value) =>
-                              value == null || int.tryParse(value) == null
-                                  ? 'Número inválido'
-                                  : null,
+                        child: Row(
+                          children: [
+                            Radio<bool>(
+                              value: true,
+                              groupValue: _cocheraController.text == 'true',
+                              onChanged: (value) {
+                                setState(() => _cocheraController.text = value.toString());
+                              },
+                            ),
+                            const Text('Sí'),
+                            const SizedBox(width: 20),
+                            Radio<bool>(
+                              value: false,
+                              groupValue: _cocheraController.text == 'true',
+                              onChanged: (value) {
+                                setState(() => _cocheraController.text = value.toString());
+                              },
+                            ),
+                            const Text('No'),
+                          ],
                         ),
                       ),
                     ],
