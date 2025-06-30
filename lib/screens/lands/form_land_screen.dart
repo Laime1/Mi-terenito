@@ -320,6 +320,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
               _buildTextField(_descriptionController, 'Descripción', Icons.description, lines: 3),
               _buildTextField(_priceController, 'Precio', Icons.attach_money, isNumber: true),
               UrlMapField(controller: _urlMapController),
+              const SizedBox(height: 16),
               _buildTextField(_sizeController, 'Tamaño (m²)', Icons.square_foot, isNumber: true),
               _buildTextField(_servicesController, 'Servicios básicos', Icons.plumbing),
 
