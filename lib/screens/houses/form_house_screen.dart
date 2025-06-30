@@ -298,66 +298,97 @@ Future<void> _pickFromGallery() async {
                   label: const Text('Agregar desde galería'),
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _tituloController,
-                  decoration: const InputDecoration(labelText: 'Título', border: OutlineInputBorder()),
-                  validator: (value) => value == null || value.isEmpty ? 'Ingrese un título' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _descripcionController,
-                  maxLines: 3,
-                  decoration: const InputDecoration(labelText: 'Descripción', border: OutlineInputBorder()),
-                  validator: (value) => value == null || value.isEmpty ? 'Ingrese una descripción' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _precioController,
-                  decoration: const InputDecoration(labelText: 'Precio', border: OutlineInputBorder()),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (value) => value == null || double.tryParse(value) == null
-                      ? 'Ingrese un precio válido' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _ubicacionController,
-                  decoration: const InputDecoration(labelText: 'Ubicación (link de mapa)', border: OutlineInputBorder()),
-                  validator: (value) => value == null || value.isEmpty ? 'Ingrese una ubicación' : null,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _habitacionesController,
-                        decoration: const InputDecoration(labelText: 'Habitaciones', border: OutlineInputBorder()),
-                        keyboardType: TextInputType.number,
-                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                            TextFormField(
+                        controller: _tituloController,
+                        decoration: InputDecoration(
+                          labelText: 'Título',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.title, color: AppColors.navigationButtonBackground),
+                        ),
+                        validator: (value) => value == null || value.isEmpty ? 'Ingrese un título' : null,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _banosController,
-                        decoration: const InputDecoration(labelText: 'Baños', border: OutlineInputBorder()),
-                        keyboardType: TextInputType.number,
-                        validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        controller: _descripcionController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          labelText: 'Descripción',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.description, color: AppColors.navigationButtonBackground),
+                        ),
+                        validator: (value) => value == null || value.isEmpty ? 'Ingrese una descripción' : null,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.grey.shade100,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        controller: _precioController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        decoration: InputDecoration(
+                          labelText: 'Precio',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.attach_money, color: AppColors.navigationButtonBackground),
+                        ),
+                        validator: (value) => value == null || double.tryParse(value) == null
+                            ? 'Ingrese un precio válido'
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        controller: _ubicacionController,
+                        decoration: InputDecoration(
+                          labelText: 'Ubicación (link de mapa)',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.map, color: AppColors.navigationButtonBackground),
+                        ),
+                        validator: (value) => value == null || value.isEmpty ? 'Ingrese una ubicación' : null,
+                      ),
+                      const SizedBox(height: 16),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _habitacionesController,
+                              decoration: InputDecoration(
+                                labelText: 'Habitaciones',
+                                border: const OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.bed, color: AppColors.navigationButtonBackground),
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _banosController,
+                              decoration: InputDecoration(
+                                labelText: 'Baños',
+                                border: const OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.bathtub, color: AppColors.navigationButtonBackground),
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                                      
+                                      const SizedBox(height: 16),
+                                      Container(
+                                        margin: const EdgeInsets.only(bottom: 16),
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.grey.shade300),
+                                          borderRadius: BorderRadius.circular(12),
+                                          color: Colors.grey.shade100,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -393,25 +424,26 @@ Future<void> _pickFromGallery() async {
                                   const Text('No'),
                                 ],
                               ),
+                              
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: TextFormField(
-                          controller: _pisosController,
-                          decoration: const InputDecoration(
-                            labelText: 'Pisos',
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.number,
-                          validator: (value) =>
-                              value == null || int.tryParse(value) == null
-                                  ? 'Número inválido'
-                                  : null,
+                      child: TextFormField(
+                        controller: _pisosController,
+                        decoration: InputDecoration(
+                          labelText: 'Pisos',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.stairs, color: AppColors.navigationButtonBackground),
                         ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) =>
+                            value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                       ),
+                    ),
+
                     ],
                   ),
                 ),

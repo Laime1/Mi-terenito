@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 import 'home2_screen.dart';
 
@@ -17,7 +18,7 @@ class LoginScreen extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
@@ -143,17 +144,24 @@ class LoginScreen extends StatelessWidget {
       if (usuario != null) {
         int empresaId = usuario['id_empresa'];
         int ciudadId = 1;
-        int usuarioId = usuario['id_usuario']; // <--- Aquí se agregó
-        String tipo = 'casas';
+        int usuarioId = usuario['id_usuario'];
+        String nombreUsuario = usuario['nombre_usuario'] ?? 'Usuario';
+
+
+        // Guardar en SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('usuarioNameKey', nombreUsuario);
+        await prefs.setInt('usuarioIdKey', usuarioId);
 
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => Home2Screen(
-              tipo: tipo,
+              tipo: 'casas',
               empresaId: empresaId,
               cityId: ciudadId,
-              usuarioId: usuarioId, // <--- Aquí se pasó
+              usuarioId: usuarioId,
+              usuarioName: nombreUsuario,
               selectedCityName: '',
               selectedEmpresaName: '',
               hasCasas: true,
