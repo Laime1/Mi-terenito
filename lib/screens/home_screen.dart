@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool hasDepartamentos = false;
   bool hasAlquileres = false;
 
-  String? usuarioName; // <- Aquí guardamos el nombre del usuario
+  String? usuarioName;
 
   final ApiService apiService = ApiService();
 
