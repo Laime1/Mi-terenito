@@ -151,11 +151,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            Text('', style: TextStyle(fontSize: 14, color: Colors.white)),
             Text('Click House',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
           ],
         ),
+        centerTitle: true,
         actions: [
           TextButton(
             onPressed: () {
@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 themeProvider.toggleTheme();
           },
-              icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.appBarText),
+              icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.bodyBackground),
           ),
         ],
       ),

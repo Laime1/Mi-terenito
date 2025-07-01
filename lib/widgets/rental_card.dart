@@ -87,7 +87,7 @@ class RentalCard extends StatelessWidget with CardMixin {
                       Text(
                         rental.description,
                         style: TextStyle(
-                          color: Colors.grey[700],
+                          fontWeight: FontWeight.w400,
                           fontSize: 12,
                         ),
                         maxLines: 2,

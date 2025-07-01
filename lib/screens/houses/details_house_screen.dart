@@ -20,19 +20,16 @@ class DetalleCasaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.navigationButtonBackground,
         title: Text(
           casa.title,
-          style: TextStyle(
-            color: AppColors.cardText,
+          style: const TextStyle(
+            color: Colors.white,
             fontFamily: 'Montserrat',
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
         ),
-        iconTheme: const IconThemeData(
-          color: AppColors.appBarText,
-        ),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -126,7 +123,7 @@ class DetalleCasaScreen extends StatelessWidget {
           },
           child: Row(
             children: [
-              Icon(Icons.map, color: Colors.blue[600], size: 30),
+              CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
               const SizedBox(width: 8),
               Text(
                 "Ver en Maps",
@@ -181,7 +178,7 @@ class DetalleCasaScreen extends StatelessWidget {
     height: 48,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
-      color: Colors.white,
+      color: Colors.green,
       boxShadow: [
         BoxShadow(
           color: Colors.black.withOpacity(0.1),
@@ -193,7 +190,7 @@ class DetalleCasaScreen extends StatelessWidget {
     child: const Center(
       child: FaIcon(
         FontAwesomeIcons.whatsapp,
-        color: Color.fromARGB(255, 48, 100, 27),
+        color: Colors.white,
         size: 28,
       ),
     ),
@@ -204,7 +201,7 @@ class DetalleCasaScreen extends StatelessWidget {
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.business),
+          leading: CircleAvatar(child: const Icon(Icons.business, color: Colors.white)),
           title: const Text('Información de la empresa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

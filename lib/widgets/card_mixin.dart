@@ -22,7 +22,7 @@ mixin CardMixin {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16),
+          Icon(icon, size: 12),
           const SizedBox(width: 4),
           Text(
             text,

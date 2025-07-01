@@ -42,7 +42,18 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
     final apartment = widget.apartment;
 
     return Scaffold(
-      appBar: AppBar(title: Text(apartment.title)),
+      appBar: AppBar(
+        title: Text(
+          apartment.title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,12 +128,8 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
     return RentalSpecificationsTable(
       bedrooms: apartment.bedrooms,
       bathrooms: apartment.bathrooms,
-      city: apartment.city,
-      company: apartment.company,
-      username: apartment.user?.name,
-      publishedAt: apartment.publishedAt,
-      phone: apartment.company?.phone?.toString(),
-      email: apartment.company?.email,
+      floors: apartment.floor,
+
     );
   }
 
@@ -140,12 +147,12 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
             onTap: () => AppLauncher.openMaps(apartment.mapLocation, context),
             child: Row(
               children: [
-                Icon(Icons.map, color: Colors.blue[600], size: 30),
+                CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
                 const SizedBox(width: 8),
                 Text(
                   "Ver en Maps",
                   style: TextStyle(
-                    color: Colors.blue[600],
+                    color: Colors.blue,
                     decoration: TextDecoration.underline,
                   ),
                 ),
@@ -177,8 +184,6 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(apartment.company!.name),
-              const SizedBox(height: 4),
               Text(apartment.user!.numberPhone),
             ],
           ),
@@ -200,7 +205,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.green,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -213,7 +218,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
               child: const Center(
                 child: FaIcon(
                   FontAwesomeIcons.whatsapp,
-                  color: Color.fromARGB(255, 48, 100, 27),
+                  color: Colors.white,
                   size: 28,
                 ),
               ),
@@ -221,14 +226,18 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
           ),
         ),
         const SizedBox(height: 8),
+        const Text(
+          'Información de la empresa',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading:  Icon(Icons.business, color: Colors.green),
-          title: const Text('Información de la empresa'),
+          leading:  CircleAvatar(child: Icon(Icons.business, color: Colors.white, size: 30)),
+          // title: const Text('Información de la empresa'),
+          title: Text(apartment.company!.name),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(apartment.company!.description),
               const SizedBox(height: 4),
               Text('Teléfono: ${apartment.company!.phone}'),
               Text('Email: ${apartment.company!.email}'),

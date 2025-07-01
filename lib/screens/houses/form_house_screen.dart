@@ -30,6 +30,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   final List<XFile> _images = [];
   final ImagePicker _picker = ImagePicker();
 
+
   late TextEditingController _tituloController;
   late TextEditingController _descripcionController;
   late TextEditingController _precioController;
@@ -53,10 +54,8 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
     _cocheraController = TextEditingController(text: widget.house?.garage.toString() ?? '');
     _pisosController = TextEditingController(text: widget.house?.floors.toString() ?? '');
 
-    _imagenesExistentesUrls = widget.house?.images
-            .map((img) => '${ApiService.baseImageUrl}$img')
-            .toList() ??
-        [];
+    _imagenesExistentesUrls = List.from(widget.house!.images);
+
   }
 
   @override
@@ -110,7 +109,7 @@ Future<void> _pickFromGallery() async {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          url,
+                          '${ApiService.baseImageUrl}$url',
                           width: 120,
                           height: 120,
                           fit: BoxFit.cover,
@@ -204,10 +203,7 @@ Future<void> _pickFromGallery() async {
           .where((url) => !_imagenesExistentesUrls.contains(url))
           .toList();
 
-      for (String url in imagenesEliminadas) {
-        final fileName = Uri.parse(url).pathSegments.last;
-        await ApiService().eliminarImagenDeCasa(fileName);
-      }
+
 
       final exito = await ApiService().actualizarCasaConImagenes(
         idCasa: widget.house!.id,
@@ -222,6 +218,7 @@ Future<void> _pickFromGallery() async {
         idUsuario: widget.idUsuario,
         idCiudad: widget.idCiudad,
         nuevasImagenes: _images.map((xfile) => File(xfile.path)).toList(),
+        imagenesExistentes: _imagenesExistentesUrls,
       );
 
       if (exito) {

@@ -5,7 +5,7 @@ class AppFonts {
 
   static final TextStyle montserratRegular = TextStyle(
     fontFamily: montserrat,
-    fontWeight: FontWeight.normal,
+    fontWeight: FontWeight.w400,
   );
 
   static final TextStyle montserratBold = TextStyle(

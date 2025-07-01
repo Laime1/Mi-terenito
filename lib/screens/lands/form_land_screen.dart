@@ -58,9 +58,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
       _servicesController.text = widget.land!.basicServices;
 
       _existingImageNames = widget.land!.images ?? [];
-      _existingImageUrls = _existingImageNames
-          .map((img) => '${ApiService.baseImageUrl}$img')
-          .toList();
+      _existingImageUrls =List.from(widget.land!.images);
     }
   }
 
@@ -218,7 +216,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.network(
-                            _existingImageUrls[index],
+                            '${ApiService.baseImageUrl}${_existingImageUrls[index]}',
                             width: 100,
                             height: 100,
                             fit: BoxFit.cover,
