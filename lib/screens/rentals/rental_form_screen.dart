@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../models/rental.dart';
 import '../../services/api_service.dart';
+import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 
 class RentalFormScreen extends StatefulWidget {
   final int idUser;
@@ -74,8 +75,7 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
       if (pickedFiles != null) {
         if (_selectedImages.length + pickedFiles.length > 3) {
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Máximo 3 imágenes permitidas'))
-          );
+              const SnackBar(content: Text('Máximo 3 imágenes permitidas')));
           return;
         }
 
@@ -85,8 +85,7 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al seleccionar imágenes: $e'))
-      );
+          SnackBar(content: Text('Error al seleccionar imágenes: $e')));
     }
   }
 
@@ -143,7 +142,8 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                   right: 0,
                   child: IconButton(
                     icon: const Icon(Icons.close, color: Colors.red),
-                    onPressed: () => _removeImage(isExisting ? index : index - _existingImageUrls.length, isExisting),
+                    onPressed: () =>
+                        _removeImage(isExisting ? index : index - _existingImageUrls.length, isExisting),
                   ),
                 ),
               ],
@@ -158,8 +158,7 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedImages.isEmpty && _existingImageUrls.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor selecciona al menos una imagen'))
-      );
+          const SnackBar(content: Text('Por favor selecciona al menos una imagen')));
       return;
     }
 
@@ -167,7 +166,6 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
 
     try {
       if (widget.rental != null) {
-        // Actualizar alquiler existente
         await ApiService.updateRental(
           rentalId: widget.rental!.id,
           title: _titleController.text,
@@ -177,17 +175,13 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
           furnished: _isFurnished ? 'Sí' : 'No',
           minimumMonths: int.parse(_timeMinController.text),
           includedServices: _includesServices ? 'Sí' : 'No',
-          cityId: widget.idCity, // O la ciudad actualizada si es el caso
+          cityId: widget.idCity,
           newImageFiles: _selectedImages,
           existingImageUrls: _existingImageUrls,
         );
-        print('Existentes: ${_existingImageUrls.length}');
-        print('Seleccionadas: ${_selectedImages.length}');
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Alquiler actualizado exitosamente'))
-        );
+            const SnackBar(content: Text('Alquiler actualizado exitosamente')));
       } else {
-        // Crear nuevo alquiler
         final rentalId = await ApiService.createRental(
           title: _titleController.text,
           description: _descriptionController.text,
@@ -201,25 +195,25 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
           imagePaths: _selectedImages.map((file) => file.path).toList(),
         );
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Alquiler creado exitosamente (ID: $rentalId)'))
-        );
+            SnackBar(content: Text('Alquiler creado exitosamente (ID: $rentalId)')));
       }
       Navigator.of(context).pop(true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al guardar el alquiler: $e'))
-      );
+          SnackBar(content: Text('Error al guardar el alquiler: $e')));
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.rental == null ? 'Formulario de Alquiler' : 'Editar Alquiler', style: const TextStyle(color: Colors.white)),
+        title: Text(
+          widget.rental == null ? 'Formulario de Alquiler' : 'Editar Alquiler',
+          style: const TextStyle(color: Colors.white),
+        ),
         actions: [
           if (_isLoading)
             const Padding(
@@ -233,35 +227,28 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Sección de Imágenes
                 const Text(
                   'Imágenes (Máximo 3)',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
-
-                // Vista previa de imágenes
                 _buildImagePreviews(),
-
-                // Botón para agregar imágenes
                 OutlinedButton.icon(
                   onPressed: _selectedImages.length >= 3 ? null : _pickImages,
                   icon: const Icon(Icons.add_photo_alternate),
                   label: const Text('Agregar Imágenes'),
                 ),
                 const SizedBox(height: 24),
-
-                // Campo Título
                 TextFormField(
                   controller: _titleController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Título',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.title, color: Colors.green),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -271,14 +258,12 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-
-                // Campo Descripción
                 TextFormField(
                   controller: _descriptionController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Descripción',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.description, color: Colors.green),
                   ),
                   maxLines: 3,
                   validator: (value) {
@@ -289,14 +274,12 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-
-                // Campo Precio Mensual
                 TextFormField(
                   controller: _priceMonthController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Precio Mensual',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.attach_money, color: Colors.green),
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
@@ -310,31 +293,14 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-
-                // Campo Enlace de Ubicación
-                TextFormField(
-                  controller: _urlMapController,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    labelText: 'Enlace de Ubicación (Google Maps)',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa un enlace de ubicación';
-                    }
-                    return null;
-                  },
-                ),
+                UrlMapField(controller: _urlMapController),
                 const SizedBox(height: 16),
-
-                    // Campo Tiempo Mínimo en Meses
                 TextFormField(
                   controller: _timeMinController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Tiempo Mínimo (meses)',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.timer, color: Colors.green),
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
@@ -348,7 +314,6 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Campo Amoblado
                 const Text(
                   'Amoblado',
                   style: TextStyle(fontSize: 16),
@@ -379,8 +344,6 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
-                // Campo Servicios Incluidos
                 const Text(
                   'Servicios Incluidos',
                   style: TextStyle(fontSize: 16),
@@ -411,9 +374,6 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
-
-                // Botón de enviar
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(

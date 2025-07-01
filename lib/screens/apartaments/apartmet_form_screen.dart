@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_terrenito/models/apartment.dart';
 import 'dart:io';
-
+import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 import '../../services/api_service.dart';
 
 class DepartmentFormScreen extends StatefulWidget {
@@ -13,7 +13,8 @@ class DepartmentFormScreen extends StatefulWidget {
   const DepartmentFormScreen({
     super.key,
     required this.idUser,
-    required this.idCity, this.apartment,
+    required this.idCity,
+    this.apartment,
   });
 
   @override
@@ -205,7 +206,6 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                         VoidCallback onRemove;
 
                         if (index < _existingImageUrls.length) {
-                          // Existing image
                           final imageUrl = _existingImageUrls[index];
                           imageWidget = Image.network(
                             '${ApiService.baseImageUrl}$imageUrl',
@@ -219,7 +219,6 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                           );
                           onRemove = () => _removeExistingImage(index);
                         } else {
-                          // New image
                           final newImageIndex = index - _existingImageUrls.length;
                           imageWidget = Image.file(
                             _newImages[newImageIndex],
@@ -260,135 +259,77 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _titleController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Título',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.title, color: Colors.green),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa un título';
-                    }
-                    return null;
-                  },
+                  validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa un título' : null,
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
                   controller: _descriptionController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Descripción',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.description, color: Colors.green),
                   ),
                   maxLines: 3,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa una descripción';
-                    }
-                    return null;
-                  },
+                  validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa una descripción' : null,
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
                   controller: _priceController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Precio',
                     border: OutlineInputBorder(),
                     prefixText: '\$',
+                    prefixIcon: Icon(Icons.attach_money, color: Colors.green),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa el precio';
-                    }
-                    if (double.tryParse(value) == null) {
-                      return 'Ingresa un número válido';
-                    }
-                    return null;
-                  },
+                  validator: (value) => value == null || value.isEmpty || double.tryParse(value) == null ? 'Ingresa un precio válido' : null,
                 ),
                 const SizedBox(height: 16),
-
-                TextFormField(
-                  controller: _urlMapController,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    labelText: 'Enlace de Ubicación (Google Maps)',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa un enlace de ubicación';
-                    }
-                    return null;
-                  },
-                ),
+                UrlMapField(controller: _urlMapController),
                 const SizedBox(height: 16),
-
                 TextFormField(
                   controller: _roomsController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Número de Habitaciones',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.king_bed, color: Colors.green),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa el número de habitaciones';
-                    }
-                    if (int.tryParse(value) == null) {
-                      return 'Ingresa un número válido';
-                    }
-                    return null;
-                  },
+                  validator: (value) => value == null || value.isEmpty || int.tryParse(value) == null ? 'Ingresa un número válido' : null,
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
                   controller: _bathroomsController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Número de Baños',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.bathtub, color: Colors.green),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa el número de baños';
-                    }
-                    if (int.tryParse(value) == null) {
-                      return 'Ingresa un número válido';
-                    }
-                    return null;
-                  },
+                  validator: (value) => value == null || value.isEmpty || int.tryParse(value) == null ? 'Ingresa un número válido' : null,
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
                   controller: _floorController,
                   decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Piso',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.stairs, color: Colors.green),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa el número de piso';
-                    }
-                    if (int.tryParse(value) == null) {
-                      return 'Ingresa un número válido';
-                    }
-                    return null;
-                  },
+                  validator: (value) => value == null || value.isEmpty || int.tryParse(value) == null ? 'Ingresa un número válido' : null,
                 ),
                 const SizedBox(height: 16),
 
                 ElevatedButton(
-
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,

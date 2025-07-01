@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import '../models/app_theme.dart';
 import '../services/theme_provider.dart';
@@ -45,11 +46,15 @@ class _HomeScreenState extends State<HomeScreen> {
   bool hasDepartamentos = false;
   bool hasAlquileres = false;
 
+  String? usuarioName; // <- Aquí guardamos el nombre del usuario
+
   final ApiService apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
+
+    _loadUsuarioName();
 
     selectedCity = widget.selectedCity;
     selectedEmpresaName = widget.selectedEmpresaName;
@@ -76,10 +81,17 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _loadUsuarioName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString('usuarioNameKey'); // clave usada para guardar nombre usuario
+    setState(() {
+      usuarioName = name;
+    });
+  }
+
   Future<void> loadCities() async {
     try {
       final loadedCities = await apiService.fetchCities();
-      print('ciudades: ${loadedCities}');
       setState(() {
         cities = loadedCities;
         selectedCity = null;
@@ -151,11 +163,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
+            Text('', style: TextStyle(fontSize: 14, color: Colors.white)),
             Text('Click House',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
           ],
         ),
-        centerTitle: true,
         actions: [
           TextButton(
             onPressed: () {
@@ -170,10 +182,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           IconButton(
-              onPressed: () {
-                themeProvider.toggleTheme();
-          },
-              icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.bodyBackground),
+            onPressed: () {
+              themeProvider.toggleTheme();
+            },
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.bodyBackground),
           ),
         ],
       ),
@@ -273,6 +285,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           hasTerrenos: hasTerrenos,
                           hasDepartamentos: hasDepartamentos,
                           hasAlquileres: hasAlquileres,
+                          isLoggedIn: usuarioName != null && usuarioName!.isNotEmpty,
+                          usuarioName: usuarioName,
                         ),
                       ),
                     );
@@ -286,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: AppColors.cardText),
+              Icon(icon, size: 40, color: Colors.green),
               const SizedBox(height: 10),
               Text(title, style: const TextStyle(color: AppColors.cardText)),
             ],
