@@ -171,6 +171,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(widget.apartment == null ? 'Formulario de Departamento' : 'Editar Departamento', style: TextStyle(color: Colors.white),),
         actions: [
           if (_isLoading)

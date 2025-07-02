@@ -192,6 +192,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(widget.land == null ? 'Agregar Terreno' : 'Editar Terreno'),
         centerTitle: true,
       ),

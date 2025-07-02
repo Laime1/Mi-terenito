@@ -56,7 +56,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
     _cocheraController = TextEditingController(text: widget.house?.garage.toString() ?? '');
     _pisosController = TextEditingController(text: widget.house?.floors.toString() ?? '');
 
-    _imagenesExistentesUrls = List.from(widget.house!.images);
+    _imagenesExistentesUrls = widget.house?.images ?? [];
 
   }
 
@@ -272,11 +272,10 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bodyBackground,
       appBar: AppBar(
-        titleTextStyle: AppFonts.montserratBold.copyWith(fontSize: 18, color: AppColors.appBarText),
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(widget.house != null ? 'Editar Casa' : 'Formulario de Casa'),
-        backgroundColor: AppColors.navigationButtonBackground,
+
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -368,19 +367,18 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.grey.shade100,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('¿Tiene cochera?', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                       Text('¿Tiene cochera?', style: TextStyle(fontSize: 16,  color: Theme.of(context).textTheme.bodyMedium?.color),),
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
+                          border: Border.all(color: Theme.of(context).primaryColorLight),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -392,7 +390,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                                 setState(() => _cocheraController.text = value.toString());
                               },
                             ),
-                            const Text('Sí'),
+                             Text('Sí', style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyMedium?.color),),
                             const SizedBox(width: 20),
                             Radio<bool>(
                               value: false,
@@ -401,7 +399,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                                 setState(() => _cocheraController.text = value.toString());
                               },
                             ),
-                            const Text('No'),
+                             Text('No', style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyMedium?.color),),
                           ],
                         ),
                       ),

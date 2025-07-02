@@ -44,6 +44,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
+          maxLines: 3,
           apartment.title,
           style: const TextStyle(
             color: Colors.white,

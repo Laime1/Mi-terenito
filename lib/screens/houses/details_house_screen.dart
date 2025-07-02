@@ -21,6 +21,7 @@ class DetalleCasaScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
+          maxLines: 3,
           casa.title,
           style: const TextStyle(
             color: Colors.white,
@@ -245,7 +246,7 @@ class DetalleCasaScreen extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           textStyle: AppFonts.montserratRegular,
           backgroundColor: AppColors.navigationButtonBackground,
-          foregroundColor: Colors.white, 
+          foregroundColor: Colors.white,
         ),
       ),
     );

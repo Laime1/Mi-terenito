@@ -31,6 +31,7 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
+          maxLines: 3,
           rental.title,
           style: const TextStyle(
             color: Colors.white,

@@ -32,6 +32,7 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
+          maxLines: 3,
           terreno.title,
           style: const TextStyle(
             color: Colors.white,
