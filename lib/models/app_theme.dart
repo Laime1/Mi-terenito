@@ -24,7 +24,7 @@ class AppTheme {
       unselectedItemColor: Colors.white,
     ),
     cardTheme: CardTheme(
-      color: Colors.white,
+      color: Colors.grey.shade100,
       elevation: 2,
       shadowColor: Colors.grey,
     ),

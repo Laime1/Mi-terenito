@@ -122,8 +122,6 @@ class _Home2ScreenState extends State<Home2Screen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.themeMode == ThemeMode.light;
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -150,12 +148,7 @@ class _Home2ScreenState extends State<Home2Screen> {
         automaticallyImplyLeading: false,
         centerTitle: true,
         actions: [
-          IconButton(
-            onPressed: () {
-              themeProvider.toggleTheme();
-            },
-            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.bodyBackground),
-          ),          if (widget.isLoggedIn)
+                 if (widget.isLoggedIn)
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.logout, color: Colors.white, size: 20),
                   onSelected: (value) {
