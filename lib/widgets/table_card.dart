@@ -188,7 +188,7 @@ class _RentalSpecificationsTableState extends State<RentalSpecificationsTable> {
           icon: Icons.checkroom,
           title: 'Amoblado',
           value: widget.furnished! ? 'Sí' : 'No',
-          isHighlighted: widget.furnished!,
+          // isHighlighted: widget.furnished!,
         ),
       if (widget.city?.name.isNotEmpty ?? false)
         _SpecificationItem(

@@ -59,8 +59,6 @@ class DetalleCasaScreen extends StatelessWidget {
                   _buildLocationSection(context),
                   const SizedBox(height: 16),
                   _buildPublisherInfo(context),
-                  const SizedBox(height: 24),
-                  if (usuarioId != null && usuarioId == casa.user?.id) _buildActionButtons(context),
                 ],
               ),
             ),
@@ -218,37 +216,4 @@ class DetalleCasaScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
-    return Center(
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          final resultado = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FormHouseScreen(
-                idUsuario: casa.user?.id ?? 0,
-                idCiudad: casa.city?.id ?? 0,
-                house: casa,
-              ),
-            ),
-          );
-          if (resultado == true) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Casa actualizada')),
-              );
-            }
-            Navigator.pop(context, true);
-          }
-        },
-        icon: const Icon(Icons.edit),
-        label: const Text('Editar'),
-        style: ElevatedButton.styleFrom(
-          textStyle: AppFonts.montserratRegular,
-          backgroundColor: AppColors.navigationButtonBackground,
-          foregroundColor: Colors.white,
-        ),
-      ),
-    );
-  }
 }

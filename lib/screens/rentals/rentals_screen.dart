@@ -164,10 +164,12 @@ class _RentalsScreenState extends State<RentalsScreen> {
                 MaterialPageRoute(
                 builder: (context) => RentalFormScreen(idUser: widget.userId!, idCity: 4,),
             ),
-            );
+            ).then((_) => _loadRentals()); 
           },
       )
       : null,
+   floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
+
     );
   }
 }

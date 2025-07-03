@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mi_terrenito/widgets/card_mixin.dart';
 import '../models/house.dart';
 import '../services/api_service.dart';
 import '../models/app_colors.dart';
 import '../models/app_fonts.dart';
 
-class HouseCard extends StatelessWidget {
+class HouseCard extends StatelessWidget with CardMixin{
   final House house;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
@@ -17,23 +18,22 @@ class HouseCard extends StatelessWidget {
     this.onTap,
     this.onDelete,
     this.onEdit,
-    this.enableSwipeActions = false,
+    required this.enableSwipeActions,
   });
 
   @override
   Widget build(BuildContext context) {
-    final String? imageUrl = house.images.isNotEmpty
-        ? '${ApiService.baseImageUrl}${house.images.first}'
-        : null;
+    final String? imageUrl =
+        house.images.isNotEmpty
+            ? '${ApiService.baseImageUrl}${house.images.first}'
+            : null;
 
     final cardContent = Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: onTap,
@@ -49,26 +49,35 @@ class HouseCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     color: Colors.grey[200],
                   ),
-                  child: imageUrl == null
-                      ? const Center(
-                          child: Icon(Icons.house, size: 60, color: Colors.grey),
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            imageUrl,
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                              color: Colors.grey[200],
-                              child: const Center(
-                                child: Icon(Icons.broken_image,
-                                    size: 60, color: Colors.grey),
-                              ),
+                  child:
+                      imageUrl == null
+                          ? const Center(
+                            child: Icon(
+                              Icons.house,
+                              size: 60,
+                              color: Colors.grey,
+                            ),
+                          )
+                          : ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              imageUrl,
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (_, __, ___) => Container(
+                                    color: Colors.grey[200],
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.broken_image,
+                                        size: 60,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
                             ),
                           ),
-                        ),
                 ),
               ),
               Expanded(
@@ -79,9 +88,7 @@ class HouseCard extends StatelessWidget {
                     children: [
                       Text(
                         house.title,
-                        style: AppFonts.montserratBold.copyWith(
-                          fontSize: 16,
-                        ),
+                        style: AppFonts.montserratBold.copyWith(fontSize: 16),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -109,12 +116,27 @@ class HouseCard extends StatelessWidget {
                         spacing: 6,
                         runSpacing: 6,
                         children: [
-                          _buildFeatureChip(Icons.king_bed, '${house.bedrooms} hab.'),
-                          _buildFeatureChip(Icons.bathtub, '${house.bathrooms} baños'),
-                          _buildFeatureChip(Icons.garage, '${house.garage ? 'Sí' : 'No'} garaje'),
-                          _buildFeatureChip(Icons.layers, '${house.floors} pisos'),
+                          _buildFeatureChip(
+                            Icons.king_bed,
+                            '${house.bedrooms} hab.',
+                          ),
+                          _buildFeatureChip(
+                            Icons.bathtub,
+                            '${house.bathrooms} baños',
+                          ),
+                          _buildFeatureChip(
+                            Icons.garage,
+                            '${house.garage ? 'Sí' : 'No'} garaje',
+                          ),
+                          _buildFeatureChip(
+                            Icons.layers,
+                            '${house.floors} pisos',
+                          ),
                           if (house.city != null)
-                            _buildFeatureChip(Icons.location_pin, house.city!.name),
+                            _buildFeatureChip(
+                              Icons.location_pin,
+                              house.city!.name,
+                            ),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -138,39 +160,50 @@ class HouseCard extends StatelessWidget {
       ),
     );
 
-    if (!enableSwipeActions) {
-      return cardContent;
-    }
+    // if (!enableSwipeActions) {
+    //   return cardContent;
+    // }
 
-    return Dismissible(
-      key: Key(house.id.toString()),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        padding: const EdgeInsets.only(right: 20),
-        alignment: Alignment.centerRight,
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      confirmDismiss: (direction) async {
-        return await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('Confirmar eliminación'),
-            content: const Text('¿Deseas eliminar esta casa?'),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Eliminar')),
-            ],
-          ),
-        );
-      },
-      onDismissed: (_) {
-        if (onDelete != null) {
-          onDelete!();
+    return enableSwipeActions
+        ? Dismissible(
+          key: Key(house.id.toString()),
+          direction: DismissDirection.horizontal,
+          confirmDismiss: (direction) async {
+            if (direction == DismissDirection.endToStart) {
+              return await showDialog<bool>(
+              context: context,
+              builder:
+                  (ctx) => AlertDialog(
+                    title: const Text('Confirmar eliminación'),
+                    content: const Text('¿Deseas eliminar esta casa?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Text('Cancelar'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Text('Eliminar'),
+                      ),
+                    ],
+                  ),
+            );
+            }else{
+               onEdit?.call();
+               return false;
+            }
+          },
+          background: buildSwipeBackground(true),
+      secondaryBackground: buildSwipeBackground(false),
+          onDismissed: (direction) {
+        if (direction == DismissDirection.endToStart) {
+          onDelete?.call();
         }
       },
-      child: cardContent,
-    );
+          
+          child: cardContent,
+        )
+        : cardContent;
   }
 
   Widget _buildFeatureChip(IconData icon, String text) {
@@ -179,12 +212,10 @@ class HouseCard extends StatelessWidget {
       children: [
         Icon(icon, size: 12),
         const SizedBox(width: 4),
-        Text(text, style: const TextStyle(fontSize: 12),
-        ),
+        Text(text, style: const TextStyle(fontSize: 12)),
       ],
     );
   }
 
-  String _formatDate(DateTime date) =>
-      '${date.day}/${date.month}/${date.year}';
+  String _formatDate(DateTime date) => '${date.day}/${date.month}/${date.year}';
 }

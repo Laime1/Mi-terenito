@@ -66,9 +66,6 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
                   _buildLocationSection(context),
                   const SizedBox(height: 16),
                   _buildPublisherInfo(context),
-                  const SizedBox(height: 24),
-                  if (widget.usuarioId != null && widget.usuarioId == terreno.user?.id)
-                    _buildEditButton(context),
                 ],
               ),
             ),
@@ -236,37 +233,4 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
     );
   }
 
-  Widget _buildEditButton(BuildContext context) {
-    final user = widget.terreno.user;
-    return Center(
-      child: ElevatedButton.icon(
-        icon: const Icon(Icons.edit),
-        label: const Text('Editar'),
-        style: ElevatedButton.styleFrom(
-          textStyle: AppFonts.montserratRegular,
-          backgroundColor: AppColors.navigationButtonBackground,
-          foregroundColor: Colors.white,
-        ),
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LandFormScreen(
-                idUser: user!.id,
-                idCity: widget.terreno.city?.id ?? 0,
-                idEmpresa: widget.terreno.company?.id ?? 0,
-                land: widget.terreno,
-              ),
-            ),
-          );
-          if (result == true && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Terreno actualizado')),
-            );
-            Navigator.pop(context, true);
-          }
-        },
-      ),
-    );
-  }
 }

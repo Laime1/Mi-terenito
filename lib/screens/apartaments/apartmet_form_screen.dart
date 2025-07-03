@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_terrenito/models/apartment.dart';
+import 'package:mi_terrenito/models/app_fonts.dart';
 import 'dart:io';
 import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 import '../../services/api_service.dart';
@@ -334,7 +335,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -342,7 +343,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                   ),
                   child: Text(
                     widget.apartment == null ? 'Guardar Departamento' : 'Actualizar Departamento',
-                    style: const TextStyle(fontSize: 18),
+                    style: AppFonts.montserratRegular.copyWith(fontSize: 18),
                   ),
                 ),
               ],

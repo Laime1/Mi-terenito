@@ -114,6 +114,21 @@ class _LandsScreenState extends State<LandsScreen> {
     }
   }
 
+  void _editLand(Land land, BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => LandFormScreen(
+              idUser: widget.usuarioId!,
+              idCity: widget.cityId,
+              land: land,
+               idEmpresa: widget.empresaId,
+            ),
+      ),
+    ).then((_) => loadAllData());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,6 +181,9 @@ class _LandsScreenState extends State<LandsScreen> {
                             onDelete: widget.usuarioId != null
                                 ? () => _deleteTerreno(terreno.id, context)
                                 : null,
+                            onEdit: widget.usuarioId != null
+                                 ? () => _editLand(terreno, context)
+                                 : null,
                           );
                         },
                       ),
@@ -174,6 +192,7 @@ class _LandsScreenState extends State<LandsScreen> {
       ),
       floatingActionButton: widget.usuarioId != null
           ? FloatingActionButton(
+            child:  Icon(Icons.add),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -186,10 +205,11 @@ class _LandsScreenState extends State<LandsScreen> {
                   ),
                 );
               },
-              child: const Icon(Icons.add),
+              
               tooltip: 'Agregar Terreno',
             )
           : null,
+          floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 }

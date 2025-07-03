@@ -185,6 +185,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(apartment.company!.name),
               Text(apartment.user!.numberPhone),
             ],
           ),

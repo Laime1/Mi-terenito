@@ -97,11 +97,11 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
       MaterialPageRoute(
         builder: (context) => DepartmentFormScreen(
           idUser: widget.userId!,
-          idCity: widget.cityId, // Corregido: usar el cityId del widget
+          idCity: widget.cityId, 
           apartment: apartment,
         ),
       ),
-    ).then((_) => _loadApartments()); // Recargar después de editar
+    ).then((_) => _loadApartments()); 
   }
 
   @override
@@ -170,7 +170,6 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
           ),
         ],
       ),
-
       floatingActionButton:
           widget.userId != null
               ? FloatingActionButton(
@@ -185,11 +184,11 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
                             idCity: widget.cityId,
                           ),
                     ),
-                  );
+                    ).then((_) => _loadApartments()); 
                 },
               )
               : null,
-
+          floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 }
