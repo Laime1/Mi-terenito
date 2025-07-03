@@ -56,10 +56,8 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
     _cocheraController = TextEditingController(text: widget.house?.garage.toString() ?? '');
     _pisosController = TextEditingController(text: widget.house?.floors.toString() ?? '');
 
-    _imagenesExistentesUrls = widget.house?.images
-            .map((img) => '${ApiService.baseImageUrl}$img')
-            .toList() ??
-        [];
+    _imagenesExistentesUrls = widget.house?.images ?? [];
+
   }
 
   @override
@@ -114,7 +112,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          url,
+                          '${ApiService.baseImageUrl}$url',
                           width: 120,
                           height: 120,
                           fit: BoxFit.cover,
@@ -180,105 +178,104 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   }
 
   Future<void> guardarCasa() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    if (_images.isEmpty && _imagenesExistentesUrls.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debes agregar al menos una imagen')),
-      );
-      return;
-    }
-
-    try {
-      final titulo = _tituloController.text;
-      final descripcion = _descripcionController.text;
-      final precio = _precioController.text;
-      final ubicacion = _ubicacionController.text;
-      final habitaciones = _habitacionesController.text;
-      final banos = _banosController.text;
-      final garage = _cocheraController.text;
-      final pisos = _pisosController.text;
-
-      if (widget.house != null) {
-        final List<String> imagenesOriginales = widget.house!.images
-            .map((img) => '${ApiService.baseImageUrl}$img')
-            .toList();
-
-        final List<String> imagenesEliminadas = imagenesOriginales
-            .where((url) => !_imagenesExistentesUrls.contains(url))
-            .toList();
-
-        for (String url in imagenesEliminadas) {
-          final fileName = Uri.parse(url).pathSegments.last;
-          await ApiService().eliminarImagenDeCasa(fileName);
-        }
-
-        final exito = await ApiService().actualizarCasaConImagenes(
-          idCasa: widget.house!.id,
-          titulo: titulo,
-          descripcion: descripcion,
-          precio: precio,
-          enlaceUbicacion: ubicacion,
-          habitaciones: habitaciones,
-          banos: banos,
-          cochera: garage,
-          pisos: pisos,
-          idUsuario: widget.idUsuario,
-          idCiudad: widget.idCiudad,
-          nuevasImagenes: _images.map((xfile) => File(xfile.path)).toList(),
-        );
-
-        if (exito) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Casa actualizada correctamente')),
-          );
-          Navigator.pop(context, true);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error al actualizar la casa')),
-          );
-        }
-      } else {
-        final exito = await ApiService().crearCasaConImagenes(
-          titulo: titulo,
-          descripcion: descripcion,
-          precio: precio,
-          enlaceUbicacion: ubicacion,
-          habitaciones: habitaciones,
-          banos: banos,
-          cochera: garage,
-          pisos: pisos,
-          idUsuario: widget.idUsuario,
-          idCiudad: widget.idCiudad,
-          imagenes: _images.map((xfile) => File(xfile.path)).toList(),
-        );
-
-        if (exito) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Casa creada correctamente')),
-          );
-          Navigator.pop(context, true);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error al crear la casa')),
-          );
-        }
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar: $e')),
-      );
-    }
+  if (_images.isEmpty && _imagenesExistentesUrls.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Debes agregar al menos una imagen')),
+    );
+    return;
   }
+
+  try {
+    final titulo = _tituloController.text;
+    final descripcion = _descripcionController.text;
+    final precio = _precioController.text;
+    final ubicacion = _ubicacionController.text;
+    final habitaciones = _habitacionesController.text;
+    final banos = _banosController.text;
+    final garage = _cocheraController.text;
+    final pisos = _pisosController.text;
+
+    if (widget.house != null) {
+      final List<String> imagenesOriginales = widget.house!.images
+          .map((img) => '${ApiService.baseImageUrl}$img')
+          .toList();
+
+      final List<String> imagenesEliminadas = imagenesOriginales
+          .where((url) => !_imagenesExistentesUrls.contains(url))
+          .toList();
+
+
+
+      final exito = await ApiService().actualizarCasaConImagenes(
+        idCasa: widget.house!.id,
+        titulo: titulo,
+        descripcion: descripcion,
+        precio: precio,
+        enlaceUbicacion: ubicacion,
+        habitaciones: habitaciones,
+        banos: banos,
+        cochera: garage,
+        pisos: pisos,
+        idUsuario: widget.idUsuario,
+        idCiudad: widget.idCiudad,
+        nuevasImagenes: _images.map((xfile) => File(xfile.path)).toList(),
+        imagenesExistentes: _imagenesExistentesUrls,
+      );
+
+      if (exito) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Casa actualizada correctamente')),
+        );
+        Navigator.pop(context, true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al actualizar la casa')),
+        );
+      }
+    } else {
+
+      final exito = await ApiService().crearCasaConImagenes(
+        titulo: titulo,
+        descripcion: descripcion,
+        precio: precio,
+        enlaceUbicacion: ubicacion,
+        habitaciones: habitaciones,
+        banos: banos,
+        cochera: garage,
+        pisos: pisos,
+        idUsuario: widget.idUsuario,
+        idCiudad: widget.idCiudad,
+        imagenes: _images.map((xfile) => File(xfile.path)).toList(),
+      );
+
+      if (exito) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Casa creada correctamente')),
+        );
+        Navigator.pop(context, true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al crear la casa')),
+        );
+      }
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al guardar: $e')),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bodyBackground,
       appBar: AppBar(
-        titleTextStyle: AppFonts.montserratBold.copyWith(fontSize: 18, color: AppColors.appBarText),
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(widget.house != null ? 'Editar Casa' : 'Formulario de Casa'),
-        backgroundColor: AppColors.navigationButtonBackground,
+
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -370,19 +367,18 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.grey.shade100,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('¿Tiene cochera?', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                       Text('¿Tiene cochera?', style: TextStyle(fontSize: 16,  color: Theme.of(context).textTheme.bodyMedium?.color),),
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
+                          border: Border.all(color: Theme.of(context).primaryColorLight),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -394,7 +390,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                                 setState(() => _cocheraController.text = value.toString());
                               },
                             ),
-                            const Text('Sí'),
+                             Text('Sí', style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyMedium?.color),),
                             const SizedBox(width: 20),
                             Radio<bool>(
                               value: false,
@@ -403,7 +399,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                                 setState(() => _cocheraController.text = value.toString());
                               },
                             ),
-                            const Text('No'),
+                             Text('No', style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyMedium?.color),),
                           ],
                         ),
                       ),

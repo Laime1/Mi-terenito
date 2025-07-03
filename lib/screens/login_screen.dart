@@ -153,7 +153,7 @@ class LoginScreen extends StatelessWidget {
         await prefs.setString('usuarioNameKey', nombreUsuario);
         await prefs.setInt('usuarioIdKey', usuarioId);
 
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => Home2Screen(
@@ -171,6 +171,7 @@ class LoginScreen extends StatelessWidget {
               isLoggedIn: true,
             ),
           ),
+          (route) => false,
         );
       } else {
         _showErrorDialog(context, 'Credenciales incorrectas');

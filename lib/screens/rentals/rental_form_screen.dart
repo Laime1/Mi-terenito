@@ -210,9 +210,9 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(
           widget.rental == null ? 'Formulario de Alquiler' : 'Editar Alquiler',
-          style: const TextStyle(color: Colors.white),
         ),
         actions: [
           if (_isLoading)

@@ -29,7 +29,19 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
     final rental = widget.rental;
 
     return Scaffold(
-      appBar: AppBar(title: Text(rental.title)),
+      appBar: AppBar(
+        title: Text(
+          maxLines: 3,
+          rental.title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,11 +116,7 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
     return RentalSpecificationsTable(
       furnished: rental.furnished == 'Sí',
       basicServices: rental.includedServices,
-      city: rental.city,
-      company: rental.company,
-      publishedAt: rental.publishedAt,
-      phone: rental.company.phone.toString(),
-      email: rental.company.email,
+
     );
   }
 
@@ -127,10 +135,12 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
           },
           child: Row(
             children: [
-              Icon(
-                Icons.map,
-                color: Colors.blue[600],
-                size: 30,
+              CircleAvatar(
+                child: Icon(
+                  Icons.map,
+                  color: Colors.white,
+                  size: 30,
+                ),
               ),
               const SizedBox(width: 8),
               Text(
@@ -149,6 +159,7 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
 
   Widget _buildPublisherInfo(Rental rental, BuildContext context) {
     final propertyInfo = 'Hola, estoy interesado en "${rental.title}" ubicado en "${rental.mapLocation}". ¿Podría brindarme más información? 🏠';
+    final company = widget.rental.company;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,7 +171,7 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const CircleAvatar(child: Icon(Icons.person)),
+          leading: const CircleAvatar(child: Icon(Icons.person, color: Colors.white,)),
           title: Text(rental.user.name),
           subtitle: Text(rental.company.name),
           trailing: GestureDetector(
@@ -175,7 +186,7 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.green,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -188,11 +199,30 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
               child: const Center(
                 child: FaIcon(
                   FontAwesomeIcons.whatsapp,
-                  color: Color.fromARGB(255, 48, 100, 27),
                   size: 28,
+                  color: Colors.white,
                 ),
               ),
             ),
+
+          ),
+
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading:  CircleAvatar(child: Icon(Icons.business, color: Colors.white)),
+          title: const Text(
+            'Información de la empresa',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(company.description ?? 'Sin descripción'),
+              const SizedBox(height: 4),
+              Text('Teléfono: ${company.phone ?? 'No disponible'}'),
+              Text('Email: ${company.email ?? 'No disponible'}'),
+            ],
           ),
         ),
       ],

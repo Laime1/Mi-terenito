@@ -170,7 +170,6 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
           ),
         ],
       ),
-
       floatingActionButton:
           widget.userId != null
               ? FloatingActionButton(

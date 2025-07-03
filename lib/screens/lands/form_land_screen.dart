@@ -58,9 +58,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
       _servicesController.text = widget.land!.basicServices;
 
       _existingImageNames = widget.land!.images ?? [];
-      _existingImageUrls = _existingImageNames
-          .map((img) => '${ApiService.baseImageUrl}$img')
-          .toList();
+      _existingImageUrls =List.from(widget.land!.images);
     }
   }
 
@@ -194,6 +192,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(widget.land == null ? 'Agregar Terreno' : 'Editar Terreno'),
         centerTitle: true,
       ),
@@ -218,7 +217,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.network(
-                            _existingImageUrls[index],
+                            '${ApiService.baseImageUrl}${_existingImageUrls[index]}',
                             width: 100,
                             height: 100,
                             fit: BoxFit.cover,
