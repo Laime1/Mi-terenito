@@ -4,6 +4,7 @@ import 'package:mi_terrenito/widgets/loader_overlay.dart';
 import '../../services/api_service.dart';
 import '../../models/house.dart';
 import '../../widgets/card_houses.dart';
+import '../../widgets/custom_search_bar.dart';
 import 'details_house_screen.dart';
 import '../home2_screen.dart';
 import 'form_house_screen.dart';
@@ -161,22 +162,12 @@ class _CasasScreenState extends State<CasasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
+      body:
           Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Buscar casas...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onChanged: filterCasas,
-                ),
+              CustomSearchBar(
+                onChanged: filterCasas,
+                hintText: 'Buscar casa...',
               ),
               Expanded(
                 child:
@@ -222,17 +213,16 @@ class _CasasScreenState extends State<CasasScreen> {
                           },
                         ),
               ),
+              if (isLoading) const HouseLoader(), // Aquí va el loader
             ],
           ),
-          if (isLoading) const HouseLoader(), // Aquí va el loader
-        ],
-      ),
+
       floatingActionButton:
           widget.usuarioId != null
-              ? FloatingActionButton(
+              ? FloatingActionButton.small(
                 child: const Icon(Icons.add),
-                onPressed: () async {
-                  final resultado = await Navigator.push(
+                onPressed: ()  {
+                 Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
@@ -241,14 +231,11 @@ class _CasasScreenState extends State<CasasScreen> {
                             idCiudad: widget.cityId,
                           ),
                     ),
-                  );
-                  if (resultado == true) {
-                    await loadAllData();
-                  }
+                  ).then((_) => loadAllData());
                 },
               )
               : null,
-       floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
+       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
     );
   }
 }

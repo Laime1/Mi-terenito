@@ -5,6 +5,7 @@ import 'package:mi_terrenito/widgets/loader_overlay.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 import '../../models/apartment.dart';
 import '../../widgets/card_apartament.dart';
+import '../../widgets/custom_search_bar.dart';
 
 class ApartmentsScreen extends StatefulWidget {
   final int companyId;
@@ -34,7 +35,6 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
     super.initState();
     searchController = TextEditingController();
     _loadApartments();
-    searchController.addListener(_filterApartments);
   }
 
   Future<void> _loadApartments() async {
@@ -63,17 +63,18 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
     }
   }
 
-  void _filterApartments() {
-    final query = searchController.text.toLowerCase();
+  void filterApartments(String query) {
+    final lowerQuery = query.toLowerCase();
     setState(() {
-      filteredApartments =
-          allApartments.where((apt) {
-            return apt.title.toLowerCase().contains(query) ||
-                apt.description.toLowerCase().contains(query) ||
-                apt.price.toString().contains(query);
-          }).toList();
+      filteredApartments = allApartments.where((apt) {
+        return apt.title.toLowerCase().contains(lowerQuery) ||
+            apt.description.toLowerCase().contains(lowerQuery) ||
+            apt.price.toString().contains(lowerQuery);
+      }).toList();
     });
   }
+
+
 
   Future<void> _deleteApartment(int id, BuildContext context) async {
     try {
@@ -109,22 +110,9 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Buscar departamentos...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () => searchController.clear(),
-                ),
-              ),
-            ),
+          CustomSearchBar(
+            onChanged: filterApartments,
+            hintText: 'Buscar departamento...',
           ),
           Expanded(
             child:
@@ -172,7 +160,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
       ),
       floatingActionButton:
           widget.userId != null
-              ? FloatingActionButton(
+              ? FloatingActionButton.small(
                 child: const Icon(Icons.add),
                 onPressed: () {
                   Navigator.push(
@@ -188,7 +176,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
                 },
               )
               : null,
-          floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
     );
   }
 }
