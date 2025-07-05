@@ -261,6 +261,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _titleController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Título',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.title, color: Colors.green),
@@ -272,6 +273,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _descriptionController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Descripción',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.description, color: Colors.green),
@@ -284,6 +286,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _priceController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Precio',
                     border: OutlineInputBorder(),
                     prefixText: '\$',
@@ -298,6 +301,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _roomsController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Número de Habitaciones',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.king_bed, color: Colors.green),
@@ -310,6 +314,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _bathroomsController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Número de Baños',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.bathtub, color: Colors.green),
@@ -322,6 +327,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _floorController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Piso',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.stairs, color: Colors.green),

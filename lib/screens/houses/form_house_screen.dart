@@ -284,142 +284,154 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
           style: AppFonts.montserratRegular.copyWith(fontSize: 14),
           child: Form(
             key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text('Imágenes (Máximo 3)', style: TextStyle(fontSize: 16)),
-                const SizedBox(height: 8),
-                _buildImageGallery(),
-                OutlinedButton.icon(
-                  onPressed: (_images.length + _imagenesExistentesUrls.length) >= 3 ? null : _pickFromGallery,
-                  icon: const Icon(Icons.add_photo_alternate),
-                  label: const Text('Agregar desde galería'),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _tituloController,
-                  decoration: InputDecoration(
-                    labelText: 'Título',
-                    border: const OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.title, color: AppColors.navigationButtonBackground),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text('Imágenes (Máximo 3)', style: TextStyle(fontSize: 16)),
+                  const SizedBox(height: 8),
+                  _buildImageGallery(),
+                  OutlinedButton.icon(
+                    onPressed: (_images.length + _imagenesExistentesUrls.length) >= 3 ? null : _pickFromGallery,
+                    icon: const Icon(Icons.add_photo_alternate),
+                    label: const Text('Agregar desde galería'),
                   ),
-                  validator: (value) => value == null || value.isEmpty ? 'Ingrese un título' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _descripcionController,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    labelText: 'Descripción',
-                    border: const OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.description, color: AppColors.navigationButtonBackground),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _tituloController,
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Título',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.title, color: AppColors.navigationButtonBackground),
+                    ),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese un título' : null,
                   ),
-                  validator: (value) => value == null || value.isEmpty ? 'Ingrese una descripción' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _precioController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText: 'Precio',
-                    border: const OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.attach_money, color: AppColors.navigationButtonBackground),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _descripcionController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Descripción',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.description, color: AppColors.navigationButtonBackground),
+                    ),
+                    validator: (value) => value == null || value.isEmpty ? 'Ingrese una descripción' : null,
                   ),
-                  validator: (value) => value == null || double.tryParse(value) == null ? 'Ingrese un precio válido' : null,
-                ),
-                const SizedBox(height: 16),
-                UrlMapField(controller: _ubicacionController),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _habitacionesController,
-                  decoration: InputDecoration(
-                    labelText: 'Habitaciones',
-                    border: const OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.bed, color: AppColors.navigationButtonBackground),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _precioController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Precio',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.attach_money, color: AppColors.navigationButtonBackground),
+                    ),
+                    validator: (value) => value == null || double.tryParse(value) == null ? 'Ingrese un precio válido' : null,
                   ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _banosController,
-                  decoration: InputDecoration(
-                    labelText: 'Baños',
-                    border: const OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.bathtub, color: AppColors.navigationButtonBackground),
+                  const SizedBox(height: 16),
+                  UrlMapField(controller: _ubicacionController),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _habitacionesController,
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Habitaciones',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.bed, color: AppColors.navigationButtonBackground),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                   ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _pisosController,
-                  decoration: InputDecoration(
-                    labelText: 'Pisos',
-                    border: const OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.stairs, color: AppColors.navigationButtonBackground),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _banosController,
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Baños',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.bathtub, color: AppColors.navigationButtonBackground),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                   ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Theme.of(context).scaffoldBackgroundColor,
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _pisosController,
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Pisos',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.stairs, color: AppColors.navigationButtonBackground),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) => value == null || int.tryParse(value) == null ? 'Número inválido' : null,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                       Text('¿Tiene cochera?', style: TextStyle(fontSize: 16,  color: Theme.of(context).textTheme.bodyMedium?.color),),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Theme.of(context).primaryColorLight),
-                          borderRadius: BorderRadius.circular(8),
+                  const SizedBox(height: 16),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                         Text('¿Tiene cochera?', style: TextStyle(fontSize: 16,  color: Theme.of(context).textTheme.bodyMedium?.color),),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Theme.of(context).primaryColorLight),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Radio<bool>(
+                                value: true,
+                                groupValue: _cocheraController.text == 'true',
+                                onChanged: (value) {
+                                  setState(() => _cocheraController.text = value.toString());
+                                },
+                              ),
+                               Text('Sí', style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyMedium?.color),),
+                              const SizedBox(width: 20),
+                              Radio<bool>(
+                                value: false,
+                                groupValue: _cocheraController.text == 'true',
+                                onChanged: (value) {
+                                  setState(() => _cocheraController.text = value.toString());
+                                },
+                              ),
+                               Text('No', style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyMedium?.color),),
+                            ],
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            Radio<bool>(
-                              value: true,
-                              groupValue: _cocheraController.text == 'true',
-                              onChanged: (value) {
-                                setState(() => _cocheraController.text = value.toString());
-                              },
-                            ),
-                             Text('Sí', style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyMedium?.color),),
-                            const SizedBox(width: 20),
-                            Radio<bool>(
-                              value: false,
-                              groupValue: _cocheraController.text == 'true',
-                              onChanged: (value) {
-                                setState(() => _cocheraController.text = value.toString());
-                              },
-                            ),
-                             Text('No', style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyMedium?.color),),
-                          ],
-                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: guardarCasa,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    ],
+                    ),
+                    child: Text(
+                      widget.house != null ? 'Actualizar Casa' : 'Guardar Casa',
+                      style: AppFonts.montserratRegular.copyWith(fontSize: 18),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: guardarCasa,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.navigationButtonBackground,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: Text(
-                    widget.house != null ? 'Actualizar Casa' : 'Guardar Casa',
-                    style: AppFonts.montserratRegular.copyWith(fontSize: 18),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
