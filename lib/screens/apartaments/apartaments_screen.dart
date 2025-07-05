@@ -174,7 +174,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
       floatingActionButton:
           widget.userId != null
               ? FloatingActionButton(
-                child: const Icon(Icons.add_box),
+                child: const Icon(Icons.add),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -182,7 +182,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
                       builder:
                           (context) => DepartmentFormScreen(
                             idUser: widget.userId!,
-                            idCity: widget.cityId, // Corregido: usar el cityId del widget
+                            idCity: widget.cityId,
                           ),
                     ),
                   );

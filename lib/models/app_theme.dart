@@ -9,6 +9,10 @@ class AppTheme {
     brightness: Brightness.light,
     primarySwatch: Colors.green,
     scaffoldBackgroundColor: Colors.white,
+    textTheme: const TextTheme(
+      bodyMedium: TextStyle(color: Colors.black),
+      bodySmall: TextStyle(color: Colors.black)
+    ),
     iconTheme: IconThemeData(color: Colors.green),
     appBarTheme: const AppBarTheme(
       color: Colors.green,
@@ -20,7 +24,7 @@ class AppTheme {
       unselectedItemColor: Colors.white,
     ),
     cardTheme: CardTheme(
-      color: Colors.white,
+      color: Colors.grey.shade100,
       elevation: 2,
       shadowColor: Colors.grey,
     ),
@@ -33,8 +37,11 @@ class AppTheme {
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     primarySwatch: Colors.green,
-    scaffoldBackgroundColor: Colors.grey[900],
+    scaffoldBackgroundColor: Colors.grey[800],
     iconTheme: const IconThemeData(color: Colors.green),
+    textTheme: const TextTheme(
+      bodyMedium: TextStyle(color: Colors.white),
+  ),
     appBarTheme: AppBarTheme(
       color: Colors.grey[850],
       iconTheme: const IconThemeData(color: Colors.white),

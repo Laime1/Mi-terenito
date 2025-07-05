@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../models/rental.dart';
 import '../../services/api_service.dart';
+import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 
 class RentalFormScreen extends StatefulWidget {
   final int idUser;
@@ -209,9 +210,9 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(
           widget.rental == null ? 'Formulario de Alquiler' : 'Editar Alquiler',
-          style: const TextStyle(color: Colors.white),
         ),
         actions: [
           if (_isLoading)
@@ -292,20 +293,7 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _urlMapController,
-                  decoration: const InputDecoration(
-                    labelText: 'Enlace de Ubicación (Google Maps)',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.map, color: Colors.green),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa un enlace de ubicación';
-                    }
-                    return null;
-                  },
-                ),
+                UrlMapField(controller: _urlMapController),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _timeMinController,

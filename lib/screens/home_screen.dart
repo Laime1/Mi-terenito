@@ -185,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               themeProvider.toggleTheme();
             },
-            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.appBarText),
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.bodyBackground),
           ),
         ],
       ),
@@ -300,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: AppColors.cardText),
+              Icon(icon, size: 40, color: Colors.green),
               const SizedBox(height: 10),
               Text(title, style: const TextStyle(color: AppColors.cardText)),
             ],

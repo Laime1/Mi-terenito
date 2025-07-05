@@ -85,7 +85,7 @@ class LandCard extends StatelessWidget {
                     Text(
                       land.description,
                       style: TextStyle(
-                        color: Colors.grey[700],
+                        fontWeight: FontWeight.w400,
                         fontSize: 12,
                       ),
                       maxLines: 2,
@@ -167,13 +167,12 @@ class LandCard extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CircleAvatar(
-          radius: 8,
-          backgroundColor: Colors.grey[300],
-          child: Icon(icon, size: 12, color: Colors.black),
-        ),
+        Icon(icon, size: 16),
         const SizedBox(width: 4),
-        Text(text, style: const TextStyle(fontSize: 12)),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 12),
+        ),
       ],
     );
   }

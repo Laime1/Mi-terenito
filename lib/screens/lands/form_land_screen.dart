@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:http_parser/http_parser.dart';
-
+import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 import '../../models/land.dart';
 import '../../services/api_service.dart';
 
@@ -58,9 +58,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
       _servicesController.text = widget.land!.basicServices;
 
       _existingImageNames = widget.land!.images ?? [];
-      _existingImageUrls = _existingImageNames
-          .map((img) => '${ApiService.baseImageUrl}$img')
-          .toList();
+      _existingImageUrls =List.from(widget.land!.images);
     }
   }
 
@@ -194,6 +192,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(widget.land == null ? 'Agregar Terreno' : 'Editar Terreno'),
         centerTitle: true,
       ),
@@ -218,7 +217,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.network(
-                            _existingImageUrls[index],
+                            '${ApiService.baseImageUrl}${_existingImageUrls[index]}',
                             width: 100,
                             height: 100,
                             fit: BoxFit.cover,
@@ -319,7 +318,8 @@ class _LandFormScreenState extends State<LandFormScreen> {
               _buildTextField(_titleController, 'Título', Icons.title),
               _buildTextField(_descriptionController, 'Descripción', Icons.description, lines: 3),
               _buildTextField(_priceController, 'Precio', Icons.attach_money, isNumber: true),
-              _buildTextField(_urlMapController, 'Ubicación (Google Maps)', Icons.map),
+              UrlMapField(controller: _urlMapController),
+              const SizedBox(height: 16),
               _buildTextField(_sizeController, 'Tamaño (m²)', Icons.square_foot, isNumber: true),
               _buildTextField(_servicesController, 'Servicios básicos', Icons.plumbing),
 

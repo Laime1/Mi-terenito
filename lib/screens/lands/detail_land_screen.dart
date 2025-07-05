@@ -31,17 +31,17 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.navigationButtonBackground,
         title: Text(
+          maxLines: 3,
           terreno.title,
           style: const TextStyle(
-            color: AppColors.cardText,
+            color: Colors.white,
             fontFamily: 'Montserrat',
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
         ),
-        iconTheme: const IconThemeData(color: AppColors.appBarText),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -58,20 +58,8 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
                   _buildDescriptionSection(),
                   const SizedBox(height: 16),
                   RentalSpecificationsTable(
-                    city: null,
                     size: terreno.size,
                     basicServices: terreno.basicServices,
-                    bedrooms: null,
-                    bathrooms: null,
-                    garage: null,
-                    floors: null,
-                    furnished: null,
-                    company: null,
-                    username: null,
-                    publishedAt: null,
-                    phone: null,
-                    email: null,
-                    mapLocation: null,
                     mostrarSoloTerreno: true,
                   ),
                   const SizedBox(height: 16),
@@ -146,7 +134,7 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
             onTap: () => AppLauncher.openMaps(location, context),
             child: Row(
               children: [
-                Icon(Icons.map, color: Colors.blue[600], size: 30),
+                CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
                 const SizedBox(width: 8),
                 Text(
                   "Ver en Maps",
@@ -207,7 +195,7 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
               height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white,
+                color: Colors.green,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -219,7 +207,7 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
               child: const Center(
                 child: FaIcon(
                   FontAwesomeIcons.whatsapp,
-                  color: Color.fromARGB(255, 48, 100, 27),
+                  color: Colors.white,
                   size: 28,
                 ),
               ),
@@ -229,7 +217,7 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.business),
+          leading: CircleAvatar(child: const Icon(Icons.business, color: Colors.white,)),
           title: const Text(
             'Información de la empresa',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

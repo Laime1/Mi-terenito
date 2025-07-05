@@ -32,7 +32,6 @@ class HouseCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
           borderRadius: BorderRadius.circular(12),
         ),
         child: InkWell(
@@ -82,7 +81,6 @@ class HouseCard extends StatelessWidget {
                         house.title,
                         style: AppFonts.montserratBold.copyWith(
                           fontSize: 16,
-                          color: AppColors.cardText,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -91,8 +89,8 @@ class HouseCard extends StatelessWidget {
                       Text(
                         house.description,
                         style: AppFonts.montserratRegular.copyWith(
-                          color: Colors.grey[700],
                           fontSize: 12,
+                          fontWeight: FontWeight.w400,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -179,13 +177,10 @@ class HouseCard extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CircleAvatar(
-          radius: 8,
-          backgroundColor: Colors.grey[300],
-          child: Icon(icon, size: 12, color: Colors.black),
-        ),
+        Icon(icon, size: 12),
         const SizedBox(width: 4),
-        Text(text, style: AppFonts.montserratRegular.copyWith(fontSize: 12)),
+        Text(text, style: const TextStyle(fontSize: 12),
+        ),
       ],
     );
   }

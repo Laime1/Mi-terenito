@@ -1,4 +1,5 @@
 // utils/app_launcher.dart
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -56,5 +57,10 @@ class AppLauncher {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
+  }
+
+  static Future<String?> getClipboardText() async {
+    final clipboardData = await Clipboard.getData('text/plain');
+    return clipboardData?.text;
   }
 }

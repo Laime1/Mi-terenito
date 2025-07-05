@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_terrenito/models/apartment.dart';
 import 'dart:io';
-
+import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 import '../../services/api_service.dart';
 
 class DepartmentFormScreen extends StatefulWidget {
@@ -171,6 +171,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(widget.apartment == null ? 'Formulario de Departamento' : 'Editar Departamento', style: TextStyle(color: Colors.white),),
         actions: [
           if (_isLoading)
@@ -291,18 +292,8 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                   validator: (value) => value == null || value.isEmpty || double.tryParse(value) == null ? 'Ingresa un precio válido' : null,
                 ),
                 const SizedBox(height: 16),
-
-                TextFormField(
-                  controller: _urlMapController,
-                  decoration: const InputDecoration(
-                    labelText: 'Enlace de Ubicación (Google Maps)',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.map, color: Colors.green),
-                  ),
-                  validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa un enlace de ubicación' : null,
-                ),
+                UrlMapField(controller: _urlMapController),
                 const SizedBox(height: 16),
-
                 TextFormField(
                   controller: _roomsController,
                   decoration: const InputDecoration(
