@@ -198,7 +198,7 @@ class _LandsScreenState extends State<LandsScreen> {
                       idEmpresa: widget.empresaId,
                     ),
                   ),
-                );
+                ).then((_) => loadAllData());
               },
               
               tooltip: 'Agregar Terreno',

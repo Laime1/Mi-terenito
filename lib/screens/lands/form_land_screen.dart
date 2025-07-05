@@ -328,24 +328,19 @@ class _LandFormScreenState extends State<LandFormScreen> {
                 _buildTextField(_servicesController, 'Servicios básicos', Icons.plumbing),
 
                 const SizedBox(height: 24),
-                SizedBox(
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                            widget.land == null ? 'Guardar Terreno' : 'Actualizar Terreno',
-                              style: AppFonts.montserratRegular.copyWith(fontSize: 18),
-                          ),
+                  ),
+                  child: Text(
+                    widget.land != null ? 'Actualizar Casa' : 'Guardar Casa',
+                    style: AppFonts.montserratRegular.copyWith(fontSize: 18),
                   ),
                 ),
               ],
