@@ -7,7 +7,6 @@ import '../../widgets/card_carrusel.dart';
 import '../../widgets/table_card.dart';
 import '../../widgets/utils/app_launcher.dart';
 import '../houses/form_house_screen.dart';
-//import 'package:mi_terrenito/models/app_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DetalleCasaScreen extends StatelessWidget {
@@ -96,13 +95,12 @@ class DetalleCasaScreen extends StatelessWidget {
   Widget _buildDescriptionSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
+      children: const [
+        Text(
           'Descripción',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 8),
-        Text(casa.description, style: const TextStyle(fontSize: 16)),
+        SizedBox(height: 8),
       ],
     );
   }
@@ -122,7 +120,7 @@ class DetalleCasaScreen extends StatelessWidget {
           },
           child: Row(
             children: [
-              CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
+              const CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
               const SizedBox(width: 8),
               Text(
                 "Ver en Maps",
@@ -163,45 +161,46 @@ class DetalleCasaScreen extends StatelessWidget {
             ],
           ),
           trailing: GestureDetector(
-  onTap: () {
-    if (phone.isNotEmpty) {
-      AppLauncher.launchWhatsApp(
-        phone: phone,
-        message: mensaje,
-        context: context,
-      );
-    }
-  },
-  child: Container(
-    width: 48,
-    height: 48,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: Colors.green,
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 4,
-          offset: const Offset(0, 2),
+            onTap: () {
+              if (phone.isNotEmpty) {
+                AppLauncher.launchWhatsApp(
+                  phone: phone,
+                  message: mensaje,
+                  context: context,
+                );
+              }
+            },
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.green,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: FaIcon(
+                  FontAwesomeIcons.whatsapp,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+            ),
+          ),
         ),
-      ],
-    ),
-    child: const Center(
-      child: FaIcon(
-        FontAwesomeIcons.whatsapp,
-        color: Colors.white,
-        size: 28,
-      ),
-    ),
-  ),
-),
-
-        ),
+        const SizedBox(height: 8),
+        const Text('Información de la empresa', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: CircleAvatar(child: const Icon(Icons.business, color: Colors.white)),
-          title: const Text('Información de la empresa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          leading: const CircleAvatar(child: Icon(Icons.business, color: Colors.white)),
+          title: Text(company?.name ?? 'No disponible'),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -215,5 +214,4 @@ class DetalleCasaScreen extends StatelessWidget {
       ],
     );
   }
-
 }

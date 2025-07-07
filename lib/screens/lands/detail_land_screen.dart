@@ -131,7 +131,7 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
             onTap: () => AppLauncher.openMaps(location, context),
             child: Row(
               children: [
-                CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
+                const CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
                 const SizedBox(width: 8),
                 Text(
                   "Ver en Maps",
@@ -158,7 +158,8 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
     final phoneRaw = user?.numberPhone.replaceAll(RegExp(r'\D'), '') ?? '';
     final phone = phoneRaw.length < 10 ? '+591$phoneRaw' : phoneRaw;
     final mensaje = Uri.encodeComponent(
-        'Hola, estoy interesado en "${widget.terreno.title}". ¿Podrías brindarme más información sobre este terreno? 🌱');
+      'Hola, estoy interesado en "${widget.terreno.title}" ubicado en "${widget.terreno.mapLocation}". ¿Podría brindarme más información? 🌱',
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,13 +213,12 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
           ),
         ),
         const SizedBox(height: 8),
+        const Text('Información de la empresa', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: CircleAvatar(child: const Icon(Icons.business, color: Colors.white,)),
-          title: const Text(
-            'Información de la empresa',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
+          leading: const CircleAvatar(child: Icon(Icons.business, color: Colors.white)),
+          title: Text(company?.name ?? 'No disponible'),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -232,5 +232,4 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
       ],
     );
   }
-
 }

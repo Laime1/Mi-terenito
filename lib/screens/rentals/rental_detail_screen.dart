@@ -82,7 +82,7 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
     }
 
     return CardCarrusel(
-      key: ValueKey(imageUrls.join()), // fuerza recreación si cambian
+      key: ValueKey(imageUrls.join()),
       imageUrls: imageUrls,
     );
   }
@@ -116,7 +116,6 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
     return RentalSpecificationsTable(
       furnished: rental.furnished == 'Sí',
       basicServices: rental.includedServices,
-
     );
   }
 
@@ -135,12 +134,8 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
           },
           child: Row(
             children: [
-              CircleAvatar(
-                child: Icon(
-                  Icons.map,
-                  color: Colors.white,
-                  size: 30,
-                ),
+              const CircleAvatar(
+                child: Icon(Icons.map, color: Colors.white, size: 30),
               ),
               const SizedBox(width: 8),
               Text(
@@ -159,7 +154,7 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
 
   Widget _buildPublisherInfo(Rental rental, BuildContext context) {
     final propertyInfo = 'Hola, estoy interesado en "${rental.title}" ubicado en "${rental.mapLocation}". ¿Podría brindarme más información? 🏠';
-    final company = widget.rental.company;
+    final company = rental.company;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,9 +166,15 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const CircleAvatar(child: Icon(Icons.person, color: Colors.white,)),
+          leading: const CircleAvatar(child: Icon(Icons.person, color: Colors.white)),
           title: Text(rental.user.name),
-          subtitle: Text(rental.company.name),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(company.name),
+              Text(rental.user.numberPhone),
+            ],
+          ),
           trailing: GestureDetector(
             onTap: () {
               AppLauncher.launchWhatsApp(
@@ -204,17 +205,19 @@ class _RentalDetailScreenState extends State<RentalDetailScreen> {
                 ),
               ),
             ),
-
           ),
-
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Información de la empresa',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading:  CircleAvatar(child: Icon(Icons.business, color: Colors.white)),
-          title: const Text(
-            'Información de la empresa',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          leading: const CircleAvatar(
+            child: Icon(Icons.business, color: Colors.white),
           ),
+          title: Text(company.name),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
