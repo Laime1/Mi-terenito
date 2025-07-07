@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../../models/land.dart';
 import 'package:mi_terrenito/widgets/loader_overlay.dart';
+import '../../widgets/custom_search_bar.dart';
 import '/widgets/card_lands.dart';
 import 'detail_land_screen.dart';
 import '../home2_screen.dart';
@@ -69,15 +70,16 @@ class _LandsScreenState extends State<LandsScreen> {
     }
   }
 
-  void filterTerrenos(String query) {
+  void filterLands(String query) {
     final lowerQuery = query.toLowerCase();
     setState(() {
       searchText = query;
-      filteredTerrenos = terrenos.where((terreno) {
-        final title = terreno.title.toLowerCase();
-        final description = terreno.description.toLowerCase();
-        return title.contains(lowerQuery) || description.contains(lowerQuery);
-      }).toList();
+      filteredTerrenos =
+          terrenos.where((casa) {
+            final title = casa.title.toLowerCase();
+            final cityName = casa.city?.name.toLowerCase() ?? '';
+            return title.contains(lowerQuery) || cityName.contains(lowerQuery);
+          }).toList();
     });
   }
 
@@ -114,21 +116,29 @@ class _LandsScreenState extends State<LandsScreen> {
     }
   }
 
+  void _editLand(Land land, BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => LandFormScreen(
+              idUser: widget.usuarioId!,
+              idCity: widget.cityId,
+              land: land,
+               idEmpresa: widget.empresaId,
+            ),
+      ),
+    ).then((_) => loadAllData());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Buscar terrenos...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onChanged: filterTerrenos,
-            ),
+          CustomSearchBar(
+            onChanged: filterLands,
+            hintText: 'Buscar departamento...',
           ),
           Expanded(
             child: isLoading
@@ -166,6 +176,9 @@ class _LandsScreenState extends State<LandsScreen> {
                             onDelete: widget.usuarioId != null
                                 ? () => _deleteTerreno(terreno.id, context)
                                 : null,
+                            onEdit: widget.usuarioId != null
+                                 ? () => _editLand(terreno, context)
+                                 : null,
                           );
                         },
                       ),
@@ -173,7 +186,8 @@ class _LandsScreenState extends State<LandsScreen> {
         ],
       ),
       floatingActionButton: widget.usuarioId != null
-          ? FloatingActionButton(
+          ? FloatingActionButton.small(
+            child:  Icon(Icons.add),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -184,12 +198,13 @@ class _LandsScreenState extends State<LandsScreen> {
                       idEmpresa: widget.empresaId,
                     ),
                   ),
-                );
+                ).then((_) => loadAllData());
               },
-              child: const Icon(Icons.add),
+              
               tooltip: 'Agregar Terreno',
             )
           : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
     );
   }
 }

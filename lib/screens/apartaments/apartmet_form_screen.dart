@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_terrenito/models/apartment.dart';
+import 'package:mi_terrenito/models/app_fonts.dart';
 import 'dart:io';
 import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 import '../../services/api_service.dart';
@@ -260,6 +261,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _titleController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Título',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.title, color: Colors.green),
@@ -271,6 +273,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _descriptionController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Descripción',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.description, color: Colors.green),
@@ -283,6 +286,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _priceController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Precio',
                     border: OutlineInputBorder(),
                     prefixText: '\$',
@@ -297,6 +301,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _roomsController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Número de Habitaciones',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.king_bed, color: Colors.green),
@@ -309,6 +314,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _bathroomsController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Número de Baños',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.bathtub, color: Colors.green),
@@ -321,6 +327,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _floorController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Piso',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.stairs, color: Colors.green),
@@ -334,7 +341,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -342,7 +349,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                   ),
                   child: Text(
                     widget.apartment == null ? 'Guardar Departamento' : 'Actualizar Departamento',
-                    style: const TextStyle(fontSize: 18),
+                    style: AppFonts.montserratRegular.copyWith(fontSize: 18),
                   ),
                 ),
               ],
