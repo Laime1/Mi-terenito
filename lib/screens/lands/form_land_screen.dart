@@ -171,12 +171,13 @@ class _LandFormScreenState extends State<LandFormScreen> {
   }
 
   Widget _buildTextField(TextEditingController controller, String label, IconData icon,
-      {int lines = 1, bool isNumber = false}) {
+      {int? minLines = 1, bool isNumber = false, int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
+        minLines: minLines,
         controller: controller,
-        maxLines: lines,
+        maxLines: maxLines,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -195,7 +196,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
     return Scaffold(
       appBar: AppBar(
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-        title: Text(widget.land == null ? 'Agregar Terreno' : 'Formulario de Terreno'),
+        title: Text(widget.land == null ? 'Formulario de Terreno' : 'Actulizar Terreno'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -319,8 +320,8 @@ class _LandFormScreenState extends State<LandFormScreen> {
                 ),
 
                 const SizedBox(height: 24),
-                _buildTextField(_titleController, 'Título', Icons.title),
-                _buildTextField(_descriptionController, 'Descripción', Icons.description, lines: 3),
+                _buildTextField(_titleController, 'Título', Icons.title, maxLines: 3),
+                _buildTextField(_descriptionController, 'Descripción', Icons.description, maxLines: 3, minLines: null),
                 _buildTextField(_priceController, 'Precio', Icons.attach_money, isNumber: true),
                 UrlMapField(controller: _urlMapController),
                 const SizedBox(height: 16),
@@ -339,7 +340,7 @@ class _LandFormScreenState extends State<LandFormScreen> {
                     ),
                   ),
                   child: Text(
-                    widget.land != null ? 'Actualizar Casa' : 'Guardar Casa',
+                    widget.land != null ? 'Actualizar Terreno' : 'Guardar Terreno',
                     style: AppFonts.montserratRegular.copyWith(fontSize: 18),
                   ),
                 ),

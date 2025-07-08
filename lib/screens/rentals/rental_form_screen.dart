@@ -211,9 +211,10 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(
-          widget.rental == null ? 'Editar Alquiler' : 'Formulario Alquiler',
+          widget.rental == null ? 'Formulario de Alquiler' : 'Actualizar Alquiler',
         ),
         actions: [
           if (_isLoading)
@@ -245,6 +246,8 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
+                  minLines: 1,
+                  maxLines: 3,
                   controller: _titleController,
                   decoration: const InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,

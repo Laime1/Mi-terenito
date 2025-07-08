@@ -274,7 +274,7 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
     return Scaffold(
       appBar: AppBar(
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-        title: Text(widget.house != null ? 'Editar Casa' : 'Formulario de Casa'),
+        title: Text(widget.house != null ? 'Actualizar Casa' : 'Formulario de Casa'),
 
         centerTitle: true,
       ),
@@ -299,6 +299,8 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
+                    minLines: 1,
+                    maxLines: 3,
                     controller: _tituloController,
                     decoration: InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.always,

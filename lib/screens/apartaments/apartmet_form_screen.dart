@@ -172,8 +172,9 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-        title: Text(widget.apartment == null ? 'Formulario de Departamento' : 'Editar Departamento', style: TextStyle(color: Colors.white),),
+        title: Text(widget.apartment == null ? 'Formulario de Departamento' : 'Actualizar Departamento', style: TextStyle(color: Colors.white),),
         actions: [
           if (_isLoading)
             const Padding(
@@ -259,6 +260,8 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 const SizedBox(height: 24),
 
                 TextFormField(
+                  minLines: 1,
+                  maxLines: 3,
                   controller: _titleController,
                   decoration: const InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
