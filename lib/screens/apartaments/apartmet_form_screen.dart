@@ -207,27 +207,33 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                       itemBuilder: (context, index) {
                         Widget imageWidget;
                         VoidCallback onRemove;
-
                         if (index < _existingImageUrls.length) {
                           final imageUrl = _existingImageUrls[index];
-                          imageWidget = Image.network(
-                            '${ApiService.baseImageUrl}$imageUrl',
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, progress) =>
-                                progress == null ? child : const Center(child: CircularProgressIndicator()),
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.error, size: 40),
+                          imageWidget = ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              '${ApiService.baseImageUrl}$imageUrl',
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+
+                              loadingBuilder: (context, child, progress) =>
+                                  progress == null ? child : const Center(child: CircularProgressIndicator()),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image, size: 120),
+                            ),
                           );
                           onRemove = () => _removeExistingImage(index);
                         } else {
                           final newImageIndex = index - _existingImageUrls.length;
-                          imageWidget = Image.file(
-                            _newImages[newImageIndex],
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
+                          imageWidget = ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.file(
+                              _newImages[newImageIndex],
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ),
                           );
                           onRemove = () => _removeNewImage(newImageIndex);
                         }

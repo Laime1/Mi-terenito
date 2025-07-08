@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/models/app_colors.dart';
 import 'package:mi_terrenito/models/app_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/house.dart';
 import '../../services/api_service.dart';
 import '../../widgets/card_carrusel.dart';
@@ -136,6 +137,17 @@ class DetalleCasaScreen extends StatelessWidget {
     );
   }
 
+  void _launchWhatsAppConMensaje(String phone, String mensaje) async {
+    final whatsappUri = Uri.parse('whatsapp://send?phone=$phone&text=$mensaje');
+    try {
+      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      final webWhatsappUri = Uri.parse('https://wa.me/$phone?text=$mensaje');
+      if (await canLaunchUrl(webWhatsappUri)) {
+        await launchUrl(webWhatsappUri, mode: LaunchMode.externalApplication);
+      }
+    }
+  }
   Widget _buildPublisherInfo(BuildContext context) {
     final user = casa.user;
     final company = casa.company;
@@ -163,11 +175,14 @@ class DetalleCasaScreen extends StatelessWidget {
           trailing: GestureDetector(
             onTap: () {
               if (phone.isNotEmpty) {
-                AppLauncher.launchWhatsApp(
-                  phone: phone,
-                  message: mensaje,
-                  context: context,
-                );
+                // AppLauncher.launchWhatsApp(
+                //   phone: phone,
+                //   message: mensaje,
+                //   context: context,
+                // );
+                _launchWhatsAppConMensaje(phone, mensaje);
+              } else {
+                const SnackBar(content: Text('Número de contacto no disponible'));
               }
             },
             child: Container(

@@ -117,19 +117,29 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
 
           if (isExisting) {
             final imageUrl = _existingImageUrls[index];
-            imageWidget = Image.network(
-              '${ApiService.baseImageUrl}$imageUrl',
-              width: 120,
-              height: 120,
-              fit: BoxFit.cover,
+            imageWidget = ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.network(
+                '${ApiService.baseImageUrl}$imageUrl',
+                width: 120,
+                height: 120,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, progress) =>
+                    progress == null ? child : const Center(child: CircularProgressIndicator()),
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.broken_image, size: 120),
+              ),
             );
           } else {
             final imageFile = _selectedImages[index - _existingImageUrls.length];
-            imageWidget = Image.file(
-              imageFile,
-              width: 120,
-              height: 120,
-              fit: BoxFit.cover,
+            imageWidget = ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.file(
+                imageFile,
+                width: 120,
+                height: 120,
+                fit: BoxFit.cover,
+              ),
             );
           }
 

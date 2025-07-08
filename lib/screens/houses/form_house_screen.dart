@@ -94,87 +94,68 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   }
 
   Widget _buildImageGallery() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (_imagenesExistentesUrls.isNotEmpty)
-          SizedBox(
+    final totalImages = _images.length + _imagenesExistentesUrls.length;
+    if (totalImages == 0) {
+      return const SizedBox.shrink();
+    }
+    return
+      SizedBox(
             height: 120,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: _imagenesExistentesUrls.length,
+              itemCount: totalImages,
               itemBuilder: (context, index) {
-                final url = _imagenesExistentesUrls[index];
+                Widget imageWidget;
+                bool isExisting = index < _imagenesExistentesUrls.length;
+                if (isExisting) {
+                  final imageUrl = _imagenesExistentesUrls[index];
+                  imageWidget = ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.network(
+                      '${ApiService.baseImageUrl}$imageUrl',
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, progress) =>
+                          progress == null ? child : const Center(child: CircularProgressIndicator()),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.broken_image, size: 120),
+                    ),
+                  );
+                  } else {
+                  final imageFile = _images[index -
+                      _imagenesExistentesUrls.length];
+                  imageWidget = ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.file(
+                      File(imageFile.path),
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                }
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.only(right: 8.0),
                   child: Stack(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          '${ApiService.baseImageUrl}$url',
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: IconButton(
-                          icon: const Icon(Icons.close, color: AppColors.navigationButtonBackground),
-                          onPressed: () {
-                            setState(() {
-                              _imagenesExistentesUrls.removeAt(index);
-                            });
-                          },
-                        ),
-                      ),
+                        imageWidget,
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.red),
+                    onPressed: () => _removeImage(isExisting ? index : index - _imagenesExistentesUrls.length),
+                ),
+                ),
                     ],
                   ),
                 );
+
               },
             ),
-          ),
-        if (_imagenesExistentesUrls.isNotEmpty && _images.isNotEmpty)
-          const SizedBox(height: 12),
-        if (_images.isNotEmpty)
-          SizedBox(
-            height: 120,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _images.length,
-              itemBuilder: (context, index) {
-                final imageFile = File(_images[index].path);
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.file(
-                          imageFile,
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: IconButton(
-                          icon: const Icon(Icons.close, color: AppColors.navigationButtonBackground),
-                          onPressed: () => _removeImage(index),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-      ],
-    );
+          );
+
   }
 
   Future<void> guardarCasa() async {

@@ -7,6 +7,7 @@ import 'package:mi_terrenito/services/api_service.dart';
 import 'package:mi_terrenito/widgets/card_carrusel.dart';
 import 'package:mi_terrenito/widgets/utils/app_launcher.dart';
 import 'package:mi_terrenito/widgets/table_card.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../lands/form_land_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -75,6 +76,17 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
     );
   }
 
+  void _launchWhatsAppConMensaje(String phone, String mensaje) async {
+    final whatsappUri = Uri.parse('whatsapp://send?phone=$phone&text=$mensaje');
+    try {
+      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      final webWhatsappUri = Uri.parse('https://wa.me/$phone?text=$mensaje');
+      if (await canLaunchUrl(webWhatsappUri)) {
+        await launchUrl(webWhatsappUri, mode: LaunchMode.externalApplication);
+      }
+    }
+  }
   Widget _buildImageGallery() {
     final images = widget.terreno.images;
     if (images.isEmpty) {
@@ -181,11 +193,9 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
           trailing: GestureDetector(
             onTap: () {
               if (phone.isNotEmpty) {
-                AppLauncher.launchWhatsApp(
-                  phone: phone,
-                  message: mensaje,
-                  context: context,
-                );
+                _launchWhatsAppConMensaje(phone, mensaje);
+              } else {
+                const SnackBar(content: Text('Número de contacto no disponible'));
               }
             },
             child: Container(

@@ -193,6 +193,10 @@ class _LandFormScreenState extends State<LandFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final totalImages = _existingImageUrls.length + _mobileImages.length;
+    if (totalImages == 0) {
+      return const SizedBox.shrink();
+    }
     return Scaffold(
       appBar: AppBar(
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
@@ -211,112 +215,69 @@ class _LandFormScreenState extends State<LandFormScreen> {
                 const Text('Imágenes (máximo 3)', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
 
-                if (_existingImageUrls.isNotEmpty)
                   SizedBox(
-                    height: 100,
+                    height: 120,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: _existingImageUrls.length,
-                      itemBuilder: (context, index) => Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
+                      itemCount: totalImages,
+                      itemBuilder: (context, index) {
+                        Widget imageWidget;
+                        bool isExisting = index < _existingImageUrls.length;
+
+                        if (isExisting) {
+                          final imageUrl = _existingImageUrls[index];
+                          imageWidget = ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
                             child: Image.network(
-                              '${ApiService.baseImageUrl}${_existingImageUrls[index]}',
-                              width: 100,
-                              height: 100,
+                              '${ApiService.baseImageUrl}$imageUrl',
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, progress) =>
+                                  progress == null ? child : const Center(child: CircularProgressIndicator()),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image, size: 120),
+                            ),
+                          );
+                        } else {
+                          final imageFile = _mobileImages[index - _existingImageUrls.length];
+                          imageWidget = ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.file(
+                              imageFile,
+                              width: 120,
+                              height: 120,
                               fit: BoxFit.cover,
                             ),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Stack(
+                            children: [
+                              imageWidget,
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: IconButton(
+                                  icon: const Icon(Icons.close, color: Colors.red),
+                                  onPressed: () =>
+                                      isExisting ? _removeExistingImage(index) : _removeNewImage(index),
+                                ),
+                              ),
+                            ],
                           ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red),
-                              onPressed: () => _removeExistingImage(index),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                if (kIsWeb && _webImages.isNotEmpty)
-                  SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _webImages.length,
-                      itemBuilder: (context, index) => Stack(
-                        children: [
-                          Image.network(
-                            _webImages[index].path,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red),
-                              onPressed: () => _removeNewImage(index),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                if (!kIsWeb && _mobileImages.isNotEmpty)
-                  SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _mobileImages.length,
-                      itemBuilder: (context, index) => Stack(
-                        children: [
-                          Image.file(
-                            _mobileImages[index],
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red),
-                              onPressed: () => _removeNewImage(index),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: 48,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      if ((_existingImageUrls.length +
-                              (kIsWeb ? _webImages.length : _mobileImages.length)) >=
-                          3) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Solo se permiten máximo 3 imágenes')),
                         );
-                        return;
+
                       }
-                      _pickImage();
-                    },
-                    icon: const Icon(Icons.image),
-                    label: Text(kIsWeb ? 'Seleccionar imágenes' : 'Agregar imágenes'),
-                    style: OutlinedButton.styleFrom(
-                      textStyle: const TextStyle(fontSize: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
                     ),
-                  ),
+
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: _mobileImages.length >= 3 ? null : _pickImage,
+                  icon: const Icon(Icons.add_photo_alternate),
+                  label: const Text('Agregar Imágenes'),
                 ),
 
                 const SizedBox(height: 24),
