@@ -1,16 +1,11 @@
-// ...importaciones sin cambios
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mi_terrenito/models/app_fonts.dart';
 import 'package:mi_terrenito/screens/apartaments/apartaments_screen.dart';
 import 'package:mi_terrenito/screens/rentals/rentals_screen.dart';
-import '../services/theme_provider.dart';
 import 'houses/houses_screen.dart';
 import 'lands/lands_screen.dart';
 import 'package:circle_bottom_navigation/circle_bottom_navigation.dart';
 import 'package:circle_bottom_navigation/widgets/tab_data.dart';
-import '../models/app_colors.dart';
 import 'home_screen.dart';
 
 class Home2Screen extends StatefulWidget {
@@ -87,7 +82,7 @@ class _Home2ScreenState extends State<Home2Screen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const HomeScreen()),
-      (route) => false,
+          (route) => false,
     );
   }
 
@@ -155,33 +150,33 @@ class _Home2ScreenState extends State<Home2Screen> {
               icon: const Icon(Icons.logout, color: Colors.white, size: 20),
               onPressed: () {
                 showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Cerrar sesión'),
-                  content: const Text('¿Está seguro que quiere cerrar sesión?'),
-                  actions: [
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Cerrar sesión'),
+                    content: const Text('¿Está seguro que quiere cerrar sesión?'),
+                    actions: [
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          cerrarSesion();
+                        },
+                        child: const Text('Sí'),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        cerrarSesion();
-                      },
-                      child: const Text('Sí'),
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('No'),
                       ),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('No'),
-                    ),
-                  ],
-                ),
-              );
+                    ],
+                  ),
+                );
 
               },
             ),
@@ -199,18 +194,18 @@ class _Home2ScreenState extends State<Home2Screen> {
         textColor: Colors.white,
         tabs: widget.isLoggedIn
             ? [
-                TabData(icon: Icons.house_rounded, title: 'Casas'),
-                TabData(icon: Icons.park_rounded, title: 'Terrenos'),
-                TabData(icon: Icons.apartment_rounded, title: 'Departamentos'),
-                TabData(icon: Icons.real_estate_agent_rounded, title: 'Alquileres'),
-              ]
+          TabData(icon: Icons.house_rounded, title: 'Casas'),
+          TabData(icon: Icons.park_rounded, title: 'Terrenos'),
+          TabData(icon: Icons.apartment_rounded, title: 'Departamentos'),
+          TabData(icon: Icons.real_estate_agent_rounded, title: 'Alquileres'),
+        ]
             : [
-                TabData(icon: Icons.home, title: 'Inicio'),
-                TabData(icon: Icons.house_rounded, title: 'Casas'),
-                TabData(icon: Icons.park_rounded, title: 'Terrenos'),
-                TabData(icon: Icons.apartment_rounded, title: 'Departamentos'),
-                TabData(icon: Icons.real_estate_agent_rounded, title: 'Alquileres'),
-              ],
+          TabData(icon: Icons.home, title: 'Inicio'),
+          TabData(icon: Icons.house_rounded, title: 'Casas'),
+          TabData(icon: Icons.park_rounded, title: 'Terrenos'),
+          TabData(icon: Icons.apartment_rounded, title: 'Departamentos'),
+          TabData(icon: Icons.real_estate_agent_rounded, title: 'Alquileres'),
+        ],
         onTabChangedListener: (position) {
           String nuevoTipo = _indexToTipo(position);
 
@@ -235,7 +230,7 @@ class _Home2ScreenState extends State<Home2Screen> {
                   hasAlquileres: hasAlquileres,
                 ),
               ),
-              (route) => false,
+                  (route) => false,
             );
             return;
           }

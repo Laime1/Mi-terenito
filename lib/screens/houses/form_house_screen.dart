@@ -268,7 +268,6 @@ class _FormHouseScreenState extends State<FormHouseScreen> {
   }
 }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

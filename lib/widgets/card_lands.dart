@@ -190,7 +190,10 @@ class LandCard extends StatelessWidget with CardMixin {
       children: [
         Icon(icon, size: 16),
         const SizedBox(width: 4),
-        Text(text, style: const TextStyle(fontSize: 12)),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 12),
+        ),
       ],
     );
   }
