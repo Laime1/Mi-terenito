@@ -65,7 +65,7 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
             decoration: BoxDecoration(
-              color: AppColors.cardBackground,
+              color: Color(0xFF022021),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.grey.shade500),
             ),
@@ -76,8 +76,9 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
                   child: Text(
                     widget.selectedItem ?? widget.hint,
                     style: const TextStyle(
-                      color: Color.fromARGB(255, 5, 5, 5),
                       fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFc49c2e), // será reemplazado por el degradado
                     ),
                   ),
                 ),
@@ -85,7 +86,7 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
                   turns: _iconRotation,
                   child: const Icon(
                     Icons.keyboard_arrow_down,
-                    color: Color.fromARGB(255, 5, 5, 5),
+                    color: Color(0xFFc49c2e),
                   ),
                 ),
               ],

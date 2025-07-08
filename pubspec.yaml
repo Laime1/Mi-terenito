@@ -77,6 +77,7 @@ flutter:
     - assets/home_terreno.png
     - assets/animations/house_loading.json
     - assets/animations/cargaAnimation.json
+    - assets/background/fondo_1.jpg
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

@@ -15,17 +15,26 @@ class LoginScreen extends StatelessWidget {
     final ValueNotifier<bool> obscurePassword = ValueNotifier(true);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        // backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        backgroundColor: Colors.transparent,
       ),
-      body: Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: Center(
+      body: Stack(
+        children:[
+          Positioned.fill(
+            child: Image(
+              image: AssetImage('assets/background/fondo_1.jpg'),
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+                   ),
+          ),
+        Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
@@ -124,6 +133,7 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
         ),
+        ]
       ),
     );
   }
