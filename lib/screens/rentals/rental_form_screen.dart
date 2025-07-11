@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mi_terrenito/models/app_fonts.dart';
 import 'dart:io';
 import '../../models/rental.dart';
 import '../../services/api_service.dart';
@@ -116,19 +117,29 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
 
           if (isExisting) {
             final imageUrl = _existingImageUrls[index];
-            imageWidget = Image.network(
-              '${ApiService.baseImageUrl}$imageUrl',
-              width: 120,
-              height: 120,
-              fit: BoxFit.cover,
+            imageWidget = ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.network(
+                '${ApiService.baseImageUrl}$imageUrl',
+                width: 120,
+                height: 120,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, progress) =>
+                    progress == null ? child : const Center(child: CircularProgressIndicator()),
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.broken_image, size: 120),
+              ),
             );
           } else {
             final imageFile = _selectedImages[index - _existingImageUrls.length];
-            imageWidget = Image.file(
-              imageFile,
-              width: 120,
-              height: 120,
-              fit: BoxFit.cover,
+            imageWidget = ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.file(
+                imageFile,
+                width: 120,
+                height: 120,
+                fit: BoxFit.cover,
+              ),
             );
           }
 
@@ -210,9 +221,10 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         title: Text(
-          widget.rental == null ? 'Formulario de Alquiler' : 'Editar Alquiler',
+          widget.rental == null ? 'Formulario de Alquiler' : 'Actualizar Alquiler',
         ),
         actions: [
           if (_isLoading)
@@ -244,8 +256,11 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
+                  minLines: 1,
+                  maxLines: 3,
                   controller: _titleController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Título',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.title, color: Colors.green),
@@ -261,6 +276,7 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                 TextFormField(
                   controller: _descriptionController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Descripción',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.description, color: Colors.green),
@@ -277,6 +293,7 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                 TextFormField(
                   controller: _priceMonthController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Precio Mensual',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.attach_money, color: Colors.green),
@@ -298,6 +315,7 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                 TextFormField(
                   controller: _timeMinController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Tiempo Mínimo (meses)',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.timer, color: Colors.green),
@@ -378,15 +396,15 @@ class _RentalFormScreenState extends State<RentalFormScreen> {
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Guardar Alquiler',
-                    style: TextStyle(fontSize: 18),
+                  child:  Text(
+                    widget.rental == null ? 'Guardar Alquiler' : 'Actualizar Alquiler',
+                    style: AppFonts.montserratRegular.copyWith(fontSize: 18),
                   ),
                 ),
               ],

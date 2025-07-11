@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mi_terrenito/widgets/card_mixin.dart';
 import '../models/land.dart';
 import '../services/api_service.dart';
 
-class LandCard extends StatelessWidget {
+class LandCard extends StatelessWidget with CardMixin {
   final Land land;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
   final bool enableSwipeActions;
 
   const LandCard({
@@ -14,14 +16,15 @@ class LandCard extends StatelessWidget {
     required this.land,
     this.onTap,
     this.onDelete,
-    this.enableSwipeActions = false,
+    this.enableSwipeActions = false, this.onEdit,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final String? imageUrl = land.images.isNotEmpty
-        ? '${ApiService.baseImageUrl}${land.images.first}'
-        : null;
+    final String? imageUrl =
+        land.images.isNotEmpty
+            ? '${ApiService.baseImageUrl}${land.images.first}'
+            : null;
 
     final card = Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -43,26 +46,35 @@ class LandCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.grey[200],
                 ),
-                child: imageUrl == null
-                    ? const Center(
-                        child: Icon(Icons.terrain, size: 60, color: Colors.grey),
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          imageUrl,
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: Colors.grey[200],
-                            child: const Center(
-                              child: Icon(Icons.broken_image,
-                                  size: 60, color: Colors.grey),
-                            ),
+                child:
+                    imageUrl == null
+                        ? const Center(
+                          child: Icon(
+                            Icons.terrain,
+                            size: 60,
+                            color: Colors.grey,
+                          ),
+                        )
+                        : ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            imageUrl,
+                            width: 120,
+                            height: 120,
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (_, __, ___) => Container(
+                                  color: Colors.grey[200],
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      size: 60,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
                           ),
                         ),
-                      ),
               ),
             ),
             // Detalles
@@ -107,8 +119,10 @@ class LandCard extends StatelessWidget {
                       children: [
                         if (land.city != null)
                           _buildFeatureChip(Icons.location_on, land.city!.name),
-                        _buildFeatureChip(Icons.square_foot,
-                            '${land.size > 0 ? land.size.toStringAsFixed(2) : 'N/A'} m²'),
+                        _buildFeatureChip(
+                          Icons.square_foot,
+                          '${land.size > 0 ? land.size.toStringAsFixed(2) : 'N/A'} m²',
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -128,39 +142,46 @@ class LandCard extends StatelessWidget {
       ),
     );
 
-    if (!enableSwipeActions) return card;
+    return enableSwipeActions
+        ? Dismissible(
+          key: Key(land.id.toString()),
+          direction: DismissDirection.horizontal,
+          confirmDismiss: (direction) async {
+            if (direction == DismissDirection.endToStart) {
+              return await showDialog<bool>(
+                context: context,
+                builder:
+                    (ctx) => AlertDialog(
+                      title: const Text('Confirmar eliminación'),
+                      content: const Text('¿Deseas eliminar este terreno?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: const Text('Cancelar'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: const Text('Eliminar'),
+                        ),
+                      ],
+                    ),
+              );
+            } else {
+              onEdit?.call();
+              return false;
+            }
+          },
+          background: buildSwipeBackground(true),
+          secondaryBackground: buildSwipeBackground(false),
+          onDismissed: (direction) {
+            if (direction == DismissDirection.endToStart) {
+              onDelete?.call();
+            }
+          },
 
-    return Dismissible(
-      key: Key(land.id.toString()),
-      direction: DismissDirection.endToStart,  // Solo permite deslizar hacia la izquierda
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      confirmDismiss: (direction) async {
-        if (direction == DismissDirection.endToStart && onDelete != null) {
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Confirmar eliminación'),
-              content: const Text('¿Quieres eliminar este terreno?'),
-              actions: [
-                TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancelar')),
-                TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Eliminar')),
-              ],
-            ),
-          );
-          if (confirm == true) {
-            onDelete!();
-          }
-          return confirm;
-        }
-        return false;
-      },
-      child: card,
-    );
+          child: card,
+        )
+        : card;
   }
 
   Widget _buildFeatureChip(IconData icon, String text) {

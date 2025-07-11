@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 
 class ApiService {
   static const String baseUrl = 'https://api-nodejs-7tvl.onrender.com/api';
-  //static const String baseUrl = 'http://localhots:3000/api';
+  //static const String baseUrl = 'http://localhost:3000/api';
   static const String baseImageUrl = 'https://api-nodejs-7tvl.onrender.com';
   //static const String baseImageUrl = 'http://localhost:3000';
 

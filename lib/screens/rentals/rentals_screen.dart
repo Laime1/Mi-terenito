@@ -6,6 +6,7 @@ import 'package:mi_terrenito/widgets/rental_card.dart';
 import 'package:mi_terrenito/services/api_service.dart';
 
 import '../../models/rental.dart';
+import '../../widgets/custom_search_bar.dart';
 
 class RentalsScreen extends StatefulWidget {
    final int companyId;
@@ -36,7 +37,6 @@ class _RentalsScreenState extends State<RentalsScreen> {
     super.initState();
     searchController = TextEditingController();
     _loadRentals();
-    searchController.addListener(_filterRentals);
   }
 
   Future<void> _loadRentals() async {
@@ -60,13 +60,13 @@ class _RentalsScreenState extends State<RentalsScreen> {
     }
   }
 
-  void _filterRentals() {
-    final query = searchController.text.toLowerCase();
+  void filterRentals(String query) {
+    final lowerQuery = query.toLowerCase();
     setState(() {
-      filteredRentals = allRentals.where((rental) {
-        return rental.title.toLowerCase().contains(query) ||
-            rental.description.toLowerCase().contains(query) ||
-            rental.monthlyPrice.toString().contains(query);
+      filteredRentals = allRentals.where((apt) {
+        return apt.description.toLowerCase().contains(lowerQuery) ||
+            apt.description.toLowerCase().contains(lowerQuery) ||
+            apt.monthlyPrice.toString().contains(lowerQuery);
       }).toList();
     });
   }
@@ -106,18 +106,9 @@ class _RentalsScreenState extends State<RentalsScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Padding(
-            padding:  EdgeInsets.all(16.0),
-            child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Buscar alquileres...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
+          CustomSearchBar(
+            onChanged: filterRentals,
+            hintText: 'Buscar departamento...',
           ),
           Expanded(
             child: isLoading
@@ -156,7 +147,7 @@ class _RentalsScreenState extends State<RentalsScreen> {
         ],
       ),
       floatingActionButton: widget.userId != null
-      ? FloatingActionButton(
+      ? FloatingActionButton.small(
         child: const Icon(Icons.add),
           onPressed: (){
             Navigator.push(
@@ -164,10 +155,12 @@ class _RentalsScreenState extends State<RentalsScreen> {
                 MaterialPageRoute(
                 builder: (context) => RentalFormScreen(idUser: widget.userId!, idCity: 4,),
             ),
-            );
+            ).then((_) => _loadRentals()); 
           },
       )
       : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
+
     );
   }
 }

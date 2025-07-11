@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_terrenito/models/apartment.dart';
+import 'package:mi_terrenito/models/app_fonts.dart';
 import 'dart:io';
 import 'package:mi_terrenito/widgets/utils/url_map_field.dart';
 import '../../services/api_service.dart';
@@ -171,8 +172,9 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-        title: Text(widget.apartment == null ? 'Formulario de Departamento' : 'Editar Departamento', style: TextStyle(color: Colors.white),),
+        title: Text(widget.apartment == null ? 'Formulario de Departamento' : 'Actualizar Departamento', style: TextStyle(color: Colors.white),),
         actions: [
           if (_isLoading)
             const Padding(
@@ -205,27 +207,33 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                       itemBuilder: (context, index) {
                         Widget imageWidget;
                         VoidCallback onRemove;
-
                         if (index < _existingImageUrls.length) {
                           final imageUrl = _existingImageUrls[index];
-                          imageWidget = Image.network(
-                            '${ApiService.baseImageUrl}$imageUrl',
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, progress) =>
-                                progress == null ? child : const Center(child: CircularProgressIndicator()),
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.error, size: 40),
+                          imageWidget = ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              '${ApiService.baseImageUrl}$imageUrl',
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+
+                              loadingBuilder: (context, child, progress) =>
+                                  progress == null ? child : const Center(child: CircularProgressIndicator()),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image, size: 120),
+                            ),
                           );
                           onRemove = () => _removeExistingImage(index);
                         } else {
                           final newImageIndex = index - _existingImageUrls.length;
-                          imageWidget = Image.file(
-                            _newImages[newImageIndex],
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
+                          imageWidget = ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.file(
+                              _newImages[newImageIndex],
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ),
                           );
                           onRemove = () => _removeNewImage(newImageIndex);
                         }
@@ -258,8 +266,11 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 const SizedBox(height: 24),
 
                 TextFormField(
+                  minLines: 1,
+                  maxLines: 3,
                   controller: _titleController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Título',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.title, color: Colors.green),
@@ -271,6 +282,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _descriptionController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Descripción',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.description, color: Colors.green),
@@ -283,6 +295,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _priceController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Precio',
                     border: OutlineInputBorder(),
                     prefixText: '\$',
@@ -297,6 +310,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _roomsController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Número de Habitaciones',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.king_bed, color: Colors.green),
@@ -309,6 +323,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _bathroomsController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Número de Baños',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.bathtub, color: Colors.green),
@@ -321,6 +336,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                 TextFormField(
                   controller: _floorController,
                   decoration: const InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Piso',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.stairs, color: Colors.green),
@@ -334,7 +350,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -342,7 +358,7 @@ class _DepartmentFormScreenState extends State<DepartmentFormScreen> {
                   ),
                   child: Text(
                     widget.apartment == null ? 'Guardar Departamento' : 'Actualizar Departamento',
-                    style: const TextStyle(fontSize: 18),
+                    style: AppFonts.montserratRegular.copyWith(fontSize: 18),
                   ),
                 ),
               ],

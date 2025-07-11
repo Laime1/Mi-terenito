@@ -7,6 +7,7 @@ import 'package:mi_terrenito/services/api_service.dart';
 import 'package:mi_terrenito/widgets/card_carrusel.dart';
 import 'package:mi_terrenito/widgets/utils/app_launcher.dart';
 import 'package:mi_terrenito/widgets/table_card.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../lands/form_land_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -66,9 +67,6 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
                   _buildLocationSection(context),
                   const SizedBox(height: 16),
                   _buildPublisherInfo(context),
-                  const SizedBox(height: 24),
-                  if (widget.usuarioId != null && widget.usuarioId == terreno.user?.id)
-                    _buildEditButton(context),
                 ],
               ),
             ),
@@ -78,6 +76,17 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
     );
   }
 
+  void _launchWhatsAppConMensaje(String phone, String mensaje) async {
+    final whatsappUri = Uri.parse('whatsapp://send?phone=$phone&text=$mensaje');
+    try {
+      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      final webWhatsappUri = Uri.parse('https://wa.me/$phone?text=$mensaje');
+      if (await canLaunchUrl(webWhatsappUri)) {
+        await launchUrl(webWhatsappUri, mode: LaunchMode.externalApplication);
+      }
+    }
+  }
   Widget _buildImageGallery() {
     final images = widget.terreno.images;
     if (images.isEmpty) {
@@ -134,7 +143,7 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
             onTap: () => AppLauncher.openMaps(location, context),
             child: Row(
               children: [
-                CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
+                const CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
                 const SizedBox(width: 8),
                 Text(
                   "Ver en Maps",
@@ -161,7 +170,8 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
     final phoneRaw = user?.numberPhone.replaceAll(RegExp(r'\D'), '') ?? '';
     final phone = phoneRaw.length < 10 ? '+591$phoneRaw' : phoneRaw;
     final mensaje = Uri.encodeComponent(
-        'Hola, estoy interesado en "${widget.terreno.title}". ¿Podrías brindarme más información sobre este terreno? 🌱');
+      'Hola, estoy interesado en "${widget.terreno.title}" ubicado en "${widget.terreno.mapLocation}". ¿Podría brindarme más información? 🌱',
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,11 +193,9 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
           trailing: GestureDetector(
             onTap: () {
               if (phone.isNotEmpty) {
-                AppLauncher.launchWhatsApp(
-                  phone: phone,
-                  message: mensaje,
-                  context: context,
-                );
+                _launchWhatsAppConMensaje(phone, mensaje);
+              } else {
+                const SnackBar(content: Text('Número de contacto no disponible'));
               }
             },
             child: Container(
@@ -215,13 +223,12 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
           ),
         ),
         const SizedBox(height: 8),
+        const Text('Información de la empresa', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: CircleAvatar(child: const Icon(Icons.business, color: Colors.white,)),
-          title: const Text(
-            'Información de la empresa',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
+          leading: const CircleAvatar(child: Icon(Icons.business, color: Colors.white)),
+          title: Text(company?.name ?? 'No disponible'),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -233,40 +240,6 @@ class _DetailLandScreenState extends State<DetailLandScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildEditButton(BuildContext context) {
-    final user = widget.terreno.user;
-    return Center(
-      child: ElevatedButton.icon(
-        icon: const Icon(Icons.edit),
-        label: const Text('Editar'),
-        style: ElevatedButton.styleFrom(
-          textStyle: AppFonts.montserratRegular,
-          backgroundColor: AppColors.navigationButtonBackground,
-          foregroundColor: Colors.white,
-        ),
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LandFormScreen(
-                idUser: user!.id,
-                idCity: widget.terreno.city?.id ?? 0,
-                idEmpresa: widget.terreno.company?.id ?? 0,
-                land: widget.terreno,
-              ),
-            ),
-          );
-          if (result == true && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Terreno actualizado')),
-            );
-            Navigator.pop(context, true);
-          }
-        },
-      ),
     );
   }
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mi_terrenito/models/app_colors.dart';
 import 'package:mi_terrenito/models/app_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/house.dart';
 import '../../services/api_service.dart';
 import '../../widgets/card_carrusel.dart';
 import '../../widgets/table_card.dart';
 import '../../widgets/utils/app_launcher.dart';
 import '../houses/form_house_screen.dart';
-//import 'package:mi_terrenito/models/app_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DetalleCasaScreen extends StatelessWidget {
@@ -59,8 +59,6 @@ class DetalleCasaScreen extends StatelessWidget {
                   _buildLocationSection(context),
                   const SizedBox(height: 16),
                   _buildPublisherInfo(context),
-                  const SizedBox(height: 24),
-                  if (usuarioId != null && usuarioId == casa.user?.id) _buildActionButtons(context),
                 ],
               ),
             ),
@@ -98,13 +96,12 @@ class DetalleCasaScreen extends StatelessWidget {
   Widget _buildDescriptionSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
+      children: const [
+        Text(
           'Descripción',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 8),
-        Text(casa.description, style: const TextStyle(fontSize: 16)),
+        SizedBox(height: 8),
       ],
     );
   }
@@ -124,7 +121,7 @@ class DetalleCasaScreen extends StatelessWidget {
           },
           child: Row(
             children: [
-              CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
+              const CircleAvatar(child: Icon(Icons.map, color: Colors.white, size: 30)),
               const SizedBox(width: 8),
               Text(
                 "Ver en Maps",
@@ -140,6 +137,17 @@ class DetalleCasaScreen extends StatelessWidget {
     );
   }
 
+  void _launchWhatsAppConMensaje(String phone, String mensaje) async {
+    final whatsappUri = Uri.parse('whatsapp://send?phone=$phone&text=$mensaje');
+    try {
+      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      final webWhatsappUri = Uri.parse('https://wa.me/$phone?text=$mensaje');
+      if (await canLaunchUrl(webWhatsappUri)) {
+        await launchUrl(webWhatsappUri, mode: LaunchMode.externalApplication);
+      }
+    }
+  }
   Widget _buildPublisherInfo(BuildContext context) {
     final user = casa.user;
     final company = casa.company;
@@ -165,45 +173,49 @@ class DetalleCasaScreen extends StatelessWidget {
             ],
           ),
           trailing: GestureDetector(
-  onTap: () {
-    if (phone.isNotEmpty) {
-      AppLauncher.launchWhatsApp(
-        phone: phone,
-        message: mensaje,
-        context: context,
-      );
-    }
-  },
-  child: Container(
-    width: 48,
-    height: 48,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: Colors.green,
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 4,
-          offset: const Offset(0, 2),
+            onTap: () {
+              if (phone.isNotEmpty) {
+                // AppLauncher.launchWhatsApp(
+                //   phone: phone,
+                //   message: mensaje,
+                //   context: context,
+                // );
+                _launchWhatsAppConMensaje(phone, mensaje);
+              } else {
+                const SnackBar(content: Text('Número de contacto no disponible'));
+              }
+            },
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.green,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: FaIcon(
+                  FontAwesomeIcons.whatsapp,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+            ),
+          ),
         ),
-      ],
-    ),
-    child: const Center(
-      child: FaIcon(
-        FontAwesomeIcons.whatsapp,
-        color: Colors.white,
-        size: 28,
-      ),
-    ),
-  ),
-),
-
-        ),
+        const SizedBox(height: 8),
+        const Text('Información de la empresa', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: CircleAvatar(child: const Icon(Icons.business, color: Colors.white)),
-          title: const Text('Información de la empresa', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          leading: const CircleAvatar(child: Icon(Icons.business, color: Colors.white)),
+          title: Text(company?.name ?? 'No disponible'),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -215,40 +227,6 @@ class DetalleCasaScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildActionButtons(BuildContext context) {
-    return Center(
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          final resultado = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FormHouseScreen(
-                idUsuario: casa.user?.id ?? 0,
-                idCiudad: casa.city?.id ?? 0,
-                house: casa,
-              ),
-            ),
-          );
-          if (resultado == true) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Casa actualizada')),
-              );
-            }
-            Navigator.pop(context, true);
-          }
-        },
-        icon: const Icon(Icons.edit),
-        label: const Text('Editar'),
-        style: ElevatedButton.styleFrom(
-          textStyle: AppFonts.montserratRegular,
-          backgroundColor: AppColors.navigationButtonBackground,
-          foregroundColor: Colors.white,
-        ),
-      ),
     );
   }
 }

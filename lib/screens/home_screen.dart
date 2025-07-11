@@ -176,13 +176,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final isDarkMode = themeProvider.themeMode == ThemeMode.light;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
             Text('', style: TextStyle(fontSize: 14, color: Colors.white)),
             Text('Click House',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color:  Color(0xFFc49c2e))),
           ],
         ),
         actions: [
@@ -195,105 +196,122 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: const Text(
               'Iniciar sesión',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color:  Color(0xFFc49c2e)),
             ),
           ),
           IconButton(
             onPressed: () {
               themeProvider.toggleTheme();
             },
-            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: AppColors.bodyBackground),
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color:  Color(0xFFc49c2e)),
           ),
         ],
+        backgroundColor: Colors.transparent,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    CustomDropdown(
-                      items: cities,
-                      selectedItem: selectedCity,
-                      hint: 'Ciudades',
-                      onChanged: (value) async {
-                        setState(() {
-                          selectedCity = value;
-                          empresas = [];
-                          selectedEmpresaId = null;
-                          selectedEmpresaName = null;
-
-                          hasCasas = false;
-                          hasTerrenos = false;
-                          hasDepartamentos = false;
-                          hasAlquileres = false;
-                        });
-                        if (value != null) {
-                          final cityId = await apiService.getCityIdByName(value);
-                          await loadEmpresas(cityId);
-                        }
-                      },
+              child: Column(
+                children: [
+                  Container(
+                    height: 120,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF022021),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30),
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    isLoadingEmpresas
-                        ? const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            child: Center(child: CircularProgressIndicator()),
-                          )
-                        : empresas.isNotEmpty
-                            ? CustomDropdown(
-                                items: empresas.map<String>((e) => e['nombre'] as String).toList(),
-                                selectedItem: selectedEmpresaName,
-                                hint: 'Empresas',
-                                onChanged: (value) async {
-                                  final empresa = empresas.firstWhere((e) => e['nombre'] == value);
-                                  setState(() {
-                                    selectedEmpresaName = value;
-                                    selectedEmpresaId = empresa['id_empresa'];
-                                  });
-                                  if (selectedCity != null && selectedEmpresaId != null) {
-                                    final cityId = await apiService.getCityIdByName(selectedCity!);
-                                    await verificarDisponibilidadPropiedades(cityId, selectedEmpresaId!);
-                                  }
-                                },
-                              )
-                            : const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 15),
-                                child: Text(
-                                  'Sin empresas',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: AppColors.cardText),
-                                ),
-                              ),
-                    const SizedBox(height: 100),
-                    Stack(
-                      alignment: Alignment.center,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 35, right: 35, top: 40),
+                    child: Column(
                       children: [
-                        Opacity(
-                          opacity: isVerificandoPropiedades ? 0.5 : 1.0,
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: [
-                              _buildMenuItem('Casas', Icons.house_rounded, hasCasas),
-                              _buildMenuItem('Terrenos', Icons.park_rounded, hasTerrenos),
-                              _buildMenuItem('Departamentos', Icons.apartment_rounded, hasDepartamentos),
-                              _buildMenuItem('Alquileres', Icons.real_estate_agent_rounded, hasAlquileres),
-                            ],
-                          ),
+                        CustomDropdown(
+                          items: cities,
+                          selectedItem: selectedCity,
+                          hint: 'Ciudad',
+                          onChanged: (value) async {
+                            setState(() {
+                              selectedCity = value;
+                              empresas = [];
+                              selectedEmpresaId = null;
+                              selectedEmpresaName = null;
+
+                              hasCasas = false;
+                              hasTerrenos = false;
+                              hasDepartamentos = false;
+                              hasAlquileres = false;
+                            });
+                            if (value != null) {
+                              final cityId = await apiService.getCityIdByName(value);
+                              await loadEmpresas(cityId);
+                            }
+                          },
                         ),
-                        if (isVerificandoPropiedades)
-                          SizedBox(
-                            height: 200,
-                            width: 200,
-                            child: Lottie.asset('assets/animations/cargaAnimation.json'),
-                          ),
+                        const SizedBox(height: 16),
+                        isLoadingEmpresas
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 15),
+                                child: Center(child: CircularProgressIndicator()),
+                              )
+                            : empresas.isNotEmpty
+                                ? CustomDropdown(
+                                    items: empresas.map<String>((e) => e['nombre'] as String).toList(),
+                                    selectedItem: selectedEmpresaName,
+                                    hint: 'Empresas',
+                                    onChanged: (value) async {
+                                      final empresa = empresas.firstWhere((e) => e['nombre'] == value);
+                                      setState(() {
+                                        selectedEmpresaName = value;
+                                        selectedEmpresaId = empresa['id_empresa'];
+                                      });
+                                      if (selectedCity != null && selectedEmpresaId != null) {
+                                        final cityId = await apiService.getCityIdByName(selectedCity!);
+                                        await verificarDisponibilidadPropiedades(cityId, selectedEmpresaId!);
+                                      }
+                                    },
+                                  )
+                                : const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 15),
+                                    child: Text(
+                                      'Sin empresas',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: AppColors.cardText),
+                                    ),
+                                  ),
+                        const SizedBox(height: 40),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Opacity(
+                              opacity: isVerificandoPropiedades ? 0.5 : 1.0,
+                              child: GridView.count(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 8,
+                                crossAxisSpacing: 8,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                children: [
+                                  _buildMenuItem('Casas', Icons.house_rounded, hasCasas),
+                                  _buildMenuItem('Terrenos', Icons.park_rounded, hasTerrenos),
+                                  _buildMenuItem('Departamentos', Icons.apartment_rounded, hasDepartamentos),
+                                  _buildMenuItem('Alquileres', Icons.real_estate_agent_rounded, hasAlquileres),
+                                ],
+                              ),
+                            ),
+                            if (isVerificandoPropiedades)
+                              SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: Lottie.asset('assets/animations/cargaAnimation.json'),
+                              ),
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
     );
@@ -303,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Opacity(
       opacity: enabled ? 1.0 : 0.4,
       child: Card(
-        color: AppColors.cardBackground,
+        color: Color(0xFF022021),
         child: InkWell(
           onTap: enabled
               ? () async {
@@ -339,9 +357,45 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: Colors.green),
+              ShaderMask(
+                shaderCallback: (bounds) {
+                  return const LinearGradient(
+                    colors: [
+                      Color(0xFFbc972b),
+                      Color(0xFF957021),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ).createShader(bounds);
+                },
+                child: Icon(
+                  icon,
+                  size: 65,
+                  color: Colors.white,
+                ),
+              ),
+
               const SizedBox(height: 10),
-              Text(title, style: const TextStyle(color: AppColors.cardText)),
+        ShaderMask(
+          shaderCallback: (bounds) {
+            return const LinearGradient(
+              colors: [
+                Color(0xFFFFD700),
+                Color(0xFFC99700),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ).createShader(bounds);
+          },
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        )
             ],
           ),
         ),
