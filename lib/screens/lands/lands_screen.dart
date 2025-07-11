@@ -44,25 +44,17 @@ class _LandsScreenState extends State<LandsScreen> {
   }
 
   Future<void> loadAllData() async {
-    setState(() => isLoading = true);
     try {
       final loadedTerrenosJson = widget.usuarioId != null
           ? await apiService.fetchTerrenosByUsuario(widget.usuarioId!)
           : await apiService.fetchTerrenosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
-
-      final loadedCasas = await apiService.fetchCasasByEmpresaAndCiudad(widget.empresaId, widget.cityId);
-      final loadedDepartamentos = await apiService.fetchDepartamentosByEmpresaAndCiudad(widget.empresaId, widget.cityId);
-      final loadedAlquileres = await apiService.fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
 
       final loadedTerrenos = loadedTerrenosJson.map<Land>((json) => Land.fromJson(json)).toList();
 
       setState(() {
         terrenos = loadedTerrenos;
         filteredTerrenos = loadedTerrenos;
-        hasTerrenos = loadedTerrenos.isNotEmpty;
-        hasCasas = loadedCasas.isNotEmpty;
-        hasDepartamentos = loadedDepartamentos.isNotEmpty;
-        hasAlquileres = loadedAlquileres.isNotEmpty;
+
         isLoading = false;
       });
     } catch (_) {

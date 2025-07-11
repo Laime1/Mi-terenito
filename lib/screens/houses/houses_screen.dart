@@ -34,6 +34,7 @@ class _CasasScreenState extends State<CasasScreen> {
   bool hasTerrenos = false;
   bool hasDepartamentos = false;
   bool hasAlquileres = false;
+  String errorMessage = '';
   final ApiService apiService = ApiService();
 
   @override
@@ -43,7 +44,6 @@ class _CasasScreenState extends State<CasasScreen> {
   }
 
   Future<void> loadAllData() async {
-    setState(() => isLoading = true);
     try {
       List<dynamic> loadedCasasJson;
       if (widget.usuarioId != null) {
@@ -56,17 +56,6 @@ class _CasasScreenState extends State<CasasScreen> {
           widget.cityId,
         );
       }
-      final loadedTerrenos = await apiService.fetchTerrenosByEmpresaAndCiudad(
-        widget.empresaId,
-        widget.cityId,
-      );
-      final loadedDepartamentos = await apiService
-          .fetchDepartamentosByEmpresaAndCiudad(
-            widget.empresaId,
-            widget.cityId,
-          );
-      final loadedAlquileres = await apiService
-          .fetchAlquileresByEmpresaAndCiudad(widget.empresaId, widget.cityId);
       final loadedCasas =
           loadedCasasJson.map((json) => House.fromJson(json)).toList();
 
@@ -75,14 +64,13 @@ class _CasasScreenState extends State<CasasScreen> {
       setState(() {
         casas = loadedCasas;
         filteredCasas = loadedCasas;
-        hasCasas = loadedCasas.isNotEmpty;
-        hasTerrenos = loadedTerrenos.isNotEmpty;
-        hasDepartamentos = loadedDepartamentos.isNotEmpty;
-        hasAlquileres = loadedAlquileres.isNotEmpty;
         isLoading = false;
       });
     } catch (e) {
-      setState(() => isLoading = false);
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Error: ${e.toString()}';
+      });
     }
   }
 
@@ -171,7 +159,13 @@ class _CasasScreenState extends State<CasasScreen> {
                 hintText: 'Buscar casa...',
               ),
               Expanded(
-                child: filteredCasas.isEmpty && !isLoading
+                child: isLoading
+                    ? const HouseLoader()
+                    : errorMessage.isNotEmpty
+                        ? Center(
+                            child: Text(errorMessage),
+                          )
+                        : filteredCasas.isEmpty
                     ? Center(
                         child: Text(
                           widget.usuarioId != null
@@ -210,10 +204,6 @@ class _CasasScreenState extends State<CasasScreen> {
               ),
             ],
           ),
-          if (isLoading)
-            const Center(
-              child: HouseLoader(),
-            ),
         ],
       ),
       floatingActionButton:
