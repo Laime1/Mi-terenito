@@ -162,7 +162,8 @@ class _CasasScreenState extends State<CasasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
+      body: Stack(
+        children: [
           Column(
             children: [
               CustomSearchBar(
@@ -170,53 +171,51 @@ class _CasasScreenState extends State<CasasScreen> {
                 hintText: 'Buscar casa...',
               ),
               Expanded(
-                child:
-                    isLoading
-                        ? const SizedBox()
-                        : filteredCasas.isEmpty
-                        ? Center(
-                          child: Text(
-                            widget.usuarioId != null
-                                ? 'Sin casas publicadas.'
-                                : 'No hay casas disponibles.',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        )
-                        : ListView.builder(
-                          itemCount: filteredCasas.length,
-                          itemBuilder: (context, index) {
-                            final house = filteredCasas[index];
-                            return HouseCard(
-                              house: house,
-                              enableSwipeActions: widget.usuarioId != null,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => DetalleCasaScreen(
-                                          casa: house,
-                                          usuarioId: widget.usuarioId,
-                                        ),
-                                  ),
-                                );
-                              },
-                              onEdit:
-                                  widget.usuarioId != null
-                                      ? () => _editHouse(house, context)
-                                      : null,
-                              onDelete:
-                                  widget.usuarioId != null
-                                      ? () => _deleteCasa(house.id, context)
-                                      : null,
-                            );
-                          },
+                child: filteredCasas.isEmpty && !isLoading
+                    ? Center(
+                        child: Text(
+                          widget.usuarioId != null
+                              ? 'Sin casas publicadas.'
+                              : 'No hay casas disponibles.',
+                          style: const TextStyle(fontSize: 16),
                         ),
+                      )
+                    : ListView.builder(
+                        itemCount: filteredCasas.length,
+                        itemBuilder: (context, index) {
+                          final house = filteredCasas[index];
+                          return HouseCard(
+                            house: house,
+                            enableSwipeActions: widget.usuarioId != null,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetalleCasaScreen(
+                                    casa: house,
+                                    usuarioId: widget.usuarioId,
+                                  ),
+                                ),
+                              );
+                            },
+                            onEdit: widget.usuarioId != null
+                                ? () => _editHouse(house, context)
+                                : null,
+                            onDelete: widget.usuarioId != null
+                                ? () => _deleteCasa(house.id, context)
+                                : null,
+                          );
+                        },
+                      ),
               ),
-              if (isLoading) const HouseLoader(), // Aquí va el loader
             ],
           ),
-
+          if (isLoading)
+            const Center(
+              child: HouseLoader(),
+            ),
+        ],
+      ),
       floatingActionButton:
           widget.usuarioId != null
               ? FloatingActionButton.small(
