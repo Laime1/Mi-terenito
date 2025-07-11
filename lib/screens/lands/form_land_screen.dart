@@ -193,10 +193,6 @@ class _LandFormScreenState extends State<LandFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final totalImages = _existingImageUrls.length + _mobileImages.length;
-    if (totalImages == 0) {
-      return const SizedBox.shrink();
-    }
     return Scaffold(
       appBar: AppBar(
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
@@ -215,11 +211,13 @@ class _LandFormScreenState extends State<LandFormScreen> {
                 const Text('Imágenes (máximo 3)', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
 
+                if (_existingImageUrls.isNotEmpty || _mobileImages.isNotEmpty || _webImages.isNotEmpty)
+
                   SizedBox(
                     height: 120,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: totalImages,
+                        itemCount: _existingImageUrls.length + (kIsWeb ? _webImages.length : _mobileImages.length),
                       itemBuilder: (context, index) {
                         Widget imageWidget;
                         bool isExisting = index < _existingImageUrls.length;
