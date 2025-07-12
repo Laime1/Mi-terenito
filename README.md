@@ -12,17 +12,14 @@ graph TD
 
     subgraph "Core"
         B(MyApp)
-        C(Provider <ThemeProvider>)
+        C(Provider<ThemeProvider>)
         D[ApiService]
     end
 
     subgraph "Modelos de Datos"
-        M1[Property Models
-(House, Land, Apartment, etc.)]
-        M2[UI Models
-(AppTheme, AppColors)]
-        M3[Data Models
-(User, City, Company)]
+        M1["Property Models (House, Land, Apartment)"]
+        M2["UI Models (AppTheme, AppColors)"]
+        M3["Data Models (User, City, Company)"]
     end
 
     subgraph "Servicios"
@@ -49,16 +46,14 @@ graph TD
     end
 
     subgraph "Widgets Reutilizables"
-        W1[Property Cards
-(HouseCard, LandCard, etc.)]
+        W1["Property Cards (HouseCard, LandCard)"]
         W2[CustomSearchBar]
         W3[CustomDropdown]
         W4[CardCarrusel]
         W5[TableCard]
         W6[LoaderOverlay]
         W7[CardMixin]
-        W8[Utils
-(AppLauncher, UrlMapField)]
+        W8["Utils (AppLauncher, UrlMapField)"]
     end
 
     %% Conexiones
