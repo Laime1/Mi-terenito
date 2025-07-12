@@ -60,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                   height: 45,
                   child: TextField(
                     controller: correoController,
-                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                    style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Correo',
                       hintText: 'ingresar correo',
@@ -85,7 +85,7 @@ class LoginScreen extends StatelessWidget {
                       return TextField(
                         controller: contrasenaController,
                         obscureText: value,
-                        style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
                           hintText: 'ingresar contraseña',
