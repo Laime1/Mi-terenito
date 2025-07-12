@@ -1,4 +1,4 @@
-graph TD
+1 graph TD
 2     subgraph "Punto de Entrada"
 3         A[main.dart]
 4     end
