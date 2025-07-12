@@ -1,18 +1,28 @@
+# Mi Terrenito App
+
+Aplicación móvil para la visualización y gestión de propiedades inmobiliarias.
+
+## Diagrama de Arquitectura
+
+```mermaid
 graph TD
-subgraph "Punto de Entrada"
-A[main.dart]
-end
+    subgraph "Punto de Entrada"
+        A[main.dart]
+    end
 
     subgraph "Core"
         B(MyApp)
-        C(Provider<ThemeProvider>)
+        C(Provider <ThemeProvider>)
         D[ApiService]
     end
 
     subgraph "Modelos de Datos"
-        M1["Property Models (House, Land, Apartment)"]
-        M2["UI Models (AppTheme, AppColors)"]
-        M3["Data Models (User, City, Company)"]
+        M1[Property Models
+(House, Land, Apartment, etc.)]
+        M2[UI Models
+(AppTheme, AppColors)]
+        M3[Data Models
+(User, City, Company)]
     end
 
     subgraph "Servicios"
@@ -39,14 +49,16 @@ end
     end
 
     subgraph "Widgets Reutilizables"
-        W1["Property Cards (HouseCard, LandCard)"]
+        W1[Property Cards
+(HouseCard, LandCard, etc.)]
         W2[CustomSearchBar]
         W3[CustomDropdown]
         W4[CardCarrusel]
         W5[TableCard]
         W6[LoaderOverlay]
         W7[CardMixin]
-        W8["Utils (AppLauncher, UrlMapField)"]
+        W8[Utils
+(AppLauncher, UrlMapField)]
     end
 
     %% Conexiones
@@ -106,3 +118,4 @@ end
     class S1,S2 service
     class W1,W2,W3,W4,W5,W6,W7,W8 widget
     class M1,M2,M3 model
+```

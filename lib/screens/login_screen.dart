@@ -46,7 +46,7 @@ class LoginScreen extends StatelessWidget {
                     fontSize: 24,
                     fontFamily: 'InknutAntiqua',
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -64,10 +64,10 @@ class LoginScreen extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: 'Correo',
                       hintText: 'ingresar correo',
-                      labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
-                      hintStyle: TextStyle(color: Theme.of(context).hintColor),
+                      labelStyle: TextStyle(color: Colors.white),
+                      hintStyle: TextStyle(color: Colors.white),
                       filled: true,
-                      fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+                      fillColor: Colors.black,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -89,10 +89,10 @@ class LoginScreen extends StatelessWidget {
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
                           hintText: 'ingresar contraseña',
-                          labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
-                          hintStyle: TextStyle(color: Theme.of(context).hintColor),
+                          labelStyle: TextStyle(color: Colors.white),
+                          hintStyle: TextStyle(color: Colors.white),
                           filled: true,
-                          fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+                          fillColor: Colors.black,
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           suffixIcon: IconButton(
                             icon: Icon(
