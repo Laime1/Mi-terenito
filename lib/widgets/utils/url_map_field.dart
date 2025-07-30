@@ -1,5 +1,8 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UrlMapField extends StatelessWidget {
@@ -41,6 +44,55 @@ class UrlMapField extends StatelessWidget {
     }
   }
 
+  Future<void> _setCurrentLocation(BuildContext context) async {
+    if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('La ubicación no está disponible en esta plataforma')),
+      );
+      return;
+    }
+
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('La ubicación está desactivada')),
+        );
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Permiso de ubicación denegado')),
+          );
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Permisos permanentemente denegados')),
+        );
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition();
+      final url = 'https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}';
+      controller.text = url;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ubicación actual establecida')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al obtener ubicación: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -55,10 +107,20 @@ class UrlMapField extends StatelessWidget {
           tooltip: 'Abrir en Google Maps',
           onPressed: () => _openMap(context),
         ),
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.paste, color: Colors.green),
-          tooltip: 'Pegar desde portapapeles',
-          onPressed: () => _pasteFromClipboard(context),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.my_location, color: Colors.green),
+              tooltip: 'Usar ubicación actual',
+              onPressed: () => _setCurrentLocation(context),
+            ),
+            IconButton(
+              icon: const Icon(Icons.paste, color: Colors.green),
+              tooltip: 'Pegar desde portapapeles',
+              onPressed: () => _pasteFromClipboard(context),
+            ),
+          ],
         ),
       ),
       validator: (value) => value == null || value.isEmpty ? 'Este campo es requerido' : null,

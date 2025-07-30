@@ -177,13 +177,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('', style: TextStyle(fontSize: 14, color: Colors.white)),
-            Text('Click House',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color:  Color(0xFFc49c2e))),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/terrenohome.png',
+              height: 130,
+              width: 130,
+            ),
+            const SizedBox(width: 10),
           ],
         ),
         actions: [
@@ -196,17 +201,16 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: const Text(
               'Iniciar sesión',
-              style: TextStyle(color:  Color(0xFFc49c2e)),
+              style: TextStyle(color: Color(0xFFc49c2e)),
             ),
           ),
           IconButton(
             onPressed: () {
               themeProvider.toggleTheme();
             },
-            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color:  Color(0xFFc49c2e)),
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color: Color(0xFFc49c2e)),
           ),
         ],
-        backgroundColor: Colors.transparent,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -216,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     height: 120,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF022021),
+                      color: Color(0xFF336666),
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(30),
                         bottomRight: Radius.circular(30),
@@ -275,9 +279,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : const Padding(
                                     padding: EdgeInsets.symmetric(vertical: 15),
                                     child: Text(
-                                      'Sin empresas',
+                                      'Sin Empresas',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(color: AppColors.cardText),
+                                      style: TextStyle(color: AppColors.gold),
                                     ),
                                   ),
                         const SizedBox(height: 40),
@@ -321,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Opacity(
       opacity: enabled ? 1.0 : 0.4,
       child: Card(
-        color: Color(0xFF022021),
+        color: Color(0xFF336666),
         child: InkWell(
           onTap: enabled
               ? () async {

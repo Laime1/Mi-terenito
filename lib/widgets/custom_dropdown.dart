@@ -65,7 +65,7 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
             decoration: BoxDecoration(
-              color: Color(0xFF022021),
+              color: Color(0xFF336666),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.grey.shade500),
             ),
@@ -78,7 +78,7 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFc49c2e), // será reemplazado por el degradado
+                      color: Color(0xFFc49c2e),
                     ),
                   ),
                 ),
@@ -100,7 +100,7 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
             curve: Curves.easeInOut,
             height: isExpanded ? maxHeight : 0,
             decoration: BoxDecoration(
-              color: AppColors.bodyBackground,
+              color: Color(0xFF336666),
               border: Border.all(color: Colors.grey.shade400),
               boxShadow: const [
                 BoxShadow(
@@ -126,7 +126,10 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
                         alignment: Alignment.center,
                         child: Text(
                           item,
-                          style: const TextStyle(color: AppColors.cardText),
+                          style: const TextStyle(
+                            color: Color(0xFFc49c2e),
+                            fontWeight: FontWeight.bold,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ),

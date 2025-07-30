@@ -153,14 +153,13 @@ class _RentalsScreenState extends State<RentalsScreen> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                builder: (context) => RentalFormScreen(idUser: widget.userId!, idCity: 4,),
+                builder: (context) => RentalFormScreen(idUser: widget.userId!, idCity: widget.cityId,),
             ),
             ).then((_) => _loadRentals()); 
           },
       )
       : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
-
     );
   }
 }
