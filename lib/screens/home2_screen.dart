@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mi_terrenito/screens/apartaments/apartaments_screen.dart';
 import 'package:mi_terrenito/screens/rentals/rentals_screen.dart';
+import '../services/theme_provider.dart';
 import 'houses/houses_screen.dart';
 import 'lands/lands_screen.dart';
 import 'package:circle_bottom_navigation/circle_bottom_navigation.dart';
@@ -115,6 +117,9 @@ class _Home2ScreenState extends State<Home2Screen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.themeMode == ThemeMode.light;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -145,6 +150,12 @@ class _Home2ScreenState extends State<Home2Screen> {
         automaticallyImplyLeading: false,
         centerTitle: true,
         actions: [
+          IconButton(
+            onPressed: () {
+              themeProvider.toggleTheme();
+            },
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+          ),
           if (widget.isLoggedIn)
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white, size: 20),
@@ -180,6 +191,7 @@ class _Home2ScreenState extends State<Home2Screen> {
 
               },
             ),
+
         ],
       ),
       body: getCurrentScreen(),
