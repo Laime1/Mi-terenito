@@ -199,12 +199,6 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(color:  Color(0xFFc49c2e)),
             ),
           ),
-          IconButton(
-            onPressed: () {
-              themeProvider.toggleTheme();
-            },
-            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode, color:  Color(0xFFc49c2e)),
-          ),
         ],
         backgroundColor: Colors.transparent,
       ),
